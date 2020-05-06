@@ -77,31 +77,6 @@ function getView(){
             //<select class="form-control input-sm" id="cmbCoddoc"></select>
             //<select class="form-control" id="cmbVendedor"></select>
         },
-        cajabusquedaproducto :()=>{
-            return `
-        <div class="row">
-            <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
-
-                <div class="input-group">
-                    <select class="form-control col-3" id="cmbTipoPrecio">
-                        <option value="P">DET</option>
-                        <option value="C">MayC</option>
-                        <option value="B">MayB</option>
-                        <option value="A">MayA</option>
-                        <option value="K">CAMBIO</option>
-                    </select>
-                    <input id="txtBusqueda" type="text" ref="txtBusqueda" class="form-control col-7" placeholder="Buscar código o descripción..." aria-label="" aria-describedby="button-addon4" />
-                    <div class="input-group-prepend">
-                        <button class="btn btn-info waves-effect waves-themed" type="button" id="btnBuscarProducto">
-                            <i class="fal fa-search"></i>
-                        </button>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-            `
-        },
         gridTempVenta :()=>{
             return `
         <div class="row">
@@ -119,7 +94,7 @@ function getView(){
                     <div class="panel-content">
                         <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
                             <div class="input-group">
-                                <select class="form-control col-3" id="cmbTipoPrecio">
+                                <select class="form-control col-3" id="cmbTipoPrecio" disabled>
                                     <option value="P">DET</option>
                                     <option value="C">MayC</option>
                                     <option value="B">MayB</option>
@@ -503,7 +478,7 @@ function getView(){
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <label class="modal-title text-danger h3" id="">Nueva Cantidad</label>
+                            <label class="modal-title text-danger h3" id="">Nueva Cantidad // Precio: Q</label><input type="number" class="form-control col-4 text-danger" id="txtNuevoPrecio" onclick="alert('cambiando precios')">
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true"><i class="fal fa-times"></i></span>
                             </button>
