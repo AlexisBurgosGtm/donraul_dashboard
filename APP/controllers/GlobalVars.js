@@ -33,10 +33,10 @@ let GlobalGpsLong = 0;
 let GlobalSelectedId;
 let GlobalSelectedCodigo;
 let GlobalSelectedFecha;
-let GlobalCoddoc = 'PED01';
+let GlobalCoddoc = 'PD999';
 let GlobalTotalDocumento = 0;
 let GlobalTotalCostoDocumento = 0;
-let GlobalCodBodega = '01';
+let GlobalCodBodega = 'B001';
 let GlobalTipoCobro = 'TERMINAR';
 
 let GlobalSelectedCodCliente;
