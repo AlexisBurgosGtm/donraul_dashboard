@@ -1,394 +1,659 @@
-﻿const express = require('express');
+﻿const execute = require('./connection');
+const express = require('express');
 const router = express.Router();
-const execute = require('./connection');
 
-router.get("/admin/ventasdiarias", async(req,res)=>{
-	const sql = require('mssql')
-	let token = req.query.token;
-	let anio = req.query.anio;
-	let mes = req.query.mes;
-	try {sql.close()} catch (error) {}
-			const pool = await sql.connect(config)		
-			try {
-				const result = await sql.query`SELECT FECHA,DIA, concat('Q',TOTALCOSTO) AS TOTALCOSTO, concat('Q',TOTALVENTA) AS TOTALVENTA, concat('Q',UTILIDAD) AS UTILIDAD, UTILIDADPORC,LASTUPDATE FROM WEB_VENTASDIARIAS WHERE TOKEN=${token} AND ANIO=${anio} AND MES=${mes}`
-				console.dir('Enviando ventas diarias');
-				res.send(result);
-			} catch (err) {
-				console.log(String(err));
-			}
-			sql.close()
+// VENTANA DE VENTAS
+///////////////////////////////////////
+
+// VENTAS BUSCAR PRODUCTO POR DESCRIPCION
+router.get("/buscarproducto", async(req,res)=>{
+    
+    const {empnit,filtro,app,tipoprecio} = req.query;
+    // app= sucusal
+    // K= CAMBIO DE PRODUCTO
+
+    let campoprecio = '';
+
+    switch (tipoprecio) {
+        case 'P':
+            campoprecio = 'COMMUNITY_PRECIOS_SYNC.PRECIO';        
+            break;
+        case 'C':
+            campoprecio = 'COMMUNITY_PRECIOS_SYNC.MAYOREOC';
+            break;
+        case 'B':
+            campoprecio = 'COMMUNITY_PRECIOS_SYNC.MAYOREOC';
+            break;
+        case 'A':
+            campoprecio = 'COMMUNITY_PRECIOS_SYNC.MAYOREOA';
+            break;
+        case 'K':
+            campoprecio = '0.01'
+            break;
+        default:
+            campoprecio = 'COMMUNITY_PRECIOS_SYNC.PRECIO';
+            break;
+    }
+    let qry ='';
+    qry = `SELECT COMMUNITY_PRODUCTOS_SYNC.CODPROD, COMMUNITY_PRODUCTOS_SYNC.DESPROD, COMMUNITY_PRECIOS_SYNC.CODMEDIDA, COMMUNITY_PRECIOS_SYNC.EQUIVALE, COMMUNITY_PRECIOS_SYNC.COSTO, 
+	${campoprecio} as PRECIO, ISNULL(COMMUNITY_MARCAS.DESMARCA, 'SN') AS DESMARCA, COMMUNITY_INVSALDO_SYNC.SALDO AS EXISTENCIA
+	FROM            COMMUNITY_PRODUCTOS_SYNC LEFT OUTER JOIN
+                         COMMUNITY_PRECIOS_SYNC ON COMMUNITY_PRODUCTOS_SYNC.CODPROD = COMMUNITY_PRECIOS_SYNC.CODPROD AND COMMUNITY_PRODUCTOS_SYNC.EMPNIT = COMMUNITY_PRECIOS_SYNC.EMPNIT AND 
+                         COMMUNITY_PRODUCTOS_SYNC.TOKEN = COMMUNITY_PRECIOS_SYNC.TOKEN LEFT OUTER JOIN
+                         COMMUNITY_MARCAS ON COMMUNITY_PRODUCTOS_SYNC.TOKEN = COMMUNITY_MARCAS.TOKEN AND COMMUNITY_PRODUCTOS_SYNC.EMPNIT = COMMUNITY_MARCAS.EMPNIT LEFT OUTER JOIN
+                         COMMUNITY_INVSALDO_SYNC ON COMMUNITY_PRODUCTOS_SYNC.TOKEN = COMMUNITY_INVSALDO_SYNC.TOKEN AND COMMUNITY_PRODUCTOS_SYNC.EMPNIT = COMMUNITY_INVSALDO_SYNC.EMPNIT AND 
+                         COMMUNITY_PRODUCTOS_SYNC.CODPROD = COMMUNITY_INVSALDO_SYNC.CODPROD
+    WHERE (COMMUNITY_PRODUCTOS_SYNC.DESPROD LIKE '%${filtro}%') 
+        OR (COMMUNITY_PRODUCTOS_SYNC.CODPROD = '${filtro}')` 
+    
+    
+    execute.Query(res,qry);
+
+})
+// obtiene el total de temp ventas según sea el usuario
+router.get("/tempVentastotal", async(req,res)=>{
+    let empnit = req.query.empnit;
+    let usuario = req.query.usuario;
+    let token = req.query.token;
+    let app = req.query.app;
+
+    let qry = '';
+
+
+            qry = `SELECT COUNT(CODPROD) AS TOTALITEMS, SUM(TOTALCOSTO) AS TOTALCOSTO, SUM(TOTALPRECIO) AS TOTALPRECIO, SUM(EXENTO) AS TOTALEXENTO
+            FROM ME_TEMP_VENTAS
+            WHERE (CODSUCURSAL = '${app}') AND (USUARIO = '${usuario}')`        
+
+    execute.Query(res,qry);
+    
 });
 
-// OBTIENE TODAS LAS EMPRESAS
-router.get("/empresas/all", async(req,res)=>{
+// obtiene el grid de temp ventas
+router.get("/tempVentas", async(req,res)=>{
+    let empnit = req.query.empnit;
+    let coddoc = req.query.coddoc;
+    let usuario = req.query.usuario;
+    let token = req.query.token;
+    let app = req.query.app;
 
-	const sql = require('mssql')
-	let token = req.query.token;
-	try {sql.close()} catch (error) {}
-	const pool = await sql.connect(sqlString)
-	try {
-		//const pool = await sql.connect(sqlString)
-		const result = await sql.query`SELECT EMPNIT,EMPNOMBRE FROM EMPRESAS WHERE TOKEN=${token} ORDER BY EMPNOMBRE`
-		console.dir('Empresas cargadas exitosamente token ' + token);
-	
-		res.send(result);
-		
-	} catch (err) {
-		console.log(String(err));
-	}
-	sql.close()
+    let qry = '';
+
+    qry = `SELECT 
+            ME_TEMP_VENTAS.ID,ME_TEMP_VENTAS.CODPROD, 
+            ME_TEMP_VENTAS.DESPROD, 
+            ME_TEMP_VENTAS.CODMEDIDA, 
+            ME_TEMP_VENTAS.CANTIDAD, 
+            ME_TEMP_VENTAS.EQUIVALE,
+            ME_TEMP_VENTAS.PRECIO, 
+            ME_TEMP_VENTAS.TOTALPRECIO
+                FROM ME_TEMP_VENTAS 
+            WHERE (ME_TEMP_VENTAS.CODSUCURSAL = '${app}') AND (ME_TEMP_VENTAS.USUARIO = '${usuario}')
+            ORDER BY ME_TEMP_VENTAS.ID DESC`
+
+       
+    execute.Query(res,qry);
+    
 });
 
-//OBTIENE LAS VENTAS POR DIA Y VENDEDOR
-router.get("/ventas/dia", async(req,res)=>{
-	
-	const sql = require('mssql')
-	let token = req.query.token;
-	try {sql.close()} catch (error) {}
-	/*
-	const pool = await sql.connect(sqlString)
-	try {
-		const result = await sql.query`SELECT ANIO,MES,DIA,CODVEN,NOMVEN,VENTA,EMPNIT FROM VENTAS_DIA_VENDEDOR WHERE TOKEN=${token}`
-		console.dir('Generado Ventas por vendedor por día');
-		res.send(result);
-	} catch (err) {
-		console.log(String(err));
-	}
-	sql.close()*/
+// obtiene row de temp ventas
+router.post("/tempVentasRow", async(req,res)=>{
+    
+    const {id,app} = req.body;
+
+    let qry = '';
+    
+    qry = `SELECT ID,CODPROD,DESPROD,CODMEDIDA,CANTIDAD,EQUIVALE,COSTO,PRECIO,EXENTO FROM ME_TEMP_VENTAS WHERE ID=${id}`
+  
+    execute.Query(res,qry);
+    
 });
 
-//OBTIENE LA LISTA DE PRODUCTOS Y PRECIOS CON EXISTENCIA
-router.get("/productos/all", async(req,res)=>{
-	const sql = require('mssql')
-	let token = req.query.token
-	try {sql.close()} catch (error) {}
-			const pool = await sql.connect(config)		
-			try {
-				const result = await sql.query`SELECT CODPROD,DESPROD,DESMARCA,CODMEDIDA,EQUIVALE,COSTO,PRECIO,concat('Q',PRECIO) as QPRECIO, EXISTENCIA, EMPNIT FROM PRECIOS WHERE TOKEN=${token}`
-				console.dir('Productos cargados');
-				res.send(result);
-			} catch (err) {
-				console.log(String(err));
-			}
-			sql.close()
+// ACTUALIZA el grid de temp ventas
+router.put("/tempVentasRow", async(req,res)=>{
+    
+    const {app,id,totalcosto,totalprecio,cantidad,totalunidades,exento} = req.body;
+    
+    let qry = '';
+    
+    qry = `UPDATE ME_TEMP_VENTAS SET CANTIDAD=${cantidad},TOTALCOSTO=${totalcosto},TOTALPRECIO=${totalprecio},TOTALUNIDADES=${totalunidades},EXENTO=${exento} WHERE ID=${id}`
+    
+    
+    execute.Query(res,qry);
+    
 });
 
-//OBTIENE LA LISTA DE PRODUCTOS CON EXISTENCIA ÚNICA
-router.get("/productos/inventario", async(req,res)=>{
-	const sql = require('mssql')
-	let token = req.query.token
-	try {sql.close()} catch (error) {}
-			const pool = await sql.connect(config)		
-			try {
-				const result = await sql.query`SELECT CODPROD, DESPROD, EXISTENCIA, LASTUPDATE FROM PRECIOS GROUP BY TOKEN, EMPNIT, CODPROD, DESPROD, EXISTENCIA, LASTUPDATE HAVING (TOKEN = ${token})`
-				console.dir('Existencias cargadas');
-				res.send(result);
-			} catch (err) {
-				console.log(String(err));
-			}
-			sql.close()
+// inserta un nuevo registro en temp ventas   
+router.post("/tempVentas", async(req,res)=>{
+        
+    let empnit = req.body.empnit;
+    let usuario = req.body.usuario;
+    let token = req.body.token;
+
+    let tipoprecio = req.body.tipoprecio;
+
+    let codprod = req.body.codprod;
+    let desprod = req.body.desprod;
+    let codmedida= req.body.codmedida;
+    let cantidad=Number(req.body.cantidad);
+    let equivale = Number(req.body.equivale);
+    let totalunidades = Number(req.body.totalunidades);
+    let costo = Number(req.body.costo);
+    let precio=Number(req.body.precio);
+    let totalcosto =Number(req.body.totalcosto);
+    let totalprecio=Number(req.body.totalprecio);
+    let exento=Number(req.body.exento);
+
+    let coddoc = req.body.coddoc;
+
+
+    let app = req.body.app;
+    let qry = '';
+
+    qry = `INSERT INTO ME_TEMP_VENTAS 
+            (EMPNIT,CODPROD,DESPROD,CODMEDIDA,CANTIDAD,EQUIVALE,TOTALUNIDADES,COSTO,PRECIO,TOTALCOSTO,TOTALPRECIO,EXENTO,USUARIO,TIPOPRECIO,CODSUCURSAL) 
+    VALUES ('${empnit}','${codprod}','${desprod}','${codmedida}',${cantidad},${equivale},${totalunidades},${costo},${precio},${totalcosto},${totalprecio},${exento},'${usuario}','${tipoprecio}','${app}')`        
+     
+        
+   execute.Query(res,qry);
+
 });
 
-// OBTIENE TODOS LOS CLIENTES DE LA TABLA
-router.get("/cliente", async(req,res)=>{
-	
-	const {token,filtro} = req.query;
-	
-	let qry = `SELECT CLIENTES.CODCLIENTE, CLIENTES.NIT, CLIENTES.NOMCLIENTE, CLIENTES.DIRCLIENTE, MUNICIPIOS.DESMUNICIPIO, DEPARTAMENTOS.DESDEPARTAMENTO, CLIENTES.TELEFONOS, CLIENTES.SALDO, CLIENTES.EMPNIT, CLIENTES.EMAIL
-									FROM CLIENTES LEFT OUTER JOIN DEPARTAMENTOS ON CLIENTES.CODDEPTO = DEPARTAMENTOS.CODDEPARTAMENTO LEFT OUTER JOIN
-								 				MUNICIPIOS ON CLIENTES.CODMUNICIPIO = MUNICIPIOS.CODMUNICIPIO
-									WHERE (CLIENTES.TOKEN='${token}') AND (CLIENTES.NOMCLIENTE LIKE '%${filtro}%')`
+// elimina un item de la venta
+router.delete("/tempVentas", async(req,res)=>{
+    let id=Number(req.body.id);
+    
 
-	execute.Query(res,qry);
+      let qry = `DELETE FROM ME_TEMP_VENTAS WHERE ID=${id}`
+    
+   execute.Query(res,qry);
+
 });
 
-//OBTIENE LA LISTA DE REPARTIDORES
-router.get("/reparto/repartidores/all", async(req,res)=>{
-	const sql = require('mssql')
-	let token = req.query.token
-	try {sql.close()} catch (error) {}
-			const pool = await sql.connect(config)		
-			try {
-				const result = await sql.query`SELECT EMPNIT,CODREP,NITREP,DESREP,DIRREP,TELREP,CONTACTO,TELCONTACTO,EMAIL,WHATSAPP,CLAVE FROM REPARTIDORES WHERE TOKEN=${token}`
-				console.dir('Repartidores cargados...');
-				res.send(result);
-			} catch (err) {
-				console.log(String(err));
-			}
-			sql.close()
+// elimina un item de la venta todos 
+router.post("/tempVentastodos", async(req,res)=>{
+    const{empnit,usuario,app} = req.body;
+    let qry = "";
+   
+    qry = `DELETE FROM ME_TEMP_VENTAS WHERE CODSUCURSAL='${app}' AND USUARIO='${usuario}'`
+
+    execute.Query(res,qry);
+
 });
 
-router.get("/reparto/usuarios/login", async(req,res)=>{
-	const sql = require('mssql')
-	let token = req.query.token;
-	try {sql.close()} catch (error) {}
-		const pool = await sql.connect(sqlString)
-		try {
-			const result = await sql.query`SELECT EMPNIT,CODREP,DESREP,CLAVE FROM REPARTIDORES WHERE TOKEN=${token}`
-			console.dir('La consulta usuario se generó');
-			res.send(result);
-		
-		} catch (err) {
-			// ... error checks
-			res.send('Denegado');
-			console.log('Error en la consulta usuarios');
-		}
-		sql.close()
+// SIN USAR
+// VENTAS BUSCAR CLIENTE POR NIT O CODIGO EN VENTAS
+router.get("/buscarcliente", async(req,res)=>{
+    
+    const {empnit,nit, app} = req.query;
+    
+    let qry = '';
+
+    qry = `SELECT CODCLIENTE, NIT, NOMCLIENTE, DIRCLIENTE,'P' AS CATEGORIA FROM CLIENTES WHERE CODCLIENTE='${nit}'`         
+
+    execute.Query(res,qry);
+
 });
 
-router.get("/reparto/enviospendientes", async(req,res)=>{
-	const sql = require('mssql');
-	let token = req.query.token
-	try {sql.close()} catch (error) {}
-			const pool = await sql.connect(config)		
-			try {
-				const result = await sql.query`SELECT WEB_DOCUMENTOS.EMPNIT, WEB_DOCUMENTOS.CODDOC, WEB_DOCUMENTOS.CORRELATIVO, CLIENTES.NOMCLIENTE, CLIENTES.DIRCLIENTE,CLIENTES.TELEFONOS,WEB_DOCUMENTOS.TOTALVENTA, concat('Q',WEB_DOCUMENTOS.TOTALVENTA) as QPRECIO, WEB_DOCUMENTOS.CODREP, 
-												REPARTIDORES.DESREP, WEB_DOCUMENTOS.ENTREGADO FROM WEB_DOCUMENTOS LEFT OUTER JOIN
-												REPARTIDORES ON WEB_DOCUMENTOS.CODREP = REPARTIDORES.CODREP AND WEB_DOCUMENTOS.EMPNIT = REPARTIDORES.EMPNIT AND 
-												WEB_DOCUMENTOS.TOKEN = REPARTIDORES.TOKEN LEFT OUTER JOIN
-												CLIENTES ON WEB_DOCUMENTOS.CODCLIENTE = CLIENTES.CODCLIENTE AND WEB_DOCUMENTOS.EMPNIT = CLIENTES.EMPNIT AND WEB_DOCUMENTOS.TOKEN = CLIENTES.TOKEN
-												WHERE (WEB_DOCUMENTOS.ENTREGADO = 'NO') AND (WEB_DOCUMENTOS.TOKEN=${token})`
-				console.dir('Envios pendientes Cargados...');
-				res.send(result);
-			} catch (err) {
-				console.log(String(err));
-			}
-			sql.close()
-});
 
-router.get("/reparto/enviosentregados", async(req,res)=>{
-	const sql = require('mssql');
-	let token = req.query.token
-	try {sql.close()} catch (error) {}
-			const pool = await sql.connect(config)		
-			try {
-				const result = await sql.query`SELECT WEB_DOCUMENTOS.EMPNIT, WEB_DOCUMENTOS.CODDOC, WEB_DOCUMENTOS.CORRELATIVO, CLIENTES.NOMCLIENTE, CLIENTES.DIRCLIENTE,CLIENTES.TELEFONOS,WEB_DOCUMENTOS.TOTALVENTA, concat('Q',WEB_DOCUMENTOS.TOTALVENTA) as QPRECIO, WEB_DOCUMENTOS.CODREP, 
-												REPARTIDORES.DESREP, WEB_DOCUMENTOS.ENTREGADO FROM WEB_DOCUMENTOS LEFT OUTER JOIN
-												REPARTIDORES ON WEB_DOCUMENTOS.CODREP = REPARTIDORES.CODREP AND WEB_DOCUMENTOS.EMPNIT = REPARTIDORES.EMPNIT AND 
-												WEB_DOCUMENTOS.TOKEN = REPARTIDORES.TOKEN LEFT OUTER JOIN
-												CLIENTES ON WEB_DOCUMENTOS.CODCLIENTE = CLIENTES.CODCLIENTE AND WEB_DOCUMENTOS.EMPNIT = CLIENTES.EMPNIT AND WEB_DOCUMENTOS.TOKEN = CLIENTES.TOKEN
-												WHERE (WEB_DOCUMENTOS.ENTREGADO = 'SI') AND (WEB_DOCUMENTOS.TOKEN=${token})`
-				console.dir('Envios pendientes Cargados...');
-				res.send(result);
-			} catch (err) {
-				console.log(String(err));
-			}
-			sql.close()
-});
 
-router.post("/reparto/marcarenviado", async(req,res)=>{
-	const sql = require('mssql');
-	let token = req.body.token;
-	let empnit = req.body.empnit;
-	let coddoc = req.body.coddoc;
-	let correlativo = Number(req.body.correlativo);
 
-	let sqlQry = `UPDATE WEB_DOCUMENTOS SET ENTREGADO='SI' WHERE TOKEN='${token}' AND EMPNIT='${empnit}' AND CODDOC='${coddoc}' AND CORRELATIVO=${correlativo}`
-	try {sql.close()} catch (error) {}
-	const pool1 = await new sql.ConnectionPool(config, err => {
-		// ... error checks
-				 
-		// Query
-		 pool1.request() // or: new sql.Request(pool1)
-		 //.input('entregado', sql.VarChar(2), 'NO')
-		 .query(sqlQry, (err, result) => {
-			if (result.rowsAffected){
-				res.send('Ingreso exitoso')
-			}
-		});
-		//sql.close()
-		//pool1.release();
+
+
+
+// INSERTA UN PEDIDO EN LAS TABLAS DE DOCUMENTOS Y DOCPRODUCTOS
+router.post("/documentos", async (req,res)=>{
+    const {app,empnit,anio,mes,dia,coddoc,fecha,fechaentrega,formaentrega,codcliente,nomclie,codbodega,totalcosto,totalprecio,nitclie,dirclie,obs,direntrega,usuario,codven,lat,long} = req.body;
+    
+
+    let correlativo = req.body.correlativo;
+    let ncorrelativo = correlativo;
+
+    //variables sin asignar
+    let concre = 'CRE';
+    let abono = totalprecio; 
+    let saldo = totalprecio;
+    let pagotarjeta = 0; let recargotarjeta = 0;
+    let codrep = 0;
+    let totalexento=0;
+
+    switch (correlativo.toString().length) {
+        case 1:
+            correlativo = '         ' + correlativo;
+        break;
+        case 2:
+            correlativo = '        ' + correlativo;
+        break;
+        case 3:
+            correlativo = '       ' + correlativo;
+            
+        break;
+        case 4:
+            correlativo = '      ' + correlativo;
+            break;
+        case 5:
+            correlativo = '     ' + correlativo;
+            break;
+        case 6:
+            correlativo = '    ' + correlativo;
+            break;
+        case 7:
+            correlativo = '   ' + correlativo;
+            break;
+        case 8:
+            correlativo = '  ' + correlativo;
+        break;
+        case 9:
+            correlativo = ' ' + correlativo;
+        break;
+        case 10:
+            correlativo = correlativo;
+        break;
+        default:
+            break;
+    };
+    
+    let nuevocorrelativo = Number(ncorrelativo) + 1;
+
+
+    let qry = ''; // inserta los datos en la tabla documentos
+    let qrydoc = ''; // inserta los datos de la tabla docproductos
+    let qrycorrelativo = ''; //actualiza el correlativo del documento
+
+            qry = `INSERT INTO ME_DOCUMENTOS (
+                EMP_NIT, DOC_ANO, DOC_MES, CODDOC, DOC_NUMERO, 
+                CODCAJA, DOC_FECHA, DOC_NUMREF, DOC_NOMREF, BODEGAENTRADA,
+                BODEGASALIDA, USUARIO, DOC_ESTATUS, DOC_TOTALCOSTO, DOC_TOTALVENTA,
+                DOC_HORA, DOC_FVENCE, DOC_DIASCREDITO, DOC_CONTADOCREDITO, DOC_DESCUENTOTOTAL,
+                DOC_DESCUENTOPROD, DOC_PORDESCUTOTAL, DOC_IVA, DOC_SUBTOTALIVA, DOC_SUBTOTAL,
+                NITCLIE, DOC_PORDESCUFAC, CODVEN, DOC_ABONOS, DOC_SALDO,
+                DOC_VUELTO, DOC_NIT, DOC_PAGO, DOC_CODREF, DOC_TIPOCAMBIO,
+                DOC_PARCIAL, DOC_ANTICIPO, ANT_CODDOC, ANT_DOCNUMERO, DOC_OBS,
+                DOC_PORCENTAJEIVA, DOC_ENVIO, DOC_CUOTAS, DOC_TIPOCUOTA, 
+                DIVA_NUMINT, FRT_CODIGO, TRANSPORTE, DOC_REFPEDIDO, DOC_REFFACTURA,
+                CODPROV, DOC_TOTALOTROS, DOC_RECIBO, DOC_MATSOLI, DOC_REFERENCIA, 
+                DOC_LUGAR, DOC_ANOMBREDE, DOC_IVAEXO, DOC_VALOREXO, DOC_SECTOR,
+                DOC_DIRENTREGA, DOC_CANTENV, DOC_EXP, DOC_FECHAENT, TIPOPRODUCCION,
+                DOC_TOTCOSINV, DOC_TOTALFIN, USUARIOENUSO, DOC_IMPUESTO1, DOC_TOTALIMPU1,
+                DOC_PORCOMI, DOC_DOLARES, CODMESA, DOC_TIPOOPE, USUARIOAUTORIZA, 
+                NUMAUTORIZA, DOC_TEMPORADA, DOC_INGUAT,
+                CODVENBOD,
+                CODHABI, DOC_SERIE,
+                CTABAN, NUMINTBAN, 
+                CODVENEMP,
+                DOC_TOTCOSDOL, DOC_TOTCOSINVDOL, CODUNIDAD,
+                TOTCOMBUSTIBLE, DOC_CODCONTRA, DOC_NUMCONTRA, INTERES, ABONOINTERES,
+                SALDOINTERES, NUMEROCORTE, DOC_PORLOCAL, DOC_NUMORDEN, DOC_FENTREGA,
+                DOC_INTERESADO, DOC_RECIBE, NUMEROROLLO, COD_CENTRO, GENCUOTA,
+                DOC_PORINGUAT, DOC_INGUATEXENTO, DOC_TIPOTRANIVA, DOC_PORTIMBREPRE, DOC_TIMBREPRENSA,
+                ABONOSANTICIPO, SALDOANTICIPO, DOC_PRODEXENTO, PUNTOSGANADOS, PUNTOSUSADOS,
+                APL_ANTICIPO, COD_DEPARTA, FIRMAELECTRONICA, DOC_CODDOCRETENCION, DOC_SERIERETENCION,
+                DOC_NUMRETENCION, FIRMAISC, ISCENVIADO, LAT, LONG, CODSUCURSAL
+                ) 
+                VALUES (
+                '${empnit}', ${anio}, ${mes}, '${coddoc}', '${correlativo}',
+                '', '${fecha}', '', '${nomclie}', '',
+                '${codbodega}', '${usuario}', 'O', ${totalcosto}, ${totalprecio},
+                0, '${fecha}', 0, '${concre}', 0,
+                0, 0, 0, ${totalprecio}, ${totalprecio},
+                '${nitclie}', 0, '${codven}', 0, ${saldo}, 
+                0, '${nitclie}', 0, '', 1, 
+                0, 0, '', '', '${obs}',
+                0, 0, 0, 0, 
+                0, '', '${formaentrega}', '', '',
+                '', 0, 0, '${direntrega}', '', 
+                '', '', '', 0, '', 
+                '${dirclie}', '', '', '${fechaentrega}', '',
+                ${totalcosto}, 0, '', 0, 0,
+                0, 0, '', 0,'',
+                0, 0, 0,
+                0,
+                '', '', 
+                0, 0, 
+                0,
+                0, 0, '',
+                0, '', '', 0, 0, 
+                0, 0, 0, '','NO',
+                '', '', 0, '', '',
+                0, 'N', 'C', 0, 0,
+                0, 0, 0, 0, 0,
+                '', '', '', '', '',
+                '', '', 0, ${lat},${long},'${app}'
+                );`
+                  //GETANSINULL()
+            qrydoc = `INSERT INTO ME_DOCPRODUCTOS 
+                  (EMP_NIT,DOC_ANO,DOC_MES,CODDOC,DOC_NUMERO,
+                  DOC_ITEM,CODPROD,CODMEDIDA,CANTIDAD,EQUIVALE,
+                  CANTIDADINV,COSTO,PRECIO,TOTALCOSTO,TOTALPRECIO,
+                  BODEGAENTRADA,BODEGASALIDA,SUBTOTAL,DESCUENTOPROD,PORDESCUPROD,
+                  DESCUENTOFAC,PORDESCUFAC,TOTALDESCUENTO,DESCRIPCION,SUBTOTALPROD,
+                  TIPOCAMBIO,PRODPRECIO,CANTIDADENVIADA,CODFAC,NUMFAC,
+                  ITEMFAC,NOAFECTAINV, DOCPESO,COSTOINV,FLETE,TOTALPRECIOFIN,PRECIOFIN,TOTALCOSTOINV,CANTIDADBONI,CODOPR,NUMOPR,
+                  ITEMOPR,CODINV,NUMINV,ITEMINV,TIPOCLIE,LISTA,PORIVA,VALORIVA,NOLOTE,VALORIMPU1,DESEMPAQUE,
+                  SALDOINVANTCOM,NCUENTAMESA,CUENTACERRADA,COSTODOL,COSTOINVDOL,TOTALCOSTODOL,TOTALCOSTOINVDOL,
+                  IMPCOMBUSTIBLE,CODVENPROD,COMIVEN,SOBREPRECIO,CODREG,NUMREG,ITEMREG,CANTIDADORIGINAL,CANTIDADMODIFICADA,NSERIETARJETA,
+                  CODOC,NUMOC,PORTIMBREPRENSA,VALORTIMBREPRENSA,CODTIPODESCU,TOTALPUNTOS,ITEMOC,CODPRODORIGEN,CODMEDIDAORIGEN,
+                  CANTIDADDEVUELTA,CODARANCEL,TIPOPRECIO,CODSUCURSAL) 
+                  SELECT 
+                  EMPNIT,${anio} as DOC_ANO,${mes} AS DOC_MES,'${coddoc}' AS CODDOC,'${correlativo}' AS DOC_NUMERO,
+                  ID AS DOC_ITEM,CODPROD,CODMEDIDA,CANTIDAD, EQUIVALE,
+                  TOTALUNIDADES AS CANTIDADINV,COSTO,PRECIO,TOTALCOSTO,TOTALPRECIO,
+                  '','${codbodega}',
+                  TOTALPRECIO,0,0,0,0,0,DESPROD,TOTALPRECIO,1,PRECIO,0,'','',0,0,
+                  0,COSTO,0,TOTALPRECIO,
+                  PRECIO,TOTALCOSTO,0,'','',0,'','',0,
+                  'P',
+                  '',
+                  0,0,'SN',0,'',0,'',0,0,COSTO,0,TOTALCOSTO,0,0,0,0,'','',0,0,0,'','','',0,0,'',0,0,'','',0,'',TIPOPRECIO,'${app}'
+                  FROM ME_TEMP_VENTAS   
+                  WHERE EMPNIT='${empnit}' AND USUARIO='${usuario}';`
+
+            qrycorrelativo =`UPDATE ME_TIPODOCUMENTOS SET CORRELATIVO=${nuevocorrelativo} WHERE CODDOC='${coddoc}'`
+            
  
-	})
-	 
-	pool1.on('error', err => {
-		// ... error handler
-	})
+    execute.Query(res,qry + qrydoc + qrycorrelativo);
+    
+});
+
+
+// LISTADOS DE PEDIDOS
+router.post("/pedidospendientes", async(req,res)=>{
+    const {sucursal,codven}  = req.body;
+    
+    let qry = '';
+    qry = `SELECT DOC_FECHA AS FECHA, CODDOC, DOC_NUMERO AS CORRELATIVO, DOC_NOMREF AS NOMCLIE, DOC_DIRENTREGA AS DIRCLIE, '' AS DESMUNI, DOC_TOTALVENTA AS IMPORTE, LAT, LONG, DOC_NUMORDEN AS EMBARQUE, DOC_ESTATUS AS ST, DOC_OBS AS OBS
+            FROM ME_Documentos
+            WHERE (CODVEN = ${codven}) AND (DOC_ESTATUS='O') AND (ISCENVIADO=0)
+            ORDER BY DOC_FECHA,DOC_NUMERO`
+
+    
+    execute.Query(res,qry);
+});
+
+router.post("/pedidosbloqueados", async(req,res)=>{
+    const {sucursal,codven}  = req.body;
+    
+    let qry = '';
+    qry = `SELECT DOC_FECHA AS FECHA, CODDOC, DOC_NUMERO AS CORRELATIVO, DOC_NOMREF AS NOMCLIE, DOC_DIRENTREGA AS DIRCLIE, '' AS DESMUNI, DOC_TOTALVENTA AS IMPORTE, LAT, LONG, DOC_NUMORDEN AS EMBARQUE, DOC_ESTATUS AS ST, DOC_OBS AS OBS
+            FROM ME_Documentos
+            WHERE (CODVEN = ${codven}) AND (DOC_ESTATUS='A') AND (ISCENVIADO=0)
+            ORDER BY DOC_FECHA,DOC_NUMERO`
+
+    
+    execute.Query(res,qry);
+});
+
+router.post("/pedidosgenerados", async(req,res)=>{
+    const {sucursal,codven}  = req.body;
+    
+    let qry = '';
+    qry = `SELECT DOC_FECHA AS FECHA, CODDOC, DOC_NUMERO AS CORRELATIVO, DOC_NOMREF AS NOMCLIE, DOC_DIRENTREGA AS DIRCLIE, '' AS DESMUNI, DOC_TOTALVENTA AS IMPORTE, LAT, LONG, DOC_NUMORDEN AS EMBARQUE, DOC_ESTATUS AS ST
+            FROM ME_Documentos
+            WHERE (CODVEN = ${codven}) AND (DOC_ESTATUS<>'I') AND (ISCENVIADO=1)
+            ORDER BY DOC_FECHA,DOC_NUMERO`
+
+    
+    execute.Query(res,qry);
+});
+
+
+
+
+
+
+//******************************* */
+// REPORTES DE VENDEDORES
+//******************************* */
+
+// UNA FECHA (DIA)
+// LISTA DE PEDIDOS POR UNA FECHA
+router.post("/listapedidos", async(req,res)=>{
+    const {sucursal,codven,fecha}  = req.body;
+    
+    let qry = '';
+    qry = `SELECT CODDOC, DOC_NUMERO AS CORRELATIVO, DOC_NOMREF AS NOMCLIE, DOC_DIRENTREGA AS DIRCLIE, '' AS DESMUNI, DOC_TOTALVENTA AS IMPORTE, DOC_FECHA AS FECHA, LAT, LONG, DOC_OBS AS OBS, DOC_MATSOLI AS DIRENTREGA
+            FROM ME_Documentos
+            WHERE (CODSUCURSAL = '${sucursal}') AND (DOC_FECHA = '${fecha}') AND (CODVEN = ${codven}) AND (DOC_ESTATUS<>'A')`
+
+    
+    execute.Query(res,qry);
+});
+
+//reporte de productos del dia y vendedor
+router.post('/reporteproductosdia', async(req,res)=>{
+    
+    const {fecha,sucursal,codven} = req.body;
+
+    let qry = `SELECT ME_Docproductos.CODPROD, ME_Productos.DESPROD, SUM(ME_Docproductos.CANTIDADINV) AS TOTALUNIDADES, SUM(ME_Docproductos.TOTALCOSTO) AS TOTALCOSTO, SUM(ME_Docproductos.TOTALPRECIO) 
+    AS TOTALPRECIO
+FROM            ME_Docproductos LEFT OUTER JOIN
+    ME_Productos ON ME_Docproductos.CODSUCURSAL = ME_Productos.CODSUCURSAL AND ME_Docproductos.CODPROD = ME_Productos.CODPROD RIGHT OUTER JOIN
+    ME_Documentos ON ME_Docproductos.DOC_NUMERO = ME_Documentos.DOC_NUMERO AND ME_Docproductos.CODDOC = ME_Documentos.CODDOC AND 
+    ME_Docproductos.CODSUCURSAL = ME_Documentos.CODSUCURSAL AND ME_Docproductos.DOC_ANO = ME_Documentos.DOC_ANO AND ME_Docproductos.EMP_NIT = ME_Documentos.EMP_NIT LEFT OUTER JOIN
+    ME_Tipodocumentos ON ME_Documentos.CODSUCURSAL = ME_Tipodocumentos.CODSUCURSAL AND ME_Documentos.CODDOC = ME_Tipodocumentos.CODDOC AND ME_Documentos.EMP_NIT = ME_Tipodocumentos.EMP_NIT
+            WHERE (ME_Tipodocumentos.TIPODOC = 'PED') AND (ME_Documentos.DOC_FECHA = '${fecha}') AND (ME_Documentos.CODSUCURSAL = '${sucursal}') AND (ME_Documentos.CODVEN = ${codven}) AND (ME_Documentos.DOC_ESTATUS<>'A')
+            GROUP BY ME_Docproductos.CODPROD, ME_Productos.DESPROD`;
+    
+    execute.Query(res,qry);
 
 });
 
-router.post("/reparto/marcarnoenviado", async(req,res)=>{
-	const sql = require('mssql');
-	
-	let token = req.body.token;
-	let empnit = req.body.empnit;
-	let coddoc = req.body.coddoc;
-	let correlativo = Number(req.body.correlativo);
-	try {sql.close()} catch (error) {}
-	let sqlQry = `UPDATE WEB_DOCUMENTOS SET ENTREGADO='NO' WHERE TOKEN='${token}' AND EMPNIT='${empnit}' AND CODDOC='${coddoc}' AND CORRELATIVO=${correlativo}`
+// reporte de marcas por vendedor y dia
+router.post('/reportemarcasdia',async(req,res)=>{
 
-			//const pool = await sql.connect(sqlString)
-			const pool1 = await new sql.ConnectionPool(config, err => {
-				// ... error checks
-						 
-				// Query
-				 pool1.request() // or: new sql.Request(pool1)
-				 //.input('entregado', sql.VarChar(2), 'NO')
-				 .query(sqlQry, (err, result) => {
-					if (result.rowsAffected){
-						res.send('Ingreso exitoso')
-					}
-				});
-				//sql.close()
-				//pool1.release();
-		 
-			})
-			 
-			pool1.on('error', err => {
-				// ... error handler
-			})
+    const {fecha,sucursal,codven} = req.body;
 
+    let qry = `SELECT       ME_Marcas.DESMARCA, SUM(ME_Docproductos.TOTALCOSTO) AS TOTALCOSTO, SUM(ME_Docproductos.TOTALPRECIO) AS TOTALPRECIO
+    FROM            ME_Productos LEFT OUTER JOIN
+                             ME_Marcas ON ME_Productos.CODSUCURSAL = ME_Marcas.CODSUCURSAL AND ME_Productos.CODMARCA = ME_Marcas.CODMARCA RIGHT OUTER JOIN
+                             ME_Docproductos ON ME_Productos.CODSUCURSAL = ME_Docproductos.CODSUCURSAL AND ME_Productos.CODPROD = ME_Docproductos.CODPROD RIGHT OUTER JOIN
+                             ME_Documentos ON ME_Docproductos.DOC_MES = ME_Documentos.DOC_MES AND ME_Docproductos.DOC_ANO = ME_Documentos.DOC_ANO AND ME_Docproductos.EMP_NIT = ME_Documentos.EMP_NIT AND 
+                             ME_Docproductos.CODDOC = ME_Documentos.CODDOC AND ME_Docproductos.DOC_NUMERO = ME_Documentos.DOC_NUMERO LEFT OUTER JOIN
+                             ME_Tipodocumentos ON ME_Documentos.CODSUCURSAL = ME_Tipodocumentos.CODSUCURSAL AND ME_Documentos.CODDOC = ME_Tipodocumentos.CODDOC AND ME_Documentos.EMP_NIT = ME_Tipodocumentos.EMP_NIT
+                WHERE (ME_Tipodocumentos.TIPODOC = 'PED') AND (ME_Documentos.DOC_ESTATUS <> 'A') AND (ME_Documentos.CODVEN = ${codven}) AND (ME_Documentos.DOC_FECHA = '${fecha}') AND 
+                             (ME_Documentos.CODSUCURSAL = '${sucursal}')
+                GROUP BY ME_Marcas.DESMARCA`;
+
+    execute.Query(res,qry);
+
+});
+
+// MENSUALES
+//reporte de fechas por vendedor y mes
+router.post("/reportedinero", async (req,res)=>{
+
+    const {anio,mes,sucursal,codven} = req.body;
+
+    let qry = `SELECT       ME_Documentos.DOC_FECHA AS FECHA, COUNT(ME_Documentos.DOC_FECHA) AS PEDIDOS, SUM(ME_Documentos.DOC_TOTALVENTA) AS TOTALVENTA
+    FROM            ME_Documentos LEFT OUTER JOIN
+                             ME_Tipodocumentos ON ME_Documentos.CODSUCURSAL = ME_Tipodocumentos.CODSUCURSAL AND ME_Documentos.CODDOC = ME_Tipodocumentos.CODDOC AND ME_Documentos.EMP_NIT = ME_Tipodocumentos.EMP_NIT
+                WHERE (ME_Documentos.DOC_ANO = ${anio}) AND (ME_Documentos.DOC_MES = ${mes}) AND (ME_Documentos.CODVEN = ${codven}) AND (ME_Documentos.CODSUCURSAL = '${sucursal}') AND (ME_Tipodocumentos.TIPODOC = 'PED') AND 
+                             (ME_Documentos.DOC_ESTATUS <> 'A')
+                GROUP BY ME_Documentos.DOC_FECHA`;
+    
+    execute.Query(res,qry);
+                             
+});
+
+//reporte de productos por mes y vendedo
+router.post('/reporteproductos', async(req,res)=>{
+    
+    const {anio,mes,sucursal,codven} = req.body;
+
+    let qry = `SELECT       ME_Docproductos.CODPROD, ME_Productos.DESPROD, SUM(ME_Docproductos.CANTIDADINV) AS TOTALUNIDADES, SUM(ME_Docproductos.TOTALCOSTO) AS TOTALCOSTO, SUM(ME_Docproductos.TOTALPRECIO) 
+    AS TOTALPRECIO
+FROM            ME_Docproductos LEFT OUTER JOIN
+    ME_Productos ON ME_Docproductos.CODSUCURSAL = ME_Productos.CODSUCURSAL AND ME_Docproductos.CODPROD = ME_Productos.CODPROD RIGHT OUTER JOIN
+    ME_Documentos ON ME_Docproductos.DOC_NUMERO = ME_Documentos.DOC_NUMERO AND ME_Docproductos.CODDOC = ME_Documentos.CODDOC AND 
+    ME_Docproductos.CODSUCURSAL = ME_Documentos.CODSUCURSAL AND ME_Docproductos.DOC_ANO = ME_Documentos.DOC_ANO AND ME_Docproductos.EMP_NIT = ME_Documentos.EMP_NIT LEFT OUTER JOIN
+    ME_Tipodocumentos ON ME_Documentos.CODSUCURSAL = ME_Tipodocumentos.CODSUCURSAL AND ME_Documentos.CODDOC = ME_Tipodocumentos.CODDOC AND ME_Documentos.EMP_NIT = ME_Tipodocumentos.EMP_NIT
+            WHERE (ME_Documentos.DOC_ESTATUS<>'A') AND (ME_Tipodocumentos.TIPODOC = 'PED') AND (ME_Documentos.DOC_MES = ${mes}) AND (ME_Documentos.DOC_ANO = ${anio}) AND (ME_Documentos.CODSUCURSAL = '${sucursal}') AND (ME_Documentos.CODVEN = ${codven})
+            GROUP BY ME_Docproductos.CODPROD, ME_Productos.DESPROD`;
+    
+    execute.Query(res,qry);
+
+});
+
+
+
+// reporte de marcas por vendedor y mes
+router.post('/reportemarcas',async(req,res)=>{
+
+    const {anio,mes,sucursal,codven} = req.body;
+
+    let qry = `SELECT       ME_Marcas.DESMARCA, SUM(ME_Docproductos.TOTALCOSTO) AS TOTALCOSTO, SUM(ME_Docproductos.TOTALPRECIO) AS TOTALPRECIO
+    FROM            ME_Marcas RIGHT OUTER JOIN
+                             ME_Productos ON ME_Marcas.CODSUCURSAL = ME_Productos.CODSUCURSAL AND ME_Marcas.CODMARCA = ME_Productos.CODMARCA RIGHT OUTER JOIN
+                             ME_Documentos LEFT OUTER JOIN
+                             ME_Docproductos ON ME_Documentos.CODSUCURSAL = ME_Docproductos.CODSUCURSAL AND ME_Documentos.DOC_MES = ME_Docproductos.DOC_MES AND ME_Documentos.DOC_ANO = ME_Docproductos.DOC_ANO AND 
+                             ME_Documentos.EMP_NIT = ME_Docproductos.EMP_NIT AND ME_Documentos.CODDOC = ME_Docproductos.CODDOC AND ME_Documentos.DOC_NUMERO = ME_Docproductos.DOC_NUMERO ON 
+                             ME_Productos.CODSUCURSAL = ME_Docproductos.CODSUCURSAL AND ME_Productos.CODPROD = ME_Docproductos.CODPROD LEFT OUTER JOIN
+                             ME_Tipodocumentos ON ME_Documentos.CODSUCURSAL = ME_Tipodocumentos.CODSUCURSAL AND ME_Documentos.CODDOC = ME_Tipodocumentos.CODDOC AND ME_Documentos.EMP_NIT = ME_Tipodocumentos.EMP_NIT
+                WHERE (ME_Tipodocumentos.TIPODOC = 'PED') AND (ME_Documentos.DOC_ESTATUS <> 'A') AND (ME_Documentos.CODVEN = ${codven}) AND (ME_Documentos.DOC_MES = ${mes}) AND (ME_Documentos.DOC_ANO = ${anio}) AND 
+                             (ME_Documentos.CODSUCURSAL = '${sucursal}')
+                GROUP BY ME_Marcas.DESMARCA`;
+
+                
+
+    execute.Query(res,qry);
 
 
 });
 
-// OBTIENE LA LISTA DE VENDEDORES
-router.get("/usuarios/login", async(req,res)=>{
-	const sql = require('mssql')
-	let token = req.query.token;
-	try {sql.close()} catch (error) {}
-		const pool = await sql.connect(sqlString)
-		try {
-			const result = await sql.query`SELECT CODVEN, NOMVEN, CLAVE, CODDOC,EMPNIT FROM VENDEDORES WHERE TOKEN=${token}`
-			console.dir('La consulta usuario se generó');
-			res.send(result);
-		
-		} catch (err) {
-			// ... error checks
-			res.send('Denegado');
-			console.log('Error en la consulta usuarios');
-		}
-		sql.close()
+// reporte de locaciones por vendedor y mes
+router.post('/reportelocaciones',async(req,res)=>{
+
+    const {anio,mes,sucursal,codven} = req.body;
+
+    let qry = `
+    SELECT ME_Documentos.DOC_FECHA AS FECHA, ME_Documentos.DOC_NOMREF AS CLIENTE, COUNT(ME_Documentos.DOC_FECHA) AS PEDIDOS, SUM(ME_Documentos.DOC_TOTALVENTA) AS TOTALVENTA, ME_Documentos.LAT, ME_Documentos.LONG
+    FROM ME_Documentos LEFT OUTER JOIN ME_Tipodocumentos ON ME_Documentos.CODDOC = ME_Tipodocumentos.CODDOC AND ME_Documentos.EMP_NIT = ME_Tipodocumentos.EMP_NIT
+    WHERE (ME_Documentos.DOC_ANO = ${anio}) 
+            AND (ME_Documentos.DOC_MES = ${mes}) 
+            AND (ME_Documentos.CODVEN = ${codven}) 
+            AND (ME_Documentos.CODSUCURSAL = '${sucursal}') 
+            AND (ME_Tipodocumentos.TIPODOC = 'PED') 
+            AND (ME_Documentos.DOC_ESTATUS <> 'A')
+    GROUP BY ME_Documentos.DOC_FECHA, ME_Documentos.DOC_NOMREF, ME_Documentos.LAT, ME_Documentos.LONG`;
+
+    execute.Query(res,qry);
+
 });
 
-// INSERTA DATOS EN LA TABLA DOCUMENTOS DEL SERVER
-//app.get("/ventas/documentos", async(req,res)=>{
-router.post("/ventas/documentos", async(req,res)=>{
 
-	const sql = require('mssql')
+//******************************* */
+// REPORTES DE GERENCIA
+//******************************* */
 
-	let _empnit = req.body.empnit;
-	let _coddoc = req.body.coddoc;
-	let _correlativo = req.body.correlativo;
-	let _codcliente = req.body.codcliente;
-	let _totalventa = req.body.totalventa;
-	let _totalcosto = req.body.totalcosto;
-	let _token = req.body.token;
-	let _anio =  req.body.anio;
-	let _mes = req.body.mes;
-	let _dia = req.body.dia;
-	let _codven = req.body.codven;
-	let _fecha = new Date(_anio,_mes,_dia);
-	let _obs = req.body.obs;
-	let _st = req.body.st;
-	let _lat = req.body.lat || '0';
-	let _long = req.body.long || '0';
+// reporte de sucursales ventas
+router.post('/rptsucursalesventas',async(req,res)=>{
 
-	let ff = String(_anio & '/' & _mes & '/' & _dia);
+    const {anio,mes} = req.body;
 
-	try {sql.close()} catch (error) {}
+    let qry = `SELECT ME_Sucursales.NOMBRE AS SUCURSAL, SUM(ME_Documentos.DOC_TOTALCOSTO) AS COSTO, SUM(ME_Documentos.DOC_TOTALVENTA) AS IMPORTE, Me_Sucursales.COLOR
+                    FROM     ME_Documentos LEFT OUTER JOIN
+                             ME_Tipodocumentos ON ME_Documentos.CODSUCURSAL = ME_Tipodocumentos.CODSUCURSAL AND ME_Documentos.CODDOC = ME_Tipodocumentos.CODDOC AND 
+                             ME_Documentos.EMP_NIT = ME_Tipodocumentos.EMP_NIT LEFT OUTER JOIN
+                             ME_Sucursales ON ME_Documentos.CODSUCURSAL = ME_Sucursales.CODSUCURSAL
+                    WHERE   (ME_Documentos.DOC_ANO = ${anio}) AND (ME_Documentos.DOC_MES = ${mes}) AND (ME_Documentos.DOC_ESTATUS <> 'A') AND (ME_Tipodocumentos.TIPODOC = 'PED')
+                    GROUP BY ME_Sucursales.NOMBRE, ME_Sucursales.COLOR`;
 
-	console.log('Llegó la solicitud ' + 'coddoc:' + _coddoc + ' correlativo: ' + _correlativo + ' cliente: ' + _codcliente + ' total: ' + _totalventa);
+    execute.Query(res,qry);
 
-	let sqlQry = 'insert into web_documentos (empnit,token,coddoc,correlativo,anio,mes,dia,fecha,codven,codcliente,totalventa,totalcosto,obs,codst,entregado,lat,long) values (@empnit,@token,@coddoc,@correlativo,@anio,@mes,@dia,@fecha,@codven,@codcliente,@totalventa,@totalcosto,@obs,@codst,@entregado,@lat,@long)'
-
-		//const pool = await sql.connect(sqlString)
-		const pool1 = await new sql.ConnectionPool(config, err => {
-			// ... error checks
-					 
-			// Query
-			 pool1.request() // or: new sql.Request(pool1)
-			 .input('empnit', sql.VarChar(50), _empnit)
-			 .input('token', sql.VarChar(255), _token)
-			 .input('coddoc', sql.VarChar(50), _coddoc)
-			 .input('correlativo', sql.Float, _correlativo)
-			 .input('anio', sql.Int, _anio)
-			 .input('mes', sql.Int, _mes)
-			 .input('dia', sql.Int, _dia)
-			 .input('fecha', sql.Date, _fecha)
-			 .input('codven', sql.Int, _codven)
-			 .input('codcliente', sql.VarChar(50), _codcliente)
-			 .input('totalventa', sql.Float, _totalventa)
-			 .input('totalcosto', sql.Float, _totalcosto)
-			 .input('obs', sql.VarChar(255), _obs)
-			 .input('codst', sql.Int, _st)
-			 .input('entregado', sql.VarChar(2), 'NO')
-			 .input('lat', sql.VarChar(100), _lat)
-			 .input('long', sql.VarChar(100), _long)
-			 .query(sqlQry, (err, result) => {
-				if (result.rowsAffected){
-					res.send('Ingreso exitoso')
-				}
-			});
-			//sql.close()
-			//pool1.release();
-		})
-		 
-		pool1.on('error', err => {
-			// ... error handler
-		})
 });
 
-// INSERTA DATOS EN LA TABLA DOCPRODUCTOS DEL SERVER
-router.post("/ventas/docproductos", async(req,res)=>{
-
-	const sql = require('mssql')
-	let _token = req.body.token;
-	let _empnit = req.body.empnit;
-
-	let _anio =  req.body.anio;
-	let _mes = req.body.mes;
-	let _dia = req.body.dia;
-	
-	let _coddoc = req.body.coddoc;
-	let _correlativo = req.body.correlativo;
-	let _codprod = req.body.codprod;
-	let _desprod = req.body.desprod;
-	let _codmedida = req.body.codmedida;
-	let _equivale = req.body.equivale;
-	let _cantidad = req.body.cantidad;
-	let _costo = req.body.costo;
-	let _precio = req.body.precio;
-	let _totalcosto = req.body.totalcosto;
-	let _totalprecio = req.body.totalprecio;
-	try {sql.close()} catch (error) {}
-	console.log('peticion de insert en docprodutos: ' + _desprod)
-	
-		const pool2 = await new sql.ConnectionPool(config, err => {
-			 var sqlQry = 'insert into web_docproductos (token,empnit,anio,mes,dia,coddoc,correlativo,codprod,desprod,codmedida,equivale,cantidad,costo,precio,totalcosto,totalprecio) values (@token,@empnit,@anio,@mes,@dia,@coddoc,@correlativo,@codprod,@desprod,@codmedida,@equivale,@cantidad,@costo,@precio,@totalcosto,@totalprecio)'
-			 pool2.request() // or: new sql.Request(pool1)
-			 .input('token', sql.VarChar(255), _token)
-			 .input('empnit', sql.VarChar(50), _empnit)
-			 .input('anio', sql.Int, _anio)
-			 .input('mes', sql.Int, _mes)
-			 .input('dia', sql.Int, _dia)
-			 .input('coddoc', sql.VarChar(50), _coddoc)
-			 .input('correlativo', sql.Float, _correlativo)
-			 .input('codprod', sql.VarChar(100), _codprod)
-			 .input('desprod', sql.VarChar(250), _desprod)
-			 .input('codmedida', sql.VarChar(50), _codmedida)
-			 .input('equivale', sql.Int, _equivale )
-			 .input('cantidad', sql.Int, _cantidad)
-			 .input('costo', sql.Float, _costo)
-			 .input('precio', sql.Float, _precio)
-			 .input('totalcosto', sql.Float, _totalcosto)
-			 .input('totalprecio', sql.Float, _totalprecio)
-			 .query(sqlQry, (err, result) => {
-				if (result.rowsAffected){
-					//res.send('Ingreso exitoso docproductos... ' + _desprod)
-				console.log('Ingreso exitoso docproductos... ' + _desprod)
-
-				}
-			});
-			//sql.close()
-			//pool1.release();
-		 
-		})
-		 
-		pool2.on('error', err => {
-			// ... error handler
-		})
+// ranking de vendedores
+router.post('/rptrankingvendedores', async(req,res)=>{
+    const {anio,mes} = req.body;
+    let qry = `SELECT ME_Vendedores.NOMVEN, ME_Sucursales.NOMBRE AS SUCURSAL, SUM(ME_Documentos.DOC_TOTALCOSTO) AS TOTALCOSTO, SUM(ME_Documentos.DOC_TOTALVENTA) AS TOTALPRECIO
+                FROM ME_Documentos LEFT OUTER JOIN
+                ME_Vendedores ON ME_Documentos.CODVEN = ME_Vendedores.CODVEN AND ME_Documentos.CODSUCURSAL = ME_Vendedores.CODSUCURSAL LEFT OUTER JOIN
+                ME_Sucursales ON ME_Vendedores.CODSUCURSAL = ME_Sucursales.CODSUCURSAL
+                WHERE (ME_Documentos.DOC_ESTATUS <> 'A') AND (ME_Documentos.DOC_ANO = ${anio}) AND (ME_Documentos.DOC_MES = ${mes})
+                GROUP BY ME_Vendedores.NOMVEN, ME_Sucursales.NOMBRE
+                ORDER BY TOTALPRECIO DESC`;
+    
+    execute.Query(res,qry);
 });
 
+
+//******************************* */
+// REPORTES DE SUPERVISOR
+//******************************* */
+
+
+// ranking de vendedores por sucursal y fecha
+router.post('/rptrankingvendedoressucursal', async(req,res)=>{
+    const {fecha,sucursal} = req.body;
+    let qry = `SELECT       ME_Vendedores.NOMVEN, COUNT(ME_Documentos.CODDOC) AS PEDIDOS, SUM(ME_Documentos.DOC_TOTALVENTA) AS TOTALPRECIO
+    FROM            ME_Documentos LEFT OUTER JOIN
+                             ME_Vendedores ON ME_Documentos.CODVEN = ME_Vendedores.CODVEN AND ME_Documentos.CODSUCURSAL = ME_Vendedores.CODSUCURSAL
+                WHERE (ME_Documentos.DOC_ESTATUS <> 'A') AND (ME_Documentos.CODSUCURSAL = '${sucursal}') AND (ME_Documentos.DOC_FECHA = '${fecha}')
+                GROUP BY ME_Vendedores.NOMVEN
+                ORDER BY TOTALPRECIO DESC`;
+    
+    execute.Query(res,qry);
+});
+
+// ranking de vendedores por sucursal y fecha
+router.post('/rptrankingvendedoressucursalmes', async(req,res)=>{
+    const {anio,mes,sucursal} = req.body;
+    let qry = `SELECT       ME_Vendedores.NOMVEN, COUNT(ME_Documentos.CODDOC) AS PEDIDOS, SUM(ME_Documentos.DOC_TOTALVENTA) AS TOTALPRECIO
+    FROM            ME_Documentos LEFT OUTER JOIN
+                             ME_Vendedores ON ME_Documentos.CODVEN = ME_Vendedores.CODVEN AND ME_Documentos.CODSUCURSAL = ME_Vendedores.CODSUCURSAL
+                WHERE (ME_Documentos.DOC_ESTATUS <> 'A') AND (ME_Documentos.CODSUCURSAL = '${sucursal}') AND (ME_Documentos.DOC_ANO = ${anio}) AND (ME_Documentos.DOC_MES = ${mes})
+                GROUP BY ME_Vendedores.NOMVEN
+                ORDER BY TOTALPRECIO DESC`;
+    
+    execute.Query(res,qry);
+});
+
+// reporte de marcas por fecha
+router.post('/reportemarcasfecha',async(req,res)=>{
+
+    const {sucursal,fecha} = req.body;
+
+    let qry = `SELECT       ME_Marcas.DESMARCA, SUM(ME_Docproductos.TOTALCOSTO) AS TOTALCOSTO, SUM(ME_Docproductos.TOTALPRECIO) AS TOTALPRECIO
+    FROM            ME_Documentos LEFT OUTER JOIN
+                             ME_Docproductos LEFT OUTER JOIN
+                             ME_Productos LEFT OUTER JOIN
+                             ME_Marcas ON ME_Productos.CODSUCURSAL = ME_Marcas.CODSUCURSAL AND ME_Productos.CODMARCA = ME_Marcas.CODMARCA ON ME_Docproductos.CODSUCURSAL = ME_Productos.CODSUCURSAL AND 
+                             ME_Docproductos.CODPROD = ME_Productos.CODPROD ON ME_Documentos.CODSUCURSAL = ME_Docproductos.CODSUCURSAL AND ME_Documentos.DOC_MES = ME_Docproductos.DOC_MES AND 
+                             ME_Documentos.DOC_ANO = ME_Docproductos.DOC_ANO AND ME_Documentos.EMP_NIT = ME_Docproductos.EMP_NIT AND ME_Documentos.CODDOC = ME_Docproductos.CODDOC AND 
+                             ME_Documentos.DOC_NUMERO = ME_Docproductos.DOC_NUMERO LEFT OUTER JOIN
+                             ME_Tipodocumentos ON ME_Documentos.CODSUCURSAL = ME_Tipodocumentos.CODSUCURSAL AND ME_Documentos.CODDOC = ME_Tipodocumentos.CODDOC AND ME_Documentos.EMP_NIT = ME_Tipodocumentos.EMP_NIT
+                WHERE (ME_Tipodocumentos.TIPODOC = 'PED') AND (ME_Documentos.DOC_ESTATUS <> 'A') AND (ME_Documentos.CODSUCURSAL = '${sucursal}') AND (ME_Documentos.DOC_FECHA = '${fecha}')
+                GROUP BY ME_Marcas.DESMARCA`;
+
+                
+
+    execute.Query(res,qry);
+
+
+});
+
+// reporte de marcas por mes
+router.post('/reportemarcasmes',async(req,res)=>{
+
+    const {anio,mes,sucursal} = req.body;
+
+    let qry = `SELECT       ME_Marcas.DESMARCA, SUM(ME_Docproductos.TOTALCOSTO) AS TOTALCOSTO, SUM(ME_Docproductos.TOTALPRECIO) AS TOTALPRECIO
+    FROM            ME_Documentos LEFT OUTER JOIN
+                             ME_Docproductos LEFT OUTER JOIN
+                             ME_Productos LEFT OUTER JOIN
+                             ME_Marcas ON ME_Productos.CODSUCURSAL = ME_Marcas.CODSUCURSAL AND ME_Productos.CODMARCA = ME_Marcas.CODMARCA ON ME_Docproductos.CODSUCURSAL = ME_Productos.CODSUCURSAL AND 
+                             ME_Docproductos.CODPROD = ME_Productos.CODPROD ON ME_Documentos.CODSUCURSAL = ME_Docproductos.CODSUCURSAL AND ME_Documentos.DOC_MES = ME_Docproductos.DOC_MES AND 
+                             ME_Documentos.DOC_ANO = ME_Docproductos.DOC_ANO AND ME_Documentos.EMP_NIT = ME_Docproductos.EMP_NIT AND ME_Documentos.CODDOC = ME_Docproductos.CODDOC AND 
+                             ME_Documentos.DOC_NUMERO = ME_Docproductos.DOC_NUMERO LEFT OUTER JOIN
+                             ME_Tipodocumentos ON ME_Documentos.CODSUCURSAL = ME_Tipodocumentos.CODSUCURSAL AND ME_Documentos.CODDOC = ME_Tipodocumentos.CODDOC AND ME_Documentos.EMP_NIT = ME_Tipodocumentos.EMP_NIT
+                WHERE (ME_Tipodocumentos.TIPODOC = 'PED') AND (ME_Documentos.DOC_ESTATUS <> 'A') AND (ME_Documentos.DOC_MES = ${mes}) AND (ME_Documentos.DOC_ANO = ${anio}) AND 
+                             (ME_Documentos.CODSUCURSAL = '${sucursal}')
+                GROUP BY ME_Marcas.DESMARCA`;
+
+                
+
+    execute.Query(res,qry);
+
+
+});
 
 module.exports = router;

@@ -117,7 +117,16 @@ let classNavegar = {
         }
     },
     appVentas: async()=>{
-        window.location = '/api/index';
+        funciones.loadScript('./VENTAS/ventas.js','root')
+        .then(()=>{
+            iniciarVistaVentas('C/F','CONSUMIDOR FINAL','CIUDAD');
+        })          
+    },
+    appCaja: async()=>{
+        funciones.loadScript('./VENTAS/caja.js','root')
+        .then(()=>{
+            iniciarVistaCaja();
+        })          
     },
     maparuta: async()=>{
         funciones.loadView('../DASHBOARD/views/isc/supervision/viewMapaRuta.html','root')

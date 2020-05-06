@@ -4,12 +4,15 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 
 const execute = require('./router/connection');
-var routerCommunity = require('./router/routerCommunity');
+
 var routerISC = require('./router/routerISC');
 var routerUsers = require('./router/routerUsers');
 var routerVentas = require('./router/routerVentas');
+var routerClientes = require('./router/routerClientes');
 var routerSupervisor = require('./router/routerSupervisor');
 var routerapi = require('./router/routerapi');
+var routerEmpleados = require('./router/routerEmpleados');
+var routerTipoDocs = require('./router/routerTipoDocs');
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -51,8 +54,6 @@ app.get("/api/index",function(req,res){
 //Router para ISC
 app.use('/reports', routerISC);
 
-//Router para reportes Community
-app.use('/reportsCommunity', routerCommunity);
 
 //Router para SUPERVISOR
 app.use('/supervisor', routerSupervisor);
@@ -60,12 +61,20 @@ app.use('/supervisor', routerSupervisor);
 //Router para app VENTAS
 app.use('/ventas', routerVentas);
 
+//Router para app CLIENTES
+app.use('/clientes', routerClientes);
+
 //Router para usuarios
 app.use('/usuarios', routerUsers);
 
-
 //Router de las solicitudes a APP DE VENTAS
 app.use('/api', routerapi);
+
+//Router de las solicitudes a EMPLEADOS
+app.use('/empleados', routerEmpleados);
+
+// Router para Tipodocumentos
+app.use('/tipodocumentos', routerTipoDocs);
 
 
 app.use("/",router);

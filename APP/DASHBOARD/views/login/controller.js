@@ -56,7 +56,10 @@ async function fcnIniciar(application){
         case 'VENTAS':
             classNavegar.appVentas();  
             
-        break;
+            break;
+        case 'OFICINA':
+            classNavegar.appCaja();  
+                break;
     
         default:
             break;
