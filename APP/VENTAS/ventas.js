@@ -472,13 +472,79 @@ function getView(){
                     </div>
                 </div>`
         },
+        modalCantidadCambioPrecio :()=>{
+            return `
+            <div class="modal fade" id="ModalPrecio" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <label class="modal-title text-danger h3" id="">Cambio de Precio</label>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                            </button>
+                        </div>
+
+                        <div class="modal-body">
+
+                            <div class="row">
+                                <div class="col-2 text-right" >
+                                    <h1 class="fw-700">Q</h1>
+                                </div>
+                                <div class="col-5 text-left">
+                                    <input type="number" class="form-control" id="txtNuevoPrecio">
+                                </div>
+                                <div class="col-5 text-right">
+                                    <h1 class="fw-700 text-danger" id="lbPrecioMinimo">Q 0.00</h1>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <br>
+                                <br>
+                            </div>
+
+                            <div class="row">
+                                <div class="form-group col-8">
+                                    <label>Explique el motivo del cambio de precios:</label>
+                                    <textarea rows="3" cols="80" class="form-control" id="txtObsNuevoPrecio" placeholder="Escriba el motivo..."></textarea>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <br>
+                                <br>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-6">
+                                    <button class="btn btn-outline-danger btn-lg btn-pills" data-dismiss="modal">
+                                        <i class="fal fa-times"></i>
+                                        Cancelar
+                                    </button>
+                                </div>
+                                
+                                <div class="col-6">
+                                    <button class="btn btn-outline-success btn-lg btn-pills" id="btnPrecioAceptar">
+                                        <i class="fal fa-angle-right"></i>    
+                                        Solicitar
+                                    </button>
+                                </div>
+                            </div>
+                        
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            `
+        },
         modalCantidadCalculadora :()=>{
             return `
             <div class="modal fade" id="ModalCantidad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <label class="modal-title text-danger h3" id="">Nueva Cantidad // Precio: Q</label><input type="number" class="form-control col-4 text-danger" id="txtNuevoPrecio" onclick="alert('cambiando precios')">
+                            <label class="modal-title text-danger h3" id="">Nueva Cantidad</label>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true"><i class="fal fa-times"></i></span>
                             </button>
@@ -678,6 +744,41 @@ function getView(){
             </div>
             `
         },
+        detallepedido: ()=>{
+            return `
+            <div class="card">
+                <br>
+                <div class="row"></div>
+                <br>
+                <div class="table-responsive">
+                    <table class="table table-responsive table-hover table-striped table-bordered">
+                        <thead class="bg-trans-gradient text-white">
+                            <tr>
+                                <td>Producto</td>
+                                <td>Medida</td>
+                                <td>Cant</td>
+                                <td>Precio</td>
+                                <td>Subtotal</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </thead>
+                        <tbody id="tblDetallePedido"></tbody>
+                        
+                    </table>
+                </div>
+                <br>
+                <div class="">
+                    <div class="col-1"></div>
+                    <div class="col-5">
+                        <label>Total Pedido : </label>
+                        <h2 class="text-danger" id="lbTotalDetallePedido"></h2>
+                    </div>
+                    
+                </div>
+            </div>
+            `
+        }
     }
 
     //+ view.cajabusquedaproducto()  antes de gridtempventas
@@ -690,7 +791,8 @@ function getView(){
                 + view.modalCobro() 
                 + view.modalNuevoCliente() 
                 + view.modalTerminar() 
-                + view.modalCantidadCalculadora();
+                + view.modalCantidadCalculadora()
+                + view.modalCantidadCambioPrecio();
 
 };
 
@@ -881,7 +983,31 @@ async function iniciarVistaVentas(nit,nombre,direccion){
     
 
     fcnIniciarModalCantidadProductos();
+
+     let btnPrecioAceptar = document.getElementById('btnPrecioAceptar'); 
+     let txtNuevoPrecio = document.getElementById('txtNuevoPrecio');
+     let txtObsNuevoPrecio = document.getElementById('txtObsNuevoPrecio');
+     btnPrecioAceptar.addEventListener('click',()=>{
+         
+        let PMin = Number(GlobalSelectedPrecioMinimo);
+        let PNuevo =Number(txtNuevoPrecio.value);
+
+        
+         if(PNuevo < PMin){
+            funciones.AvisoError('No puede Vender a un precio menor al mínimo')
+         }else{
+            if(txtObsNuevoPrecio.value==''){
+                funciones.AvisoError('Debe escribir una razón para solicitar el cambio de precios')
+            }else{
+                fcnUpdateTempRowPrecio(GlobalSelectedId,txtNuevoPrecio.value,txtObsNuevoPrecio.value);
+                $('#ModalPrecio').modal('hide');
+            }
+         }
+        
+     })
 };
+
+
 
 function fcnIniciarModalCantidadProductos(){
 
@@ -896,7 +1022,7 @@ function fcnIniciarModalCantidadProductos(){
         GlobalSelectedCantidad = Number(txtCantidad.value);
         let totalunidades = (Number(GlobalSelectedEquivale) * Number(GlobalSelectedCantidad));
         let totalexento = GlobalSelectedCantidad * GlobalSelectedExento;
-        fcnAgregarProductoVenta(GlobalSelectedCodprod,GlobalSelectedDesprod,GlobalSelectedCodmedida,GlobalSelectedCantidad,GlobalSelectedEquivale,totalunidades,GlobalSelectedCosto,GlobalSelectedPrecio,totalexento);
+        fcnAgregarProductoVenta(GlobalSelectedCodprod,GlobalSelectedDesprod,GlobalSelectedCodmedida,GlobalSelectedCantidad,GlobalSelectedEquivale,totalunidades,GlobalSelectedCosto,GlobalSelectedPrecio,totalexento,GlobalSelectedPrecioMinimo);
 
     });
 
@@ -1003,7 +1129,7 @@ async function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
             
             <td>
                 <button class="btn btn-sm btn-success btn-circle text-white" 
-                onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${rows.PRECIO},${totalexento});">
+                onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${rows.PRECIO},${totalexento},${rows.DESCUENTO});">
                     +
                 </button>
             <td>
@@ -1023,7 +1149,7 @@ async function getDetallePedido(fecha,coddoc,correlativo){
 };
 
 //gestiona la apertura de la cantidad
-function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,totalunidades,costo,precio,exento){
+function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,totalunidades,costo,precio,exento,descuento){
 
     GlobalSelectedCodprod = codprod;
     GlobalSelectedDesprod = desprod;
@@ -1033,6 +1159,7 @@ function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,total
     GlobalSelectedPrecio = parseFloat(precio);
     console.log('total exento: ' +  exento)
     GlobalSelectedExento = parseInt(exento);
+    GlobalSelectedPrecioMinimo = descuento;
     
 
     //modal para la cantidad del producto
@@ -1049,7 +1176,7 @@ function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,total
 };
 
 // agrega el producto a temp_ventas
-async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equivale,totalunidades,costo,precio,exento){
+async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equivale,totalunidades,costo,precio,exento,descuento){
     
     document.getElementById('tblResultadoBusqueda').innerHTML = '';
     let cmbTipoPrecio = document.getElementById('cmbTipoPrecio');
@@ -1073,6 +1200,7 @@ async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equiva
                     precio:precio,
                     totalcosto:totalcosto,
                     totalprecio:totalprecio,
+                    descuento:descuento,
                     exento:exento,
                     usuario:GlobalUsuario,
                     app:GlobalSistema,
@@ -1295,26 +1423,30 @@ async function fcnCargarGridTempVentas(idContenedor){
 
     tabla.innerHTML = GlobalLoader;
     let coddoc = document.getElementById('cmbCoddoc').value;
-    
+    let strClass = '';
     try {
         
         const response = await fetch('/ventas/tempventas?empnit=' + GlobalEmpnit + '&coddoc=' + coddoc + '&usuario=' + GlobalUsuario +  '&app=' + GlobalSistema)
         const json = await response.json();
         let idcant = 0;
         let data = json.recordset.map((rows)=>{
+            if(rows.PMODIF==1){strClass='bg-danger text-white'}else{strClass=''};
             idcant = idcant + 1;
-            return `<tr id="${rows.ID.toString()}">
+            return `<tr  id="${rows.ID.toString()}">
                         <td class="text-left">
                             ${rows.DESPROD}
                             <br>
                             <small class="text-danger"><b>${rows.CODPROD}</b></small>
 
                         </td>
-                        <td class="text-right">${rows.CODMEDIDA}
+                        <td class="text-right">
+                            <button class="btn btn-outline-success btn-xs btn-icon rounded-circle" onClick="fcnCambiarPrecio(${rows.ID},${rows.PRECIO},${rows.DESCUENTO});">$</button>    
+                            ${rows.CODMEDIDA}
+
                             <br>
                             <small>${rows.EQUIVALE} item</small>
                             <br>
-                            <small><b>${funciones.setMoneda(rows.PRECIO,'Q')}</b></small>
+                            <small><b class="${strClass}">${funciones.setMoneda(rows.PRECIO,'Q')}</b></small>
                         </td>
 
 
@@ -1341,6 +1473,15 @@ async function fcnCargarGridTempVentas(idContenedor){
 };
 
 
+async function fcnCambiarPrecio(id,precio,preciomin){
+    document.getElementById('txtNuevoPrecio').value=precio;
+    document.getElementById('lbPrecioMinimo').innerText = funciones.setMoneda(preciomin,'Q');
+    GlobalSelectedPrecioMinimo = preciomin;
+
+    GlobalSelectedId = id;
+    $('#ModalPrecio').modal('show');
+    
+};
 
 async function fcnCambiarCantidad(id){
     
@@ -1368,6 +1509,7 @@ async function fcnCargarTotal(idContenedor,idContenedor2){
         let data = json.recordset.map((rows)=>{
             GlobalTotalDocumento = Number(rows.TOTALPRECIO);
             GlobalTotalCostoDocumento = Number(rows.TOTALCOSTO);
+            GlobalSelectedModif = Number(rows.MODIF);
             return `${funciones.setMoneda(rows.TOTALPRECIO,'Q ')}`
        }).join('\n');
        
@@ -1426,7 +1568,13 @@ async function fcnFinalizarPedido(){
     funciones.Confirmacion('¿Está seguro que desea Finalizar este Pedido')
     .then((value)=>{
         if(value==true){
-
+            if(GlobalSelectedModif==0){
+                console.log('...prosigo con la venta')
+            }else{
+                funciones.AvisoError('Debe solicitar autorización del cambio de precios para poder continuar')
+                console.log('hay autorizaciones pendientes y no se puede continuar')
+                return false;
+            }
             //,,obs,usuario,codven
             axios.post('/ventas/documentos', {
                 app: GlobalSistema,
@@ -1550,6 +1698,66 @@ async function fcnUpdateTempRow(id,cantidad){
                             funciones.AvisoError('No se logró Eliminar la lista de productos agregados');
                             reject();
                         }else{
+                            await fcnCargarTotal('txtTotalVenta','txtTotalVentaCobro');
+                            resolve();
+                        }
+                    }, (error) => {
+                        console.log(error);
+                    });  
+            }, (error) => {
+                console.log(error);
+                reject();
+            });  
+    
+    //finaliza la promesa
+            
+        }, (error) => {
+            console.log(error);
+            reject();
+        });
+    
+};
+
+// actualiza el precio según el precio nuevo en el row seleccionado
+async function fcnUpdateTempRowPrecio(id,precio,obs){
+    
+    let costo = 0; let cantidad = 0; let equivale = 0; let exento = 0;
+    let prod ='';
+    return new Promise((resolve, reject) => {
+    //inicia la promesa    
+            axios.post('/ventas/tempVentasRow', {
+                id:id,
+                app: GlobalSistema
+            })
+            .then((response) => {
+                const data = response.data;
+                
+                data.recordset.map((rows)=>{
+                    cantidad = rows.CANTIDAD;
+                    equivale = rows.EQUIVALE;
+                    exento = rows.EXENTO;
+                    prod = rows.DESPROD;
+                })
+                
+                let totalprecio = Number(precio) * Number(cantidad);
+                let totalexento = Number(exento) * Number(cantidad);
+                                
+                    axios.put('/ventas/tempVentasRowPrecio', {
+                        app: GlobalSistema,
+                        id:id,
+                        precio:precio,
+                        totalprecio:totalprecio,
+                        exento:totalexento,
+                        obs:obs
+                    })
+                    .then(async(re) => {
+                        const data2 = re.data;
+                        if (data2.rowsAffected[0]==0){
+                            funciones.AvisoError('No se logró actualizar el precio');
+                            reject();
+                        }else{
+                            socket.emit('solicitudes precio', `Precio cambiado a ${funciones.setMoneda(precio,'Q')} en producto ${prod}`)
+                            await fcnCargarGridTempVentas('tblGridTempVentas');
                             await fcnCargarTotal('txtTotalVenta','txtTotalVentaCobro');
                             resolve();
                         }

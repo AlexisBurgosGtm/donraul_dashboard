@@ -70,18 +70,39 @@ function requestPermission() {
   });
 }
 
-/*
-socket.on('orden nueva', function(msg){
-    //persistentNotification(msg);
-    try {
-    
-    } catch (error) {
-    
-    }
-    //funciones.NotificacionPersistent(msg,"Nueva Orden generada");
-});
-*/
 
 InicializarBotonesMenu();
 
+// socket handler
+socket.on('solicitudes precio', async function(msg){
+    
+  if(GlobalSelectedForm=='CAJA'){
+    try {
+      funciones.NotificacionPersistent(msg,"Cambio de Precios");
+      
+    } catch (error) {
+    
+    };
+    
+    try {
+      await api.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
+    } catch (error) {
+      
+    }
+  }
+  
+});
 
+socket.on('solicitudes precioaprobada', async function(msg){
+  if(GlobalSelectedForm=='VENTAS'){
+
+    try {
+      funciones.NotificacionPersistent('Precio Autorizado',"Precio Autorizado");
+      await fcnCargarGridTempVentas('tblGridTempVentas');
+      
+    } catch (error) {
+      
+    }
+
+  }
+});

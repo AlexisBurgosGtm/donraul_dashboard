@@ -16,16 +16,16 @@ router.get("/buscarproducto", async(req,res)=>{
 
     switch (tipoprecio) {
         case 'P':
-            campoprecio = 'COMMUNITY_PRECIOS_SYNC.PRECIO';        
+            campoprecio = 'COMMUNITY_PRECIOS_SYNC.PRECIO';      //PRECIO  
             break;
         case 'C':
-            campoprecio = 'COMMUNITY_PRECIOS_SYNC.MAYOREOC';
+            campoprecio = 'COMMUNITY_PRECIOS_SYNC.MAYOREOC'; //ESPECIAL
             break;
         case 'B':
-            campoprecio = 'COMMUNITY_PRECIOS_SYNC.MAYOREOC';
+            campoprecio = 'COMMUNITY_PRECIOS_SYNC.MAYOREOB';//ESCALA
             break;
         case 'A':
-            campoprecio = 'COMMUNITY_PRECIOS_SYNC.MAYOREOA';
+            campoprecio = 'COMMUNITY_PRECIOS_SYNC.MAYOREOA'; //MAYORISTA
             break;
         case 'K':
             campoprecio = '0.01'
@@ -36,7 +36,7 @@ router.get("/buscarproducto", async(req,res)=>{
     }
     let qry ='';
     qry = `SELECT COMMUNITY_PRODUCTOS_SYNC.CODPROD, COMMUNITY_PRODUCTOS_SYNC.DESPROD, COMMUNITY_PRECIOS_SYNC.CODMEDIDA, COMMUNITY_PRECIOS_SYNC.EQUIVALE, COMMUNITY_PRECIOS_SYNC.COSTO, 
-	${campoprecio} as PRECIO, ISNULL(COMMUNITY_MARCAS.DESMARCA, 'SN') AS DESMARCA, COMMUNITY_INVSALDO_SYNC.SALDO AS EXISTENCIA
+	${campoprecio} as PRECIO, ISNULL(COMMUNITY_MARCAS.DESMARCA, 'SN') AS DESMARCA, COMMUNITY_INVSALDO_SYNC.SALDO AS EXISTENCIA, COMMUNITY_PRECIOS_SYNC.MAYOREOC AS DESCUENTO
 	FROM            COMMUNITY_PRODUCTOS_SYNC LEFT OUTER JOIN
                          COMMUNITY_PRECIOS_SYNC ON COMMUNITY_PRODUCTOS_SYNC.CODPROD = COMMUNITY_PRECIOS_SYNC.CODPROD AND COMMUNITY_PRODUCTOS_SYNC.EMPNIT = COMMUNITY_PRECIOS_SYNC.EMPNIT AND 
                          COMMUNITY_PRODUCTOS_SYNC.TOKEN = COMMUNITY_PRECIOS_SYNC.TOKEN LEFT OUTER JOIN
@@ -60,7 +60,7 @@ router.get("/tempVentastotal", async(req,res)=>{
     let qry = '';
 
 
-            qry = `SELECT COUNT(CODPROD) AS TOTALITEMS, SUM(TOTALCOSTO) AS TOTALCOSTO, SUM(TOTALPRECIO) AS TOTALPRECIO, SUM(EXENTO) AS TOTALEXENTO
+            qry = `SELECT COUNT(CODPROD) AS TOTALITEMS, SUM(TOTALCOSTO) AS TOTALCOSTO, SUM(TOTALPRECIO) AS TOTALPRECIO, SUM(EXENTO) AS TOTALEXENTO, SUM(PMODIF) AS MODIF
             FROM ME_TEMP_VENTAS
             WHERE (CODSUCURSAL = '${app}') AND (USUARIO = '${usuario}')`        
 
@@ -85,7 +85,9 @@ router.get("/tempVentas", async(req,res)=>{
             ME_TEMP_VENTAS.CANTIDAD, 
             ME_TEMP_VENTAS.EQUIVALE,
             ME_TEMP_VENTAS.PRECIO, 
-            ME_TEMP_VENTAS.TOTALPRECIO
+            ME_TEMP_VENTAS.TOTALPRECIO,
+            ME_TEMP_VENTAS.DESCUENTO,
+            ME_TEMP_VENTAS.PMODIF
                 FROM ME_TEMP_VENTAS 
             WHERE (ME_TEMP_VENTAS.CODSUCURSAL = '${app}') AND (ME_TEMP_VENTAS.USUARIO = '${usuario}')
             ORDER BY ME_TEMP_VENTAS.ID DESC`
@@ -102,7 +104,7 @@ router.post("/tempVentasRow", async(req,res)=>{
 
     let qry = '';
     
-    qry = `SELECT ID,CODPROD,DESPROD,CODMEDIDA,CANTIDAD,EQUIVALE,COSTO,PRECIO,EXENTO FROM ME_TEMP_VENTAS WHERE ID=${id}`
+    qry = `SELECT ID,CODPROD,DESPROD,CODMEDIDA,CANTIDAD,EQUIVALE,COSTO,PRECIO,DESCUENTO,EXENTO FROM ME_TEMP_VENTAS WHERE ID=${id}`
   
     execute.Query(res,qry);
     
@@ -116,6 +118,20 @@ router.put("/tempVentasRow", async(req,res)=>{
     let qry = '';
     
     qry = `UPDATE ME_TEMP_VENTAS SET CANTIDAD=${cantidad},TOTALCOSTO=${totalcosto},TOTALPRECIO=${totalprecio},TOTALUNIDADES=${totalunidades},EXENTO=${exento} WHERE ID=${id}`
+    
+    
+    execute.Query(res,qry);
+    
+});
+
+// ACTUALIZA el grid de temp ventas
+router.put("/tempVentasRowPrecio", async(req,res)=>{
+    
+    const {app,id,precio,totalprecio,exento,obs} = req.body;
+    
+    let qry = '';
+    
+    qry = `UPDATE ME_TEMP_VENTAS SET PRECIO=${precio},TOTALPRECIO=${totalprecio},EXENTO=${exento},PMODIF=1,OBS='${obs}' WHERE ID=${id}`
     
     
     execute.Query(res,qry);
@@ -142,6 +158,7 @@ router.post("/tempVentas", async(req,res)=>{
     let totalcosto =Number(req.body.totalcosto);
     let totalprecio=Number(req.body.totalprecio);
     let exento=Number(req.body.exento);
+    let descuento = Number(req.body.descuento);
 
     let coddoc = req.body.coddoc;
 
@@ -150,10 +167,10 @@ router.post("/tempVentas", async(req,res)=>{
     let qry = '';
 
     qry = `INSERT INTO ME_TEMP_VENTAS 
-            (EMPNIT,CODPROD,DESPROD,CODMEDIDA,CANTIDAD,EQUIVALE,TOTALUNIDADES,COSTO,PRECIO,TOTALCOSTO,TOTALPRECIO,EXENTO,USUARIO,TIPOPRECIO,CODSUCURSAL) 
-    VALUES ('${empnit}','${codprod}','${desprod}','${codmedida}',${cantidad},${equivale},${totalunidades},${costo},${precio},${totalcosto},${totalprecio},${exento},'${usuario}','${tipoprecio}','${app}')`        
+            (EMPNIT,CODPROD,DESPROD,CODMEDIDA,CANTIDAD,EQUIVALE,TOTALUNIDADES,COSTO,PRECIO,TOTALCOSTO,TOTALPRECIO,EXENTO,USUARIO,TIPOPRECIO,CODSUCURSAL,PMODIF,DESCUENTO) 
+    VALUES ('${empnit}','${codprod}','${desprod}','${codmedida}',${cantidad},${equivale},${totalunidades},${costo},${precio},${totalcosto},${totalprecio},${exento},'${usuario}','${tipoprecio}','${app}',0,${descuento})`        
      
-        
+        console.log(qry)
    execute.Query(res,qry);
 
 });
@@ -169,7 +186,7 @@ router.delete("/tempVentas", async(req,res)=>{
 
 });
 
-// elimina un item de la venta todos 
+// elimina temp ventas
 router.post("/tempVentastodos", async(req,res)=>{
     const{empnit,usuario,app} = req.body;
     let qry = "";
@@ -356,6 +373,25 @@ router.post("/documentos", async (req,res)=>{
 
 
 // LISTADOS DE PEDIDOS
+router.post("/pedidosautorizar", async(req,res)=>{
+    const {sucursal,codven}  = req.body;
+    
+    let qry = '';
+    qry = `SELECT * FROM ME_TEMP_VENTAS WHERE PMODIF=1 `
+
+    
+    execute.Query(res,qry);
+});
+
+router.put("/autorizarprecio", async(req,res)=>{
+    const {id}  = req.body;
+    
+    let qry = '';
+    qry = `UPDATE ME_TEMP_VENTAS SET PMODIF=0 WHERE ID=${id} `
+    
+    execute.Query(res,qry);
+});
+
 router.post("/pedidospendientes", async(req,res)=>{
     const {sucursal,codven}  = req.body;
     

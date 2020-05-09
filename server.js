@@ -85,7 +85,15 @@ app.use("*",function(req,res){
 
 
 io.on('connection', function(socket){
-  
+
+  socket.on('solicitudes precio',function(msg,user){
+    io.emit('solicitudes precio',msg);
+  });
+
+  socket.on('solicitudes precioaprobada',function(msg,user){
+    io.emit('solicitudes precioaprobada',msg);
+  });
+
   socket.on('chat msn', function(msg,user){
 	  io.emit('chat msn', msg, user);
   });

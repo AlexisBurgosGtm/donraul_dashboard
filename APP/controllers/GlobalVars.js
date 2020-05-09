@@ -1,8 +1,11 @@
 let GlobalSistema = '';
 let GlobalToken = '';
+
 let GlobalUser = '';
 let GlobalWaitElement = '<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>';
-let GlobalLoader = '<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>';
+let GlobalLoader = `<div class="spinner-border text-danger" role="status"><span class="sr-only">Loading...</span></div>
+                    <div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>
+                    <div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>`;
 
 
 
@@ -52,6 +55,9 @@ let GlobalSelectedCantidad = 0;
 let GlobalSelectedExento = 0;
 let GlobalSelectedCosto = 0;
 let GlobalSelectedPrecio = 0;
+let GlobalSelectedModif = 0;
+let GlobalSelectedPrecioMinimo = 0;
+
 // global vars para cantidad producto
 
 let GlobalSelectedStatus=0;

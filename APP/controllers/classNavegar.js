@@ -119,12 +119,14 @@ let classNavegar = {
     appVentas: async()=>{
         funciones.loadScript('./VENTAS/ventas.js','root')
         .then(()=>{
+            GlobalSelectedForm= 'VENTAS';
             iniciarVistaVentas('C/F','CONSUMIDOR FINAL','CIUDAD');
         })          
     },
     appCaja: async()=>{
         funciones.loadScript('./VENTAS/caja.js','root')
         .then(()=>{
+            GlobalSelectedForm= 'CAJA';
             iniciarVistaCaja();
         })          
     },

@@ -11,13 +11,29 @@ let api = {
         let strdata = '';
         let totalpedidos = 0;
         let strApicall= '';
-
+        let strHeader = '';
         switch (st) {
             case "O":
                 strApicall = '/ventas/pedidospendientes';
+                strHeader=`<thead>
+                                <tr>
+                                    <td>Cliente / Documento</td>
+                                    <td>Importe</td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>`
                 break;
             case "I":
                 strApicall = '/ventas/pedidosgenerados';
+                strHeader=`<thead>
+                                <tr>
+                                    <td>Cliente / Documento</td>
+                                    <td>Importe</td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>`
                 break;
             case "A":
                 strApicall = '/ventas/pedidosbloqueados';
@@ -66,7 +82,7 @@ let api = {
                                 </td>
                             </tr>`
             })
-            container.innerHTML = strdata;
+            container.innerHTML = strHeader + strdata + '</tbody>';
             lbTotal.innerText = `${funciones.setMoneda(total,'Q ')} - Peds:${totalpedidos} - Prom:${funciones.setMoneda((Number(total)/Number(totalpedidos)),'Q')}`;
         }, (error) => {
             funciones.AvisoError('Error en la solicitud');
@@ -76,6 +92,97 @@ let api = {
         });
            
     },//método en uso
+    cajaPedidosVendedorAutorizar: async(sucursal,codven,idContenedor,idLbTotal,st)=>{
+
+        let container = document.getElementById(idContenedor);
+        container.innerHTML = GlobalLoader;
+        
+        let lbTotal = document.getElementById(idLbTotal);
+        lbTotal.innerText = '---';
+        
+       
+        let strdata = '';
+        let totalpedidos = 0;
+        let strApicall= '';
+        let strHeader = '';
+        
+                strApicall = '/ventas/pedidosautorizar';
+                strHeader=`<thead class="bg-trans-gradient text-white">
+                                <tr>
+                                    <td>Motivo</td>
+                                    <td>Producto</td>
+                                    <td>Precio</td>
+                                    <td>Importe</td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>`
+        
+        
+        axios.post(strApicall, {
+            app:GlobalSistema,
+            sucursal: sucursal,
+            codven:codven
+        })
+        .then((response) => {
+            const data = response.data.recordset;
+            
+            data.map((rows)=>{                   
+                    strdata = strdata + `
+                            <tr>
+                                <td>
+                                    ${rows.OBS}
+                                </td>
+                                <td>${rows.DESPROD}
+                                    <br>
+                                    <small>${rows.CODMEDIDA} CANT: ${rows.CANTIDAD}</small>
+                                </td>
+                                <td>
+                                    Solicitado: <br>
+                                    <b class="text-danger">${funciones.setMoneda(rows.PRECIO,'Q')}</b>
+                                    <br>
+                                    Mínimo: <br>
+                                    <b class="text-success">${funciones.setMoneda(rows.DESCUENTO,'Q')}</b>
+                                </td>
+                                <td>
+                                    <b>${funciones.setMoneda(rows.TOTALPRECIO,'Q')}</b>
+                                </td>
+                                
+                                <td>
+                                    <button class="btn btn-info btn-sm btn-circle" onclick="postAutorization(${rows.ID})">
+                                        <i class="fal fa-unlock"></i>    
+                                        
+                                    </button>
+                                </td>
+                            </tr>`
+            })
+            container.innerHTML = strHeader + strdata + '</tbody>';
+            
+        }, (error) => {
+            funciones.AvisoError('Error en la solicitud');
+            strdata = '';
+            container.innerHTML = '';
+            
+        });
+           
+    },//método en uso
+    cajaAutorizarPrecio: async(id)=>{
+        
+        return new Promise((resolve,reject)=>{
+            axios.put('/ventas/autorizarprecio',{
+                id:id
+            })
+            .then((response) => {
+                
+               resolve();             
+            }, (error) => {
+                
+                reject();
+            });
+
+
+        })
+    },//metodo en uso
     cajaPedidosVendedor2: async(sucursal,codven,idContenedor,idLbTotal,st)=>{
 
         let container = document.getElementById(idContenedor);
@@ -154,63 +261,6 @@ let api = {
         });
            
     },
-    coronavirus :(idContenedor)=>{
-        let container = document.getElementById(idContenedor);
-        container.innerHTML = GlobalLoader;
-        
-        let strdata = '';
-        let tblheader = `<div class="row">
-                            <div class="form-group">
-                                <input type="text" class="form-control" id="txtFiltrarCoronavirus" placeholder="Escriba para buscar su país...">
-                            </div>
-                            
-                        </div>
-                    <table class="table table-responsive table-hover table-striped table-bordered" id="tblCovid">
-                        <thead class="bg-trans-gradient text-white">
-                            <tr>
-                                <td>País</td>
-                                <td>Infectados</td>
-                                <td>Muertes</td>
-                                <td>Recuperados</td>
-                                <td>Críticos</td>
-                            </tr>
-                        </thead><tbody>`;
-        let tblfooter = `</tbody></table>`
-
-        axios.get('https://coronavirus-19-api.herokuapp.com/countries')
-        .then((response) => {
-            console.log(response)
-            const data = response.data;
-            
-            data.map((rows)=>{
-                
-                    strdata = strdata + `<tr>
-                                <td>${rows.country}</td>
-                                <td>${rows.cases}</td>
-                                <td>${rows.deaths}</td>
-                                <td>${rows.recovered}</td>
-                                <td>${rows.critical}</td>
-                            </tr>`
-            })
-            
-                  
-        }, (error) => {
-            funciones.AvisoError('Error en la solicitud');
-            strdata = '';
-        })
-        .then(()=>{
-            container.innerHTML = tblheader + strdata + tblfooter;
-
-            let txtFiltrarCoronavirus = document.getElementById('txtFiltrarCoronavirus');
-            txtFiltrarCoronavirus.addEventListener('keyup',()=>{
-                funciones.crearBusquedaTabla('tblCovid','txtFiltrarCoronavirus');
-            });
-        })
-
-        
-        
-        
-    },
     empleadosLogin : (sucursal,user,pass)=>{
 
         axios.post('/empleados/login', {
@@ -246,94 +296,6 @@ let api = {
             funciones.AvisoError('Error en la solicitud');
         });
 
-    },
-    clientesVendedor: async(sucursal,codven,dia,idContenedor,idContenedorVisitados)=>{
-    
-        let container = document.getElementById(idContenedor);
-        container.innerHTML = GlobalLoader;
-
-        let containerVisitados = document.getElementById(idContenedorVisitados);
-        
-        let strdata = ''; let strdataVisitados = '';
-
-        axios.post('/clientes/listavendedor', {
-            app:GlobalSistema,
-            sucursal: sucursal,
-            codven:codven,
-            dia:dia   
-        })
-        .then((response) => {
-            const data = response.data.recordset;
-            
-            data.map((rows)=>{
-                    let f = rows.LASTSALE.toString().replace('T00:00:00.000Z','');
-                    let stClassClie = ''; let stNomStatus='';
-                    if(f==funciones.getFecha()){
-                        switch (rows.STVISITA) {
-                            case 'VENTA':
-                                stClassClie='bg-success text-white';
-                                stNomStatus= 'VENDIDO';
-                                break;
-                            case 'CERRADO':
-                                stClassClie='bg-warning';
-                                stNomStatus= 'CERRADO';        
-                                break;
-                            case 'NODINERO':
-                                stClassClie='bg-secondary text-white';
-                                stNomStatus= 'SIN DINERO';
-                                break;
-                        
-                            default:
-                                
-                                break;
-                        };
-
-                        strdataVisitados = strdataVisitados + `<tr class='${stClassClie}'>
-                        <td>${rows.NOMCLIE}
-                            <br>
-                            <small>Cod: ${rows.CODIGO} - St:${stNomStatus}</small>
-                        </td>
-                        <td>${rows.DIRCLIE}
-                            <br>
-                            <small>${rows.DESMUNI}</small>
-                        </td>
-                        <td>
-                            <button class="btn btn-info btn-sm btn-circle" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                +
-                            </button>
-                        </td>
-                    </tr>`    
-                    }else{
-                        strdata = strdata + `<tr class=''>
-                                <td>${rows.NOMCLIE}
-                                    <br>
-                                    <small>Cod: ${rows.CODIGO} - St:SN</small>
-                                </td>
-                                <td>${rows.DIRCLIE}
-                                    <br>
-                                    <small>${rows.DESMUNI}</small>
-                                </td>
-                                <td>
-                                    <button class="btn btn-info btn-sm btn-circle" onclick="getMenuCliente('${rows.CODIGO}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.TELEFONO}','${rows.LAT}','${rows.LONG}','${rows.NIT}');">
-                                        +
-                                    </button>
-                                </td>
-                            </tr>`
-                    }
-                    
-                    
-            })
-            container.innerHTML = strdata;
-            containerVisitados.innerHTML = strdataVisitados;
-
-        }, (error) => {
-            funciones.AvisoError('Error en la solicitud');
-            strdata = '';
-            containerVisitados.innerHTML = 'No se pudo cargar la lista';
-            container.innerHTML = 'No se pudo cargar la lista';
-        });
-        
-        
     },
     clientesAjenosVendedor: async(sucursal,filtro,idContenedor)=>{
     
