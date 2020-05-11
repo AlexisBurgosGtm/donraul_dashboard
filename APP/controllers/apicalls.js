@@ -15,9 +15,10 @@ let api = {
         switch (st) {
             case "O":
                 strApicall = '/ventas/pedidospendientes';
-                strHeader=`<thead>
+                strHeader=`<thead class="bg-warning text-white">
                                 <tr>
-                                    <td>Cliente / Documento</td>
+                                    <td>Documento</td>
+                                    <td>Cliente</td>
                                     <td>Importe</td>
                                     <td></td>
                                 </tr>
@@ -26,9 +27,10 @@ let api = {
                 break;
             case "I":
                 strApicall = '/ventas/pedidosgenerados';
-                strHeader=`<thead>
+                strHeader=`<thead class="bg-success text-white">
                                 <tr>
-                                    <td>Cliente / Documento</td>
+                                    <td>Documento</td>
+                                    <td>Cliente</td>
                                     <td>Importe</td>
                                     <td></td>
                                 </tr>
@@ -37,6 +39,15 @@ let api = {
                 break;
             case "A":
                 strApicall = '/ventas/pedidosbloqueados';
+                strHeader=`<thead class="bg-danger text-white">
+                                <tr>
+                                    <td>Documento</td>
+                                    <td>Cliente</td>
+                                    <td>Importe</td>
+                                    <td></td>
+                                </tr>
+                            </thead>
+                            <tbody>`
                 break;
         
             default:
@@ -64,6 +75,8 @@ let api = {
                                     ${rows.CODDOC + '-' + rows.CORRELATIVO}
                                     <br>
                                     <small>${f}</small>
+                                    <br>
+                                    <small class="text-danger">Entregar:${rows.FECHAENTREGA.toString().replace('T00:00:00.000Z','')}</small>
                                 </td>
                                 <td class="${strClassRowSt}">${rows.NOMCLIE}
                                     <br>
@@ -76,7 +89,7 @@ let api = {
                                 </td>
                                 
                                 <td>
-                                    <button class="btn btn-info btn-sm btn-circle" onclick="getDetallePedido('${f}','${rows.CODDOC}','${rows.CORRELATIVO}')">
+                                    <button class="btn btn-info btn-sm btn-circle" onclick="getDetallePedido('${f}','${rows.CODDOC}','${rows.CORRELATIVO}','${rows.NITCLIE}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.DIRENTREGA}','${rows.OBS}','${rows.FECHAENTREGA.toString().replace('T00:00:00.000Z','')}')">
                                         +
                                     </button>
                                 </td>
@@ -114,6 +127,7 @@ let api = {
                                     <td>Precio</td>
                                     <td>Importe</td>
                                     <td></td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody>`
@@ -149,9 +163,15 @@ let api = {
                                 </td>
                                 
                                 <td>
-                                    <button class="btn btn-info btn-sm btn-circle" onclick="postAutorization(${rows.ID})">
+                                    <button class="btn btn-info btn-md" onclick="postAutorization(${rows.ID},'${rows.DESPROD}',${rows.PRECIO})">
                                         <i class="fal fa-unlock"></i>    
-                                        
+                                        Autorizar
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-danger btn-md" onclick="postDenegar(${rows.ID},'${rows.DESPROD}',${rows.PRECIO})">
+                                        <i class="fal fa-lock"></i>
+                                        Denegar    
                                     </button>
                                 </td>
                             </tr>`
@@ -171,6 +191,139 @@ let api = {
         return new Promise((resolve,reject)=>{
             axios.put('/ventas/autorizarprecio',{
                 id:id
+            })
+            .then((response) => {
+                
+               resolve();             
+            }, (error) => {
+                
+                reject();
+            });
+
+
+        })
+    },//metodo en uso
+    cajaDenegarPrecio: async(id)=>{
+        
+        return new Promise((resolve,reject)=>{
+            axios.put('/ventas/denegarprecio',{
+                id:id
+            })
+            .then((response) => {
+                
+               resolve();             
+            }, (error) => {
+                
+                reject();
+            });
+
+
+        })
+    },//metodo en uso
+    cajaDetallePedido: async(fecha,coddoc,correlativo,idContenedor,idLbTotal)=>{
+
+        let container = document.getElementById(idContenedor);
+        container.innerHTML = GlobalLoader;
+        
+        let lbTotal = document.getElementById(idLbTotal);
+        lbTotal.innerText = '---';
+        
+        let strdata = '';
+
+        GlobalSelectedCoddoc = coddoc;
+        GlobalSelectedCorrelativo = correlativo;
+
+        axios.post('/ventas/detallepedido', {
+            sucursal: GlobalCodSucursal,
+            fecha:fecha,
+            coddoc:coddoc,
+            correlativo:correlativo
+        })
+        .then((response) => {
+            const data = response.data.recordset;
+            let total =0;
+            data.map((rows)=>{
+                    total = total + Number(rows.IMPORTE);
+                    strdata = strdata + `
+                            <tr id='${rows.DOC_ITEM}'>
+                                <td>${rows.DESPROD}
+                                    <br>
+                                    <small class="text-danger">${rows.CODPROD}</small>
+                                </td>
+                                <td>${rows.CODMEDIDA}</td>
+                                <td>${rows.CANTIDAD}</td>
+                                <td>${funciones.setMoneda(rows.PRECIO,'Q')}</td>
+                                <td>${funciones.setMoneda(rows.IMPORTE,'Q')}</td>
+                                <td>
+                                    <button class="btn btn-danger btn-md btn-circle"
+                                     onclick="deleteProductoPedido('${rows.DOC_ITEM}','${GlobalSelectedCoddoc}','${GlobalSelectedCorrelativo}',${rows.IMPORTE},${rows.TOTALCOSTO})">
+                                        x
+                                    </button>
+                                </td>
+                            </tr>
+                            `
+            })
+            container.innerHTML = strdata;
+            lbTotal.innerText = `Total Pedido:  ${funciones.setMoneda(total,'Q')}`;
+        }, (error) => {
+            funciones.AvisoError('Error en la solicitud');
+            strdata = '';
+            container.innerHTML = '';
+            lbTotal.innerText = 'Q0.00';
+        });
+           
+    },//metodo en uso
+    cajaQuitarRowPedido: async(item,coddoc,correlativo,totalprecio,totalcosto)=>{
+        console.log(item)
+        console.log(coddoc)
+        console.log(correlativo)
+        console.log(totalprecio)
+        console.log(totalcosto)
+
+        return new Promise((resolve,reject)=>{
+            axios.put('/ventas/pedidoquitaritem',{
+                sucursal:GlobalCodSucursal,
+                coddoc:coddoc,
+                correlativo:correlativo,
+                item:item,
+                totalprecio:totalprecio,
+                totalcosto:totalcosto
+            })
+            .then((response) => {
+                
+               resolve();             
+            }, (error) => {
+                console.log(error);        
+                reject(error);
+            });
+
+
+        })
+    }, //metodo en uso
+    cajaBloquearPedido: async(coddoc,correlativo)=>{
+        
+        return new Promise((resolve,reject)=>{
+            axios.put('/ventas/pedidobloquear',{
+                coddoc:coddoc,
+                correlativo:correlativo
+            })
+            .then((response) => {
+                
+               resolve();             
+            }, (error) => {
+                
+                reject();
+            });
+
+
+        })
+    },//metodo en uso
+    cajaFacturarPedido: async(coddoc,correlativo)=>{
+        
+        return new Promise((resolve,reject)=>{
+            axios.put('/ventas/pedidofacturado',{
+                coddoc:coddoc,
+                correlativo:correlativo
             })
             .then((response) => {
                 
@@ -1879,64 +2032,6 @@ let api = {
         })
         
     },
-    digitadorDetallePedido: async(fecha,coddoc,correlativo,idContenedor,idLbTotal)=>{
-
-        let container = document.getElementById(idContenedor);
-        container.innerHTML = GlobalLoader;
-        
-        let lbTotal = document.getElementById(idLbTotal);
-        lbTotal.innerText = '---';
-        
-        let strdata = '';
-
-        GlobalSelectedCoddoc = coddoc;
-        GlobalSelectedCorrelativo = correlativo;
-
-        axios.post('/digitacion/detallepedido', {
-            sucursal: GlobalCodSucursal,
-            fecha:fecha,
-            coddoc:coddoc,
-            correlativo:correlativo
-        })
-        .then((response) => {
-            const data = response.data.recordset;
-            let total =0;
-            data.map((rows)=>{
-                    total = total + Number(rows.IMPORTE);
-                    strdata = strdata + `
-                            <tr id='${rows.DOC_ITEM}'>
-                                <td>${rows.DESPROD}
-                                    <br>
-                                    <small class="text-danger">${rows.CODPROD}</small>
-                                </td>
-                                <td>${rows.CODMEDIDA}</td>
-                                <td>${rows.CANTIDAD}</td>
-                                <td>${rows.PRECIO}</td>
-                                <td>${rows.IMPORTE}</td>
-                                <td>
-                                    <button class="btn btn-info btn-md btn-circle" onclick="getModalCantidad('${rows.DOC_ITEM}');">
-                                        +
-                                    </button>
-                                </td>
-                                <td>
-                                    <button class="btn btn-danger btn-md btn-circle"
-                                     onclick="deleteProductoPedido('${rows.DOC_ITEM}','${GlobalSelectedCoddoc}','${GlobalSelectedCorrelativo}',${rows.IMPORTE},${rows.TOTALCOSTO})">
-                                        x
-                                    </button>
-                                </td>
-                            </tr>
-                            `
-            })
-            container.innerHTML = strdata;
-            lbTotal.innerText = `${funciones.setMoneda(total,'Q')}`;
-        }, (error) => {
-            funciones.AvisoError('Error en la solicitud');
-            strdata = '';
-            container.innerHTML = '';
-            lbTotal.innerText = 'Q0.00';
-        });
-           
-    },
     digitadorPedidosTipoprecio: async(sucursal,codven,idContenedor)=>{
 
         let container = document.getElementById(idContenedor);
@@ -1998,33 +2093,6 @@ let api = {
             }, (error) => {
                 
                 reject();
-            });
-
-
-        })
-    },
-    digitadorQuitarRowPedido: async(item,coddoc,correlativo,totalprecio,totalcosto)=>{
-        console.log(item)
-        console.log(coddoc)
-        console.log(correlativo)
-        console.log(totalprecio)
-        console.log(totalcosto)
-
-        return new Promise((resolve,reject)=>{
-            axios.put('/digitacion/pedidoquitaritem',{
-                sucursal:GlobalCodSucursal,
-                coddoc:coddoc,
-                correlativo:correlativo,
-                item:item,
-                totalprecio:totalprecio,
-                totalcosto:totalcosto
-            })
-            .then((response) => {
-                
-               resolve();             
-            }, (error) => {
-                console.log(error);        
-                reject(error);
             });
 
 

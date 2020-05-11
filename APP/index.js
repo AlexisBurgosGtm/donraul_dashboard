@@ -74,6 +74,21 @@ function requestPermission() {
 InicializarBotonesMenu();
 
 // socket handler
+socket.on('ventas nueva', async function(msg){
+  if(GlobalSelectedForm=='CAJA'){
+    try {
+      let cmbTipoListaPedidos = document.getElementById('cmbTipoListaPedidos');
+      if(cmbTipoListaPedidos.value=='AUT'){
+        //await api.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
+      }else{
+        await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
+      }
+    } catch (error) {
+      
+    }
+  }
+});
+
 socket.on('solicitudes precio', async function(msg){
     
   if(GlobalSelectedForm=='CAJA'){
@@ -97,8 +112,23 @@ socket.on('solicitudes precioaprobada', async function(msg){
   if(GlobalSelectedForm=='VENTAS'){
 
     try {
-      funciones.NotificacionPersistent('Precio Autorizado',"Precio Autorizado");
+      funciones.NotificacionPersistent('Precio Autorizado', msg);
       await fcnCargarGridTempVentas('tblGridTempVentas');
+      await fcnCargarTotal('txtTotalVenta','txtTotalVentaCobro');
+
+    } catch (error) {
+      
+    }
+
+  }
+});
+
+socket.on('solicitudes preciodenegado', async function(msg){
+  if(GlobalSelectedForm=='VENTAS'){
+
+    try {
+      funciones.NotificacionPersistent('Precio Denegado', msg);
+      funciones.AvisoError('Precio Denegado : ' + msg);
       
     } catch (error) {
       

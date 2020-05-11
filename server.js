@@ -85,6 +85,10 @@ app.use("*",function(req,res){
 
 
 io.on('connection', function(socket){
+  
+  socket.on('ventas nueva',function(msg,user){
+    io.emit('ventas nueva',msg);
+  });
 
   socket.on('solicitudes precio',function(msg,user){
     io.emit('solicitudes precio',msg);
@@ -94,13 +98,11 @@ io.on('connection', function(socket){
     io.emit('solicitudes precioaprobada',msg);
   });
 
-  socket.on('chat msn', function(msg,user){
-	  io.emit('chat msn', msg, user);
+  socket.on('solicitudes preciodenegado',function(msg,user){
+    io.emit('solicitudes preciodenegado',msg);
   });
+
   
-  socket.on('orden eliminada', function(msg,user){
-	  io.emit('orden eliminada', msg, user);
-  });
   
 });
 

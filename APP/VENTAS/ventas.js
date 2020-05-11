@@ -717,23 +717,13 @@ function getView(){
                                 <label>Tipo de Lista:</label>
                                 <select class="form-control col-6" id="cmbTipoListaPedidos">
                                     <option value="O">Pendientes</option>
-                                    <option value="I">Entregados</option>
+                                    <option value="I">Facturados</option>
                                 </select>
                             </div>
-                            <label id="lbListaPedidosTotal">0.00</label>
-                            <table class="table table-responsive table-striped table-hover table-bordered">
-                                <thead>
-                                    <tr>
-                                        <td>Documento</td>
-                                        <td>Cliente</td>
-                                        <td>Importe</td>
-                                        <td></td>
-                                    </tr>
-                                </thead>
-                                <tbody id="tblListaPedidos">
+                            <label id="lbListaPedidosTotal" class="text-danger">0.00</label>
+                            <table class="table table-responsive table-striped table-hover table-bordered"   id="tblListaPedidos">
                                 
-
-                                </tbody>
+                                
                             </table>
 
                         </div>
@@ -744,37 +734,40 @@ function getView(){
             </div>
             `
         },
-        detallepedido: ()=>{
+        modaldetallepedido: ()=>{
             return `
-            <div class="card">
-                <br>
-                <div class="row"></div>
-                <br>
-                <div class="table-responsive">
-                    <table class="table table-responsive table-hover table-striped table-bordered">
-                        <thead class="bg-trans-gradient text-white">
-                            <tr>
-                                <td>Producto</td>
-                                <td>Medida</td>
-                                <td>Cant</td>
-                                <td>Precio</td>
-                                <td>Subtotal</td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </thead>
-                        <tbody id="tblDetallePedido"></tbody>
-                        
-                    </table>
-                </div>
-                <br>
-                <div class="">
-                    <div class="col-1"></div>
-                    <div class="col-5">
-                        <label>Total Pedido : </label>
-                        <h2 class="text-danger" id="lbTotalDetallePedido"></h2>
+            <div class="modal fade" id="ModalDetallePedido" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-left" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <label class="modal-title text-danger h3" id="">Detalle del Pedido</label>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <h3 class="text-danger text-right" id="lbTotalDetallePedido"></h3>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-responsive table-hover table-striped table-bordered">
+                                    <thead class="bg-trans-gradient text-white">
+                                        <tr>
+                                            <td>Producto</td>
+                                            <td>Medida</td>
+                                            <td>Cant</td>
+                                            <td>Precio</td>
+                                            <td>Subtotal</td>
+                                            <td></td>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tblDetallePedido"></tbody>
+                                    
+                                </table>
+                            </div>
+                            
+                        </div>                    
                     </div>
-                    
                 </div>
             </div>
             `
@@ -785,7 +778,7 @@ function getView(){
     root.innerHTML = view.encabezadoClienteDocumento() 
                 + view.gridTempVenta() 
                 + view.btnCobrar() 
-                + view.modalListaPedidos()
+                + view.modalListaPedidos() + view.modaldetallepedido()
                 + view.modalBusquedaProductos() + view.modalCantidadProducto()
                 + view.modalBusquedaCliente() 
                 + view.modalCobro() 
@@ -862,7 +855,9 @@ async function iniciarVistaVentas(nit,nombre,direccion){
     });
 
     let btnListaPedidos = document.getElementById('btnListaPedidos');
-    btnListaPedidos.addEventListener('click',()=>{
+    btnListaPedidos.addEventListener('click',async ()=>{
+        let cmbTipoListaPedidos = document.getElementById('cmbTipoListaPedidos');
+        await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
         $('#ModalListaPedidos').modal('show');
     })
 
@@ -1007,8 +1002,6 @@ async function iniciarVistaVentas(nit,nombre,direccion){
      })
 };
 
-
-
 function fcnIniciarModalCantidadProductos(){
 
         
@@ -1145,7 +1138,41 @@ async function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
 };
 
 async function getDetallePedido(fecha,coddoc,correlativo){
-    funciones.Aviso(coddoc + ' detalle del pedido tomado con opciones para anularlos');
+    GlobalSelectedFecha = fecha;
+    $('#ModalDetallePedido').modal('show');
+    await api.cajaDetallePedido(fecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')  
+};
+
+function deleteProductoPedido(idRow,coddoc,correlativo,totalprecio,totalcosto){
+    let cmbTipoListaPedidos = document.getElementById('cmbTipoListaPedidos'); 
+    if(cmbTipoListaPedidos.value=='I'){
+        funciones.AvisoError('No se puede eliminar un item de un Pedido ya Facturado')
+    }else{
+
+        funciones.Confirmacion('¿Está seguro que desea Quitar este Producto en este Pedido?')
+        .then((value)=>{
+            if(value==true){
+
+                api.cajaQuitarRowPedido(idRow,coddoc,correlativo,totalprecio,totalcosto)
+                .then(async()=>{
+                
+                
+                    await api.cajaDetallePedido(GlobalSelectedFecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')
+                
+                  
+                    await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
+                
+                    funciones.Aviso('Item removido exitosamente !!')
+                })
+                .catch((error)=>{
+                    console.log(error)
+                    funciones.AvisoError('No se pudo remover el item')
+                })
+            }
+        })    
+
+    }
+    
 };
 
 //gestiona la apertura de la cantidad
@@ -1430,7 +1457,19 @@ async function fcnCargarGridTempVentas(idContenedor){
         const json = await response.json();
         let idcant = 0;
         let data = json.recordset.map((rows)=>{
-            if(rows.PMODIF==1){strClass='bg-danger text-white'}else{strClass=''};
+            switch (rows.PMODIF.toString()) {
+                case '0':
+                    strClass=''
+                    break;
+                case '1':
+                    strClass='bg-info text-white'
+                    break;
+                case '2':
+                    strClass='bg-danger text-white'
+                    break;
+
+            }
+            
             idcant = idcant + 1;
             return `<tr  id="${rows.ID.toString()}">
                         <td class="text-left">
@@ -1471,7 +1510,6 @@ async function fcnCargarGridTempVentas(idContenedor){
         tabla.innerHTML = 'No se logró cargar la lista...';
     }
 };
-
 
 async function fcnCambiarPrecio(id,precio,preciomin){
     document.getElementById('txtNuevoPrecio').value=precio;
