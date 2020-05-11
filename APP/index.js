@@ -129,6 +129,8 @@ socket.on('solicitudes preciodenegado', async function(msg){
     try {
       funciones.NotificacionPersistent('Precio Denegado', msg);
       funciones.AvisoError('Precio Denegado : ' + msg);
+      await fcnCargarGridTempVentas('tblGridTempVentas');
+      await fcnCargarTotal('txtTotalVenta','txtTotalVentaCobro');
       
     } catch (error) {
       
