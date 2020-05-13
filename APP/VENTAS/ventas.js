@@ -1281,6 +1281,36 @@ async function fcnBuscarCliente(idNit,idNombre,idDireccion){
     .then((response) => {
         const data = response.data;
         if (data.rowsAffected[0]==0){
+            funciones.GetDataNit(idNit,txtClienteNombre,txtClienteDireccion)
+            //funciones.GetDataNit(idNit,idNombre,idDireccion)
+            .then((json)=>{
+                console.log('resulta de json: ' + json);
+                if(json.resultado==true){
+
+                    document.getElementById('txtNombre').value = json.descripcion;
+                    document.getElementById('txtDireccion').value = json.direcciones.direccion;
+
+                }else{
+                    funciones.AvisoError('NIT no encontrado en SAT o en clientes de la empresa')
+                };
+
+            })
+            .catch(()=>{
+                $('#ModalNuevoCliente').modal('show');
+                document.getElementById('txtClienteNit').value = nit.value;
+                document.getElementById('txtNombre').value = '';
+                document.getElementById('txtDireccion').value = '';
+
+                document.getElementById('txtClienteNombre').focus();
+            })
+        }else{
+            data.recordset.map((rows)=>{
+                nombre.value = rows.NOMCLIENTE;
+                direccion.value = rows.DIRCLIENTE;
+            })
+        }
+        /*
+        if (data.rowsAffected[0]==0){
             funciones.AvisoError('No existe un cliente con este código')
             nit.value = '';
             nombre.value = '';
@@ -1292,7 +1322,7 @@ async function fcnBuscarCliente(idNit,idNombre,idDireccion){
                 direccion.value = rows.DIRCLIENTE;
             });
         }
-        
+        */
                 
     }, (error) => {
         console.log(error);
