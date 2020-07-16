@@ -65,15 +65,18 @@ async function getVentasDia(idcontenedor,idMes,idAnio){
             dataset.push(rows.TOTALVENTAS);
             //suma el total venta
             totalventa += Number(rows.TOTALVENTAS);
-            totalcosto +=Number(rows.TOTALCOSTO);
+            let costreal = 0; let utilreal =0;
+            if(Number(rows.TOTALCOSTODOL)==0){costreal=Number(rows.TOTALCOSTO)}else{costreal=Number(rows.TOTALCOSTODOL)}
+            utilreal = Number(rows.TOTALVENTAS) - costreal;
+            totalcosto +=costreal;
             diasprom += 1;
-            totalUtilidad += Number(rows.UTILIDAD);
+            totalUtilidad += utilreal;//Number(rows.UTILIDAD);
             str += `<tr>
                         <td>${rows.FECHA.replace('T00:00:00.000Z','')}</td>
-                        <td>${funciones.setMoneda(rows.TOTALCOSTO,'Q')}</td>
+                        <td>${funciones.setMoneda(costreal,'Q')}</td>
                         <td>${funciones.setMoneda(rows.TOTALVENTAS,'Q')}</td>
-                        <td>${funciones.setMoneda(rows.UTILIDAD,'Q')}</td>
-                        <td>${((rows.UTILIDAD/rows.TOTALCOSTO)*100).toFixed(2)} % </td>  
+                        <td>${funciones.setMoneda(utilreal,'Q')}</td>
+                        <td>${((utilreal/costreal*100).toFixed(2))} % </td>  
                         <td>
                             <button class="btn btn-icon btn-success btn-circle" onclick="getDataVentas('${rows.EMPNIT}','${rows.FECHA}');">
                                 <li class="fal fa-tag"></li>
@@ -146,17 +149,22 @@ async function getDataVentas(empnit,dia){
     .then((response) => {
         const data = response.data;        
         data.recordset.map((rows)=>{
+            let cost = 0; let util = 0;
+            //verifica si costodol está en cero, y pone totalcosto
+            if(Number(rows.COSTO2)==0){cost=Number(rows.COSTO)}else{cost=Number(rows.COSTO2)}
+            //calcula la utilidad
+            util = Number(rows.IMPORTE) - cost;
             str += `<tr>
                         <td>${rows.CODDOC}</td>
                         <td>${rows.CORRELATIVO}</td>                     
                         <td>${rows.CLIENTE}</td>
-                        <td>${funciones.setMoneda(rows.COSTO,'Q')}</td>
+                        <td>${funciones.setMoneda(cost,'Q')}</td>
                         <td>${funciones.setMoneda(rows.PRECIO,'Q')}</td>
                         <td>${funciones.setMoneda(rows.DESCUENTO,'Q')}</td>
                         <td>${funciones.setMoneda(rows.IMPORTE,'Q')}</td>
-                        <td>${funciones.setMoneda(rows.UTILIDAD,'Q')}
+                        <td>${funciones.setMoneda(util,'Q')}
                         <br>
-                            <small class="text-success">${((rows.UTILIDAD/rows.COSTO)*100).toFixed(2)} %</small>
+                            <small class="text-success">${((util/cost)*100).toFixed(2)} %</small>
                         </td>                        
                     </tr>`;
         })
