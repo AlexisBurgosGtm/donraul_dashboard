@@ -4,7 +4,7 @@ async function fcnIniciarVista(){
     let cmbEmpresas = document.getElementById('cmbEmpresas');
     let cmbMeses = document.getElementById('cmbMeses');
     let cmbAnio = document.getElementById('cmbAnio');
-    let btnCargar = document.getElementById('btnCargar');
+    //let btnCargar = document.getElementById('btnCargar');
 
     cmbMeses.innerHTML = funciones.ComboMeses();
     cmbAnio.innerHTML = funciones.ComboAnio();
@@ -12,31 +12,58 @@ async function fcnIniciarVista(){
     let f = new Date();
     cmbAnio.value = f.getFullYear().toString();
     cmbMeses.value = f.getMonth()+1;
+    
+    //EMPRESAS
+    cmbEmpresas.addEventListener('change',async()=>{
+        GlobalEmpnit = cmbEmpresas.value;
+        await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
+    });
+    //MES
+    cmbMeses.addEventListener('change',async()=>{
+        await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
+    });
+    //ANIO
+    cmbAnio.addEventListener('change',async()=>{
+        await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
+    });
 
     // LISTENERS
+    /**
     btnCargar.addEventListener('click',async()=>{
         await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
     })
+    */ 
 
     // INICIALES
     await getEmpresas();
     
-    await getVentasDia('tblVentas','cmbMeses','cmbAnio');
+    //inicialmente cargaba acá las ventas.. pero mejor voy a cargarlas luego de cargar las empresas
+    //await getVentasDia('tblVentas','cmbMeses','cmbAnio');
 };  
 
 
-async function getEmpresas(){
-    let str = ''; //`<option value=''>Todas...</option>`;
-    axios.get('/reports/empresas?token=' + GlobalToken)
-    .then((response) => {
-        const data = response.data;        
-        data.recordset.map((rows)=>{
-            str += `<option value=${rows.EMPRESA}>${rows.EMPRESA}</option>`;
-        })
-        document.getElementById('cmbEmpresas').innerHTML= str;
-    }, (error) => {
-        console.log(error);
-    });
+function getEmpresas(){
+
+        let str = ''; //`<option value=''>Todas...</option>`;
+    
+    
+        axios.get('/reports/empresas?token=' + GlobalToken)
+        .then(async(response) => {
+            const data = response.data;        
+            data.recordset.map((rows)=>{
+                str += `<option value=${rows.EMPNIT}>${rows.EMPRESA}</option>`;
+            })
+            let emp = document.getElementById('cmbEmpresas');
+            emp.innerHTML= str;
+            GlobalEmpnit = emp.value;
+            
+            await getVentasDia('tblVentas','cmbMeses','cmbAnio');
+
+        }, (error) => {
+            console.log(error);
+        });
+    
+    
 };
 
 async function getVentasDia(idcontenedor,idMes,idAnio){
@@ -57,7 +84,7 @@ async function getVentasDia(idcontenedor,idMes,idAnio){
     let labels = [];
     let dataset = [];
 
-    axios.get(`/reports/ventasmesdia?token=${GlobalToken}&mes=${mes}&anio=${anio}`)
+    axios.get(`/reports/ventasmesdia?token=${GlobalToken}&mes=${mes}&anio=${anio}&empnit=${GlobalEmpnit}`)
     .then((response) => {
         const data = response.data;        
         data.recordset.map((rows)=>{

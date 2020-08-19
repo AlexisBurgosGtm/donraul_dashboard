@@ -1,4 +1,61 @@
 <div class="row">
+  <div class="card col-12 shadow">
+    
+    <div class="row">
+      
+      <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+        <div class="form-group" id="empresasContainer">
+          <label>Empresa:</label>
+          <select id="cmbEmpresas" class="form-control">
+              <option value="">Todas...</option>                                      
+          </select>
+        </div>
+      </div>
+
+      <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-right">
+    
+        <div class="form-group">
+          <label>Mes y Año</label>
+          <div class="input-group">
+
+            <select class="form-control" id="cmbMeses">
+              <option value="10">Octubre</option>
+            </select>
+            <select class="form-control" id="cmbAnio">
+              <option value="2019">2019</option>
+              <option value="2020">2020</option>
+              <option value="2020">2021</option>
+              <option value="2020">2022</option>
+              <option value="2020">2023</option>
+              <option value="2020">2024</option>
+              <option value="2020">2025</option>
+            </select>
+
+            <!--
+            <div class="input-group-append">
+              <button class="btn btn-danger btn-md" id="btnCargar">
+                <i class="fal fa-download"></i>
+                Cargar</button>    
+            </div>  
+            -->
+          </div>
+        </div>                            
+    
+      </div>
+
+    </div>
+  </div>
+</div>
+      
+
+
+ 
+
+     
+
+<div class="row">
+  
+  <!-- PANEL DE RESUMENES -->
     <div id="panel-2" class="panel col-12">
         <div class="panel-hdr">
           <h2>
@@ -7,7 +64,7 @@
             <div class="panel-toolbar">
                 <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
                 <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"></button>
-                <button class="btn btn-panel" data-action="panel-close" data-toggle="tooltip" data-offset="0,10" data-original-title="Close"></button>
+                
             </div>
         </div>
         <div class="panel-container show">
@@ -71,6 +128,7 @@
 </div>
 
 <div class="row">
+  <!-- PANEL DE DETALLE -->
     <div id="panel-3" class="panel col-12">
         <div class="panel-hdr">
           <h2>
@@ -79,48 +137,11 @@
             <div class="panel-toolbar">
                 <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
                 <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"></button>
-                <button class="btn btn-panel" data-action="panel-close" data-toggle="tooltip" data-offset="0,10" data-original-title="Close"></button>
+                
             </div>
         </div>
         <div class="panel-container show">
             <div class="panel-content">
-       
-             
-                        <div class="row">
-      
-                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                                  <div class="row">
-                                      <div class="form-group" id="empresasContainer">
-                                        <label>Empresa:</label>
-                                        <select id="cmbEmpresas" class="form-control">
-                                            <option value="">Todas...</option>                                      
-                                        </select>
-                                      </div>
-                                  </div>
-                                </div>
-      
-                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-right">
-                                
-                                  <div class="form-group">
-                                    <label>Mes y Año</label>
-                                    <div class="input-group">
-                                      <select class="form-control" id="cmbMeses">
-                                        <option value="10">Octubre</option>
-                                      </select>
-                                      <select class="form-control" id="cmbAnio">
-                                        <option value="2019">2019</option>
-                                        <option value="2020">2020</option>
-                                      </select>
-                                      <div class="input-group-append">
-                                        <button class="btn btn-danger btn-md" id="btnCargar">Cargar</button>    
-                                      </div>  
-                                    </div>
-                                  </div>                            
-      
-                                </div>
-                 
-                        </div>                        
-                     
           
                           <div class="table table-responsive">
                             <table class="table table-striped table-hovered" id="tblListado">
