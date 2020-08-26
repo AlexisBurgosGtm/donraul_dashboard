@@ -131,7 +131,7 @@ let api = {
                                 </tr>
                             </thead>
                             <tbody>`
-        
+        let strC = '';
         
         axios.post(strApicall, {
             app:GlobalSistema,
@@ -142,12 +142,17 @@ let api = {
             const data = response.data.recordset;
             
             data.map((rows)=>{                   
+                if(Number(rows.COSTO)>Number(rows.DESCUENTO)){
+                    strC = '';
+                }else{
+                    strC = 'bg-danger text-white';
+                };
                     strdata = strdata + `
                             <tr>
                                 <td>
                                     ${rows.OBS}
                                 </td>
-                                <td>${rows.DESPROD}
+                                <td class="${strC}">${rows.DESPROD}
                                     <br>
                                     <small>${rows.CODMEDIDA} CANT: ${rows.CANTIDAD}</small>
                                 </td>
@@ -159,7 +164,7 @@ let api = {
                                     <b class="text-success">${funciones.setMoneda(rows.DESCUENTO,'Q')}</b>
                                     <br>
                                     Costo: <br>
-                                    <b class="text-success">${funciones.setMoneda(rows.COSTO,'Q')}</b>
+                                    <b class="text-white bg-danger">${funciones.setMoneda(rows.COSTO,'Q')}</b>
                                 </td>
                                 <td>
                                     <b>${funciones.setMoneda(rows.TOTALPRECIO,'Q')}</b>
