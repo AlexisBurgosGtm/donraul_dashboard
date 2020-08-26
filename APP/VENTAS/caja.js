@@ -12,7 +12,7 @@ function getView(){
                 </select>
             </div>
             <label id="lbListaPedidosTotal" class="oculto-impresion">0.00</label>
-            <table class="table table-responsive table-striped table-hover table-bordered oculto-impresion" id="tblListaPedidos">
+            <table class="table table-responsive table-striped table-hover table-bordered oculto-impresion col-12" id="tblListaPedidos">
                 
                                 
 
