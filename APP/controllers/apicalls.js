@@ -145,7 +145,7 @@ let api = {
                 
                 let strC = '';
                 let c = Number(rows.COSTO);
-                let pm = Number(rows.DESCUENTO);
+                let pm = Number(rows.PRECIO);
 
                 if(c < pm){
                     strC = 'bg-danger text-white';
