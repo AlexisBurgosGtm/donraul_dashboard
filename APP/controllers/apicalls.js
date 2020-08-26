@@ -142,10 +142,12 @@ let api = {
             const data = response.data.recordset;
             
             data.map((rows)=>{
+                
                 let strC = '';
                 let c = Number(rows.COSTO);
-                let pm = Number(rows.DESCUENTO);                   
-                if(c >= pm){
+                let pm = Number(rows.DESCUENTO);
+
+                if(c < pm){
                     strC = 'bg-danger text-white';
                 };
                     strdata = strdata + `
