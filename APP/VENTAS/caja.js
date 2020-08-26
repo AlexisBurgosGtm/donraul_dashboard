@@ -219,8 +219,17 @@ function deleteProductoPedido(idRow,coddoc,correlativo,totalprecio,totalcosto){
     
 };
 
-async function postAutorization(rowid,desprod,preciosolicitado){
-    funciones.Confirmacion('¿Está seguro que desea AUTORIZAR este precio?')
+async function postAutorization(rowid,desprod,preciosolicitado,costo){
+
+    let msn = '';
+    if(Number(costo)>Number(preciosolicitado)){
+        msn ='¿Está a punto de AUTORIZAR un precio MENOR AL COSTO, está seguro?';
+        funciones.hablar(msn);
+    }else{
+        msn ='¿Está seguro que desea AUTORIZAR este precio?';
+    };
+
+    funciones.Confirmacion(msn)
     .then(async(value)=>{
         if(value==true){
             api.cajaAutorizarPrecio(rowid)

@@ -151,7 +151,7 @@ let api = {
                     strC = 'bg-danger text-white';
                 };
                     strdata = strdata + `
-                            <tr>
+                            <tr class="border-bottom">
                                 <td>
                                     ${rows.OBS}
                                 </td>
@@ -174,7 +174,7 @@ let api = {
                                 </td>
                                 
                                 <td>
-                                    <button class="btn btn-info btn-md" onclick="postAutorization(${rows.ID},'${rows.DESPROD}',${rows.PRECIO})">
+                                    <button class="btn btn-info btn-md" onclick="postAutorization(${rows.ID},'${rows.DESPROD}',${rows.PRECIO}),${rows.COSTO})">
                                         <i class="fal fa-unlock"></i>    
                                         Autorizar
                                     </button>
