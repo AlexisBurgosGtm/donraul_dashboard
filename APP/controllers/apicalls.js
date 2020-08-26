@@ -147,7 +147,7 @@ let api = {
                 let c = Number(rows.COSTO);
                 let pm = Number(rows.PRECIO);
 
-                if(c < pm){
+                if(c > pm){
                     strC = 'bg-danger text-white';
                 };
                     strdata = strdata + `
