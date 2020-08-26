@@ -131,7 +131,7 @@ let api = {
                                 </tr>
                             </thead>
                             <tbody>`
-        let strC = '';
+        
         
         axios.post(strApicall, {
             app:GlobalSistema,
@@ -141,10 +141,11 @@ let api = {
         .then((response) => {
             const data = response.data.recordset;
             
-            data.map((rows)=>{                   
-                if(Number(rows.COSTO)>Number(rows.DESCUENTO)){
-                    strC = '';
-                }else{
+            data.map((rows)=>{
+                let strC = '';
+                let c = Number(rows.COSTO);
+                let pm = Number(rows.DESCUENTO);                   
+                if(c >= pm){
                     strC = 'bg-danger text-white';
                 };
                     strdata = strdata + `
