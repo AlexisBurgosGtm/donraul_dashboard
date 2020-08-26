@@ -157,6 +157,9 @@ let api = {
                                     <br>
                                     Mínimo: <br>
                                     <b class="text-success">${funciones.setMoneda(rows.DESCUENTO,'Q')}</b>
+                                    <br>
+                                    Costo: <br>
+                                    <b class="text-success">${funciones.setMoneda(rows.COSTO,'Q')}</b>
                                 </td>
                                 <td>
                                     <b>${funciones.setMoneda(rows.TOTALPRECIO,'Q')}</b>

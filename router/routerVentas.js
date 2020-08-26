@@ -124,14 +124,28 @@ router.put("/tempVentasRow", async(req,res)=>{
     
 });
 
-// ACTUALIZA el grid de temp ventas
-router.put("/tempVentasRowPrecio", async(req,res)=>{
+// ACTUALIZA el grid de temp ventas Y PIDE AUTORIZACION
+router.put("/tempVentasRowPrecioAutorizacion", async(req,res)=>{
     
     const {app,id,precio,totalprecio,exento,obs} = req.body;
     
     let qry = '';
     
     qry = `UPDATE ME_TEMP_VENTAS SET PRECIO=${precio},TOTALPRECIO=${totalprecio},EXENTO=${exento},PMODIF=1,OBS='${obs}' WHERE ID=${id}`
+    
+    
+    execute.Query(res,qry);
+    
+});
+
+// ACTUALIZA el grid de temp ventas Y PIDE AUTORIZACION
+router.put("/tempVentasRowPrecio", async(req,res)=>{
+    
+    const {app,id,precio,totalprecio,exento,obs} = req.body;
+    
+    let qry = '';
+    
+    qry = `UPDATE ME_TEMP_VENTAS SET PRECIO=${precio},TOTALPRECIO=${totalprecio},EXENTO=${exento},PMODIF=0,OBS='${obs}' WHERE ID=${id}`
     
     
     execute.Query(res,qry);

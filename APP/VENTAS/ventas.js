@@ -979,6 +979,7 @@ async function iniciarVistaVentas(nit,nombre,direccion){
 
     fcnIniciarModalCantidadProductos();
 
+    // MODAL EDICION PRECIO MINIMO
      let btnPrecioAceptar = document.getElementById('btnPrecioAceptar'); 
      let txtNuevoPrecio = document.getElementById('txtNuevoPrecio');
      let txtObsNuevoPrecio = document.getElementById('txtObsNuevoPrecio');
@@ -988,16 +989,20 @@ async function iniciarVistaVentas(nit,nombre,direccion){
         let PNuevo =Number(txtNuevoPrecio.value);
 
         
-         if(PNuevo < PMin){
-            funciones.AvisoError('No puede Vender a un precio menor al mínimo')
-         }else{
+        if(PNuevo < PMin){ //SI EL PRECIO ES MENOR AL MÍNIMO SOLICITA LA AUTORIZACIÓN, DE LO CONTRARIO SOLO ACTUALIZA EL PRECIO
+            //funciones.AvisoError('No puede Vender a un precio menor al mínimo')
+            //}else{
             if(txtObsNuevoPrecio.value==''){
                 funciones.AvisoError('Debe escribir una razón para solicitar el cambio de precios')
             }else{
-                fcnUpdateTempRowPrecio(GlobalSelectedId,txtNuevoPrecio.value,txtObsNuevoPrecio.value);
+                fcnUpdateTempRowPrecioAutorizacion(GlobalSelectedId,txtNuevoPrecio.value,txtObsNuevoPrecio.value);
                 $('#ModalPrecio').modal('hide');
-            }
-         }
+            };
+
+        }else{
+            fcnUpdateTempRowPrecio(GlobalSelectedId,txtNuevoPrecio.value,txtObsNuevoPrecio.value);
+            $('#ModalPrecio').modal('hide');
+        }
         
      })
 };
@@ -1048,6 +1053,7 @@ function fcnIniciarModalCantidadProductos(){
 };
 
 function iniciarModalCantidad(){
+  
     let total = document.getElementById('lbCalcTotal');
     total.innerText = "";
     let btnCalcAceptar = document.getElementById('btnCalcAceptar');
@@ -1811,6 +1817,66 @@ async function fcnUpdateTempRowPrecio(id,precio,obs){
                 let totalexento = Number(exento) * Number(cantidad);
                                 
                     axios.put('/ventas/tempVentasRowPrecio', {
+                        app: GlobalSistema,
+                        id:id,
+                        precio:precio,
+                        totalprecio:totalprecio,
+                        exento:totalexento,
+                        obs:obs
+                    })
+                    .then(async(re) => {
+                        const data2 = re.data;
+                        if (data2.rowsAffected[0]==0){
+                            funciones.AvisoError('No se logró actualizar el precio');
+                            reject();
+                        }else{
+                            socket.emit('solicitudes precio', `Precio cambiado a ${funciones.setMoneda(precio,'Q')} en producto ${prod}`)
+                            await fcnCargarGridTempVentas('tblGridTempVentas');
+                            await fcnCargarTotal('txtTotalVenta','txtTotalVentaCobro');
+                            resolve();
+                        }
+                    }, (error) => {
+                        console.log(error);
+                    });  
+            }, (error) => {
+                console.log(error);
+                reject();
+            });  
+    
+    //finaliza la promesa
+            
+        }, (error) => {
+            console.log(error);
+            reject();
+        });
+    
+};
+
+// actualiza el precio según el precio nuevo en el row seleccionado con autorización
+async function fcnUpdateTempRowPrecioAutorizacion(id,precio,obs){
+    
+    let costo = 0; let cantidad = 0; let equivale = 0; let exento = 0;
+    let prod ='';
+    return new Promise((resolve, reject) => {
+    //inicia la promesa    
+            axios.post('/ventas/tempVentasRow', {
+                id:id,
+                app: GlobalSistema
+            })
+            .then((response) => {
+                const data = response.data;
+                
+                data.recordset.map((rows)=>{
+                    cantidad = rows.CANTIDAD;
+                    equivale = rows.EQUIVALE;
+                    exento = rows.EXENTO;
+                    prod = rows.DESPROD;
+                })
+                
+                let totalprecio = Number(precio) * Number(cantidad);
+                let totalexento = Number(exento) * Number(cantidad);
+                                
+                    axios.put('/ventas/tempVentasRowPrecioAutorizacion', {
                         app: GlobalSistema,
                         id:id,
                         precio:precio,
