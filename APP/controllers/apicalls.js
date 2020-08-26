@@ -174,7 +174,7 @@ let api = {
                                 </td>
                                 
                                 <td>
-                                    <button class="btn btn-info btn-md" onclick="postAutorization(${rows.ID},'${rows.DESPROD}',${rows.PRECIO}),${rows.COSTO})">
+                                    <button class="btn btn-info btn-md" onclick="postAutorization(${rows.ID},'${rows.DESPROD}',${rows.PRECIO},${rows.COSTO})">
                                         <i class="fal fa-unlock"></i>    
                                         Autorizar
                                     </button>
