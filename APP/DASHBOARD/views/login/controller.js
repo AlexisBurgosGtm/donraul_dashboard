@@ -9,7 +9,7 @@ async function fcnLogin(idUser,idPass,idApp){
     let usuario = document.getElementById(idUser).value;
     let pass = document.getElementById(idPass).value;
     let App = document.getElementById(idApp).value;
-
+    document.getElementById('btnIniciar').innerHTML = GlobalLoader;
     axios.post('/usuarios/login', {
         usuario: usuario,
         pass: pass,
@@ -22,9 +22,11 @@ async function fcnLogin(idUser,idPass,idApp){
                 GlobalToken=rows.TOKEN;
                 GlobalUser = rows.USUARIO;
                 GlobalSistema = rows.SISTEMA;
+                GlobalCoddoc = rows.CODDOC;
                 fcnIniciar(App);
             }else{
-                funciones.AvisoError('Usuario y/o contraseña incorrectas')    
+                funciones.AvisoError('Usuario y/o contraseña incorrectas');    
+                document.getElementById('btnIniciar').innerHTML = `<i class="fal fa-unlock"></i>Iniciar`;
             }
         })
  

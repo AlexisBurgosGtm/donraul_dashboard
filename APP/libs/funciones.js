@@ -171,35 +171,6 @@ let funciones = {
       
           });
     },
-    loadViewOLD: (url, idContainer)=> {
-      return new Promise((resolve, reject) => {
-          
-          let contenedor = document.getElementById(idContainer);
-
-          var xhr = new XMLHttpRequest();
-          xhr.open('GET', url);
-          xhr.responseType = 'text';
-          xhr.onload = function(e) {
-    
-            if (this.status == 200) {
-                             
-              var view = xhr.response;
-              contenedor.innerHTML ='';
-              contenedor.innerHTML = view;
-              
-              resolve();
-    
-            } else {
-    
-              reject();
-    
-            }
-          }
-    
-          xhr.send();
-    
-        });
-    },
     hablar: function(msn){
         var utterance = new SpeechSynthesisUtterance(msn);
         return window.speechSynthesis.speak(utterance); 
@@ -395,52 +366,53 @@ let funciones = {
     },
     NotificacionPersistent : (titulo,msn)=>{
 
-    function InicializarServiceWorkerNotif(){
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () =>
-       navigator.serviceWorker.register('sw.js')
-        .then(registration => console.log('Service Worker registered'))
-        .catch(err => 'SW registration failed'));
-      };
-      
-      requestPermission();
-    }
-    
-    if ('Notification' in window) {};
-    
-    function requestPermission() {
-      if (!('Notification' in window)) {
-        alert('Notification API not supported!');
-        return;
-      }
-      
-      Notification.requestPermission(function (result) {
-        //$status.innerText = result;
-      });
-    }
-
-    InicializarServiceWorkerNotif();
-    
-    const options = {
-        body : titulo,
-        icon: "../favicon.png",
-        vibrate: [1,2,3],
-      }
-      //image: "../favicon.png",
-         if (!('Notification' in window) || !('ServiceWorkerRegistration' in window)) {
-          console.log('Persistent Notification API not supported!');
-          return;
+        function InicializarServiceWorkerNotif(){
+          if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () =>
+          navigator.serviceWorker.register('sw.js')
+            .then(registration => console.log('Service Worker registered'))
+            .catch(err => 'SW registration failed'));
+          };
+          
+          requestPermission();
         }
         
-        try {
-          navigator.serviceWorker.getRegistration()
-            .then(reg => 
-                    reg.showNotification(msn, options)
-                )
-            .catch(err => console.log('Service Worker registration error: ' + err));
-        } catch (err) {
-          console.log('Notification API error: ' + err);
+        if ('Notification' in window) {};
+        
+        function requestPermission() {
+          if (!('Notification' in window)) {
+            //alert('Notification API not supported!');
+            
+            return;
+          }
+          
+          Notification.requestPermission(function (result) {
+            //$status.innerText = result;
+          });
         }
+
+        InicializarServiceWorkerNotif();
+        
+        const options = {
+            body : titulo,
+            icon: "../favicon.png",
+            vibrate: [1,2,3],
+          }
+          //image: "../favicon.png",
+            if (!('Notification' in window) || !('ServiceWorkerRegistration' in window)) {
+              console.log('Persistent Notification API not supported!');
+              return;
+            }
+            
+            try {
+              navigator.serviceWorker.getRegistration()
+                .then(reg => 
+                        reg.showNotification(msn, options)
+                    )
+                .catch(err => console.log('Service Worker registration error: ' + err));
+            } catch (err) {
+              console.log('Notification API error: ' + err);
+            }
       
     },
     ObtenerUbicacion: (idlat,idlong)=>{

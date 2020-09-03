@@ -84,9 +84,7 @@ function getView(){
                 <div class="panel-hdr">
                     <h2 id="txtTotalVenta" class="text-danger"></h2>
                     <div class="panel-toolbar">
-                        <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
-                        
-                       
+                        <button class="btn btn-warning" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen">Ampliar</button>
                     </div>
                 </div>
                 <div class="panel-container show">
@@ -127,6 +125,264 @@ function getView(){
                 
                     </div>
                 </div>
+
+                <!-- modal de busqueda de productos -->
+                <div class="modal fade" id="ModalBusqueda" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-right" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <label class="modal-title text-danger h3" id="">Resultados de la Búsqueda</label>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+                            <table class="table table-responsive table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <td>Producto</td>
+                                        <td>Precio</td>                         
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblResultadoBusqueda">
+                                
+
+                                </tbody>
+                            </table>
+                            </div>
+
+                        
+                        </div>
+                    </div>
+                </div>
+                <!-- --------------- -->
+
+                <!-- modal cantidad producto buscado -->
+                <div class="modal fade" id="ModalCantidadProducto" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-right" role="document">
+                        <div class="modal-content">
+                            <br><br><br><br><br>
+                            <div class="modal-header">
+                                <label class="modal-title" id="txtDesProducto">Azucar don Justo Cabal Kilo</label>
+                            </div>
+                            <div class="modal-body" align="right">
+                                <div class="col-8">
+                                    <div class="row">
+                                        <b id="txtCodMedida">UNIDAD</b>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <div class="row">
+                                            <div class="input-group">
+                                    
+                                                <div class="input-group-prepend">
+                                                    <button class="btn btn-md btn-icon btn-round btn-info" id="btnCantidadDown">
+                                                        -
+                                                    </button>
+                                                </div>
+                                    
+                                                <input type="number" class="text-center form-control" id="txtCantidad" value="1">    
+                                    
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-md btn-icon btn-round btn-info" id="btnCantidadUp">
+                                                        +
+                                                    </button>    
+                                                </div>
+                                            </div>                            
+                                        </div>                              
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label>Precio: </label>
+                                        <label class="text-success" id="txtPrecioProducto">Q500</label>
+                                        <br>
+                                        <label>Subtotal:</label>
+                                        <label class="text-danger" id="txtSubTotal">Q500</label>
+                                    </div>
+
+                                    <br>
+                                    <div class="">
+                                        <button type="button" class="btn btn-secondary btn-round" data-dismiss="modal" id="btnCancelarModalProducto">
+                                            <i class="now-ui-icons ui-1_simple-remove"></i>Cancelar
+                                        </button>
+                                        <button type="button" class="btn btn-primary btn-round" data-dismiss="modal" id="btnAgregarProducto">
+                                            <i class="now-ui-icons ui-1_simple-add"></i>Agregar
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- --------------- -->
+
+                <!-- modal editar precio -->
+                <div class="modal fade" id="ModalPrecio" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <label class="modal-title text-danger h3" id="">Cambio de Precio</label>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="row">
+                                    <div class="col-2 text-right" >
+                                        <h1 class="fw-700">Q</h1>
+                                    </div>
+                                    <div class="col-5 text-left">
+                                        <input type="number" class="form-control" id="txtNuevoPrecio">
+                                    </div>
+                                    <div class="col-5 text-right">
+                                        <h1 class="fw-700 text-danger" id="lbPrecioMinimo">Q 0.00</h1>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <br>
+                                    <br>
+                                </div>
+
+                                <div class="row">
+                                    <div class="form-group col-8">
+                                        <label>Explique el motivo del cambio de precios:</label>
+                                        <textarea rows="3" cols="80" class="form-control" id="txtObsNuevoPrecio" placeholder="Escriba el motivo..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <br>
+                                    <br>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-6">
+                                        <button class="btn btn-outline-danger btn-lg btn-pills" data-dismiss="modal">
+                                            <i class="fal fa-times"></i>
+                                            Cancelar
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="col-6">
+                                        <button class="btn btn-outline-success btn-lg btn-pills" id="btnPrecioAceptar">
+                                            <i class="fal fa-angle-right"></i>    
+                                            Solicitar
+                                        </button>
+                                    </div>
+                                </div>
+                            
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <!-- ------------------  -->
+                
+                <!-- modal para la calculadora edita cantidad -->
+                <div class="modal fade" id="ModalCantidad" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <label class="modal-title text-danger h3" id="">Nueva Cantidad</label>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true"><i class="fal fa-times"></i></span>
+                                </button>
+                            </div>
+
+                            <div class="modal-body">
+
+                                <div class="row">
+                                    <div class="col-2">
+                                        <h1 class="text-danger fw-700">Cant:</h1>
+                                    </div>
+                                    <div class="col-8 text-center">
+                                        <h1 class="text-danger fw-700" id="lbCalcTotal">0</h1>
+                                    </div>
+                                    <div class="col-2"></div>
+                                </div>
+                                
+                                <br>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button class="btn btn-xl btn-circle btn-info" id="btnCalc1">1</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-xl btn-circle btn-info" id="btnCalc2">2</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-xl btn-circle btn-info" id="btnCalc3">3</button>
+                                    </div>
+                                </div>
+                                
+                                <br>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button class="btn btn-xl btn-circle btn-info" id="btnCalc4">4</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-xl btn-circle btn-info" id="btnCalc5">5</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-xl btn-circle btn-info" id="btnCalc6">6</button>
+                                    </div>
+                                </div>
+                                
+                                <br>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button class="btn btn-xl btn-circle btn-info" id="btnCalc7">7</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-xl btn-circle btn-info" id="btnCalc8">8</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-xl btn-circle btn-info" id="btnCalc9">9</button>
+                                    </div>
+                                </div>
+                                <br>
+                                <div class="row">
+                                    <div class="col-4">
+                                
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-xl btn-circle btn-info" id="btnCalc0">0</button>
+                                    </div>
+                                    <div class="col-4">
+                                
+                                    </div>
+                                </div>
+
+                                <br><br><br>
+
+                                <div class="row">
+                                    <div class="col-4">
+                                        <button class="btn btn-danger btn-lg" data-dismiss="modal">Cancelar</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-primary btn-lg" id="btnCalcLimpiar">Limpiar</button>
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-success btn-lg" data-dismiss="modal" id="btnCalcAceptar">Aceptar</button>
+                                    </div>
+                                </div>
+                            
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <!-- ------------------  -->
+
             </div>
         </div>  
             `
@@ -136,7 +392,7 @@ function getView(){
             <div id="fixed-btn3">
                 <button class="btn btn-outline-dark btn-pills waves-effect waves-themed" id="btnListaPedidos">
                     <i class="fal fa-list"></i>
-                    LISTA DE PEDIDOS
+                    LISTA
                 </button>
             </div>
             <div id="fixed-btn2">
@@ -779,13 +1035,13 @@ function getView(){
                 + view.gridTempVenta() 
                 + view.btnCobrar() 
                 + view.modalListaPedidos() + view.modaldetallepedido()
-                + view.modalBusquedaProductos() + view.modalCantidadProducto()
+                //+ view.modalBusquedaProductos() + view.modalCantidadProducto()
                 + view.modalBusquedaCliente() 
                 + view.modalCobro() 
                 + view.modalNuevoCliente() 
                 + view.modalTerminar() 
-                + view.modalCantidadCalculadora()
-                + view.modalCantidadCambioPrecio();
+                //+ view.modalCantidadCalculadora()
+                //+ view.modalCantidadCambioPrecio();
 
 };
 
@@ -1112,7 +1368,8 @@ async function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
             if(Number(rows.EXISTENCIA<=0)){strC='bg-danger text-white'}else{strC='bg-success text-white'};
             let totalexento = 0;
             if (rows.EXENTO==1){totalexento=Number(rows.PRECIO)}
-            str += `<tr id="${rows.CODPROD}">
+            str += `<tr id="${rows.CODPROD}" class="border-bottom"
+             onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${rows.PRECIO},${totalexento},${rows.DESCUENTO});">
             <td>
                 ${funciones.quitarCaracteres(rows.DESPROD,'"'," pulg",true)}
                 <br>
@@ -1126,15 +1383,15 @@ async function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
                 <small class="${strC}">E:${funciones.setMoneda(exist,'')}</small>
             </td>
             
-            <td>
-                <button class="btn btn-sm btn-success btn-circle text-white" 
-                onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${rows.PRECIO},${totalexento},${rows.DESCUENTO});">
+        </tr>`
+        })
+        /*
+        <td>
+                <button class="btn btn-sm btn-success btn-circle text-white" >
                     +
                 </button>
             <td>
-            
-        </tr>`
-        })
+        */
         tabla.innerHTML= str;
         
     }, (error) => {
@@ -1144,6 +1401,7 @@ async function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
 };
 
 async function getDetallePedido(fecha,coddoc,correlativo){
+    console.log('obteniendo el detalle del pedido ' + coddoc + correlativo)
     GlobalSelectedFecha = fecha;
     $('#ModalDetallePedido').modal('show');
     await api.cajaDetallePedido(fecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')  
@@ -1443,42 +1701,49 @@ async function fcnGuardarNuevoCliente(form){
 
 };
 
-async function fcnEliminarItem(id){
-    
-    try {        
-            var data =JSON.stringify({
-                id:id
-            });
+function fcnEliminarItem(id){
+    funciones.Confirmacion('¿Está seguro que desea Quitar este item?')
+    .then(async(value)=>{
+        if(value==true){
 
-            var peticion = new Request('/ventas/tempventas', {
-                method: 'DELETE',
-                headers: new Headers({
-                   'Content-Type': 'application/json'
-                }),
-                body: data
-              });
-        
-              await fetch(peticion)
-              
-              .then(async function(res) {
-                console.log('Estado: ', res.status);
-                if (res.status==200)
-                {
-                    console.log(id.toString());
-                    document.getElementById(id.toString()).remove();
-                    //await fcnCargarGridTempVentas('tblGridTempVentas');
-                    await fcnCargarTotal('txtTotalVenta','txtTotalVentaCobro');
-                }
-              })
-              .catch(
-                  ()=>{
-                    funciones.AvisoError('No se pudo remover este producto a la venta actual');
-                  }
-              )
+            try {        
+                var data =JSON.stringify({
+                    id:id
+                });
     
-        } catch (error) {
+                var peticion = new Request('/ventas/tempventas', {
+                    method: 'DELETE',
+                    headers: new Headers({
+                       'Content-Type': 'application/json'
+                    }),
+                    body: data
+                  });
+            
+                  await fetch(peticion)
+                  
+                  .then(async function(res) {
+                    console.log('Estado: ', res.status);
+                    if (res.status==200)
+                    {
+                        console.log(id.toString());
+                        document.getElementById(id.toString()).remove();
+                        //await fcnCargarGridTempVentas('tblGridTempVentas');
+                        await fcnCargarTotal('txtTotalVenta','txtTotalVentaCobro');
+                    }
+                  })
+                  .catch(
+                      ()=>{
+                        funciones.AvisoError('No se pudo remover este producto a la venta actual');
+                      }
+                  )
+        
+            } catch (error) {
+    
+            }
 
         }
+    })
+        
 };
 
 async function fcnCargarGridTempVentas(idContenedor){

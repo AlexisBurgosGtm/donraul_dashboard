@@ -66,3 +66,4 @@ let GlobalSelectedCorrelativo = '';
 
 let GlobalSelectedApp = '';
 
+//.replace(/(\r\n|\n|\r)/gm, "")  reemplaza el botón enter o salto de línea

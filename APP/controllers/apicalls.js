@@ -82,14 +82,16 @@ let api = {
                                     <br>
                                     <small>${rows.DIRCLIE + ',' + rows.DESMUNI}</small>
                                     <br>
-                                    <small class="text-white bg-secondary">${rows.OBS}</small>
+                                    <small class="text-white bg-secondary">
+                                        ${funciones.quitarCaracteres(rows.OBS,'"'," pulg",true)}
+                                    </small>
                                 </td>
                                 <td>
                                     ${funciones.setMoneda(rows.IMPORTE,'Q')}
                                 </td>
                                 
                                 <td>
-                                    <button class="btn btn-info btn-sm btn-circle" onclick="getDetallePedido('${f}','${rows.CODDOC}','${rows.CORRELATIVO}','${rows.NITCLIE}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.DIRENTREGA}','${rows.OBS}','${rows.FECHAENTREGA.toString().replace('T00:00:00.000Z','')}')">
+                                    <button class="btn btn-info btn-sm btn-circle" onclick="getDetallePedido('${f}','${rows.CODDOC}','${rows.CORRELATIVO}','${rows.NITCLIE}','${rows.NOMCLIE}','${rows.DIRCLIE}','${rows.DIRENTREGA.replace(/(\r\n|\n|\r)/gm, "")}','${funciones.quitarCaracteres(rows.OBS,'"'," pulg",true)}','${rows.FECHAENTREGA.toString().replace('T00:00:00.000Z','')}')">
                                         +
                                     </button>
                                 </td>

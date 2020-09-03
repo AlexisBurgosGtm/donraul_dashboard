@@ -61,7 +61,7 @@ if ('Notification' in window) {};
 
 function requestPermission() {
   if (!('Notification' in window)) {
-    alert('Notification API not supported!');
+    //alert('Notification API not supported!');
     return;
   }
   
