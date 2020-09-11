@@ -236,7 +236,8 @@ async function getComparativaDias(){
     let f = new Date();
     
     let anio = document.getElementById('cmbAnio').value;
-    let dia = f.getDay();
+    let dia = f.getDate();
+
     console.log('comparando dia ' + dia)
        
     container.innerHTML = GlobalLoader;
