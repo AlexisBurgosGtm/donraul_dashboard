@@ -30,6 +30,7 @@ FROM            Marcas RIGHT OUTER JOIN
 	execute.Query(res,qr);
 
 });
+
 // OBTIENE EL INVENTARIO DE UN SOLO PRODUCTO
 router.get("/inventarioproducto", async(req,res)=>{
   
@@ -154,6 +155,22 @@ router.get("/ventasmesdia", async(req,res)=>{
 	execute.Query(res,qr);
 
 });
+
+// GRAFICA DE COMPARATIVA DE DIAS
+router.get("/graficacomparativadias", async(req,res)=>{
+  
+  const {token,anio,dia,empnit} = req.query;
+ 
+  let qr = `SELECT EMPNIT, MES, SUM(IMPORTE) AS TOTALVENTAS, DATEPART(DAY, FECHA) AS DIA
+FROM            dbo.ISC_RPT_DOCUMENTOS
+  GROUP BY EMPNIT, MES, ANIO, DATEPART(DAY, FECHA)
+  HAVING        (EMPNIT = '${empnit}') AND (ANIO = ${anio}) AND (DATEPART(DAY, FECHA) = ${dia})
+  ORDER BY MES`
+
+	execute.Query(res,qr);
+
+});
+
 // VENTAS DEL DIA
 router.get("/ventasdia", async(req,res)=>{
   

@@ -24,20 +24,18 @@
             <select class="form-control" id="cmbAnio">
               <option value="2019">2019</option>
               <option value="2020">2020</option>
-              <option value="2020">2021</option>
-              <option value="2020">2022</option>
-              <option value="2020">2023</option>
-              <option value="2020">2024</option>
-              <option value="2020">2025</option>
+              <option value="2021">2021</option>
+              <option value="2022">2022</option>
+              <option value="2023">2023</option>
+              <option value="2024">2024</option>
+              <option value="2025">2025</option>
+              <option value="2026">2026</option>
+              <option value="2027">2027</option>
+              <option value="2028">2028</option>
+              <option value="2029">2029</option>
+              <option value="2030">2030</option>
             </select>
 
-            <!--
-            <div class="input-group-append">
-              <button class="btn btn-danger btn-md" id="btnCargar">
-                <i class="fal fa-download"></i>
-                Cargar</button>    
-            </div>  
-            -->
           </div>
         </div>                            
     
@@ -47,12 +45,6 @@
   </div>
 </div>
       
-
-
- 
-
-     
-
 <div class="row">
   
   <!-- PANEL DE RESUMENES -->
@@ -175,7 +167,6 @@
             <div class="panel-toolbar">
                 <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
                 <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"></button>
-                <button class="btn btn-panel" data-action="panel-close" data-toggle="tooltip" data-offset="0,10" data-original-title="Close"></button>
             </div>
         </div>
         <div class="panel-container show">
@@ -185,6 +176,25 @@
         </div>
     </div>  
 </div>
+
+<div class="row">
+  <div id="panel-5" class="panel col-12">
+      <div class="panel-hdr">
+        <h2>Comparativa días anteriores por Mes</h2>
+          <div class="panel-toolbar">
+              <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
+              <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"></button>
+          </div>
+      </div>
+      <div class="panel-container show">
+          <div class="panel-content">
+              <canvas id="barChart2"></canvas>
+          </div>
+      </div>
+  </div>  
+</div>
+
+
         <!-- HODAL VENTAS POR DOCUMENTO-->
         <div class="modal fade" id="modalDatosVenta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog modal-lg" role="document">
@@ -281,7 +291,7 @@
 
       
           </div>
-    </div>
+        </div>
 
 
      

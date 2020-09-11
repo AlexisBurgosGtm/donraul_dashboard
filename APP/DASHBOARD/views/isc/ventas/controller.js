@@ -4,7 +4,6 @@ async function fcnIniciarVista(){
     let cmbEmpresas = document.getElementById('cmbEmpresas');
     let cmbMeses = document.getElementById('cmbMeses');
     let cmbAnio = document.getElementById('cmbAnio');
-    //let btnCargar = document.getElementById('btnCargar');
 
     cmbMeses.innerHTML = funciones.ComboMeses();
     cmbAnio.innerHTML = funciones.ComboAnio();
@@ -17,36 +16,31 @@ async function fcnIniciarVista(){
     cmbEmpresas.addEventListener('change',async()=>{
         GlobalEmpnit = cmbEmpresas.value;
         await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
+        await getComparativaDias();
     });
     //MES
     cmbMeses.addEventListener('change',async()=>{
         await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
     });
+    
     //ANIO
     cmbAnio.addEventListener('change',async()=>{
         await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
+        await getComparativaDias();
     });
-
-    // LISTENERS
-    /**
-    btnCargar.addEventListener('click',async()=>{
-        await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
-    })
-    */ 
 
     // INICIALES
     await getEmpresas();
     
-    //inicialmente cargaba acá las ventas.. pero mejor voy a cargarlas luego de cargar las empresas
-    //await getVentasDia('tblVentas','cmbMeses','cmbAnio');
+
+    
 };  
 
 
 function getEmpresas(){
 
         let str = ''; //`<option value=''>Todas...</option>`;
-    
-    
+        
         axios.get('/reports/empresas?token=' + GlobalToken)
         .then(async(response) => {
             const data = response.data;        
@@ -58,6 +52,7 @@ function getEmpresas(){
             GlobalEmpnit = emp.value;
             
             await getVentasDia('tblVentas','cmbMeses','cmbAnio');
+            await getComparativaDias();
 
         }, (error) => {
             console.log(error);
@@ -232,4 +227,74 @@ async function getDataProductos(empnit,dia,mes,anio){
         container.innerHTML = `<h5 class="text-danger">Error al cargar datos.. ${error}</h5>`
     });
     
+};
+
+async function getComparativaDias(){
+
+    let container = document.getElementById('barChart2');
+    let totalventa = 0;
+    let f = new Date();
+    
+    let anio = document.getElementById('cmbAnio').value;
+    let dia = f.getDay();
+    console.log('comparando dia ' + dia)
+       
+    container.innerHTML = GlobalLoader;
+    
+    //para la grafica
+    let labels = [];
+    let dataset = [];
+
+    
+    axios.get(`/reports/graficacomparativadias?token=${GlobalToken}&anio=${anio}&empnit=${GlobalEmpnit}&dia=${dia}`)
+    .then((response) => {
+        const data = response.data;        
+        data.recordset.map((rows)=>{
+            labels.push(rows.MES);
+            dataset.push(rows.TOTALVENTAS);
+            
+            //suma el total venta
+            totalventa += Number(rows.TOTALVENTAS);
+            
+        })
+      
+    // CARGANDO DATOS DE LA GRAFICA
+    var datagraf = {
+            labels: labels,
+            datasets: [{
+              label: 'Q',
+              data: dataset,
+              backgroundColor: 'rgba(54, 162, 235, 0.2)',
+              borderColor: 'rgba(54, 162, 235, 1)',
+              borderWidth: 1,
+              fill: false
+            }]
+          };
+
+    var options = {
+            scales: {
+              yAxes: [{
+                ticks: {
+                  beginAtZero: true
+                }
+              }]
+            },
+            legend: {
+              display: false
+            },
+            elements: {
+              point: {
+                radius: 0
+              }
+            }
+    };
+
+    var barChartCanvas = $("#barChart2").get(0).getContext("2d");
+    var barChart = new Chart(barChartCanvas, {type: 'bar', data: datagraf, options: options});
+
+    }, (error) => {
+        //console.log(error);
+        container.innerHTML = `<h1 class="text-danger">Error al cargar datos.. ${error}</h1>`
+    });
+
 };
