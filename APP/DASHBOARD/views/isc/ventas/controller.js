@@ -170,7 +170,8 @@ async function getTotalCompras(empnit,idmes,idanio){
           document.getElementById('txtTotalCompras').innerText = funciones.setMoneda(rows.TOTALVENTA,'Q ')
       })
   }, (error) => {
-      console.log(error);
+          console.log(error);
+          document.getElementById('txtTotalCompras').innerText = "Q 0.00";
   });
 };
 

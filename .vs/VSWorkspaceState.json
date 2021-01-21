@@ -1,0 +1,12 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\APP",
+    "\\APP\\DASHBOARD",
+    "\\APP\\DASHBOARD\\views",
+    "\\APP\\DASHBOARD\\views\\isc",
+    "\\APP\\DASHBOARD\\views\\isc\\ventas"
+  ],
+  "SelectedNode": "\\APP\\DASHBOARD\\views\\isc\\ventas\\controller.js",
+  "PreviewInSolutionExplorer": false
+}
