@@ -140,6 +140,20 @@ router.get("/empresas", async(req,res)=>{
 // VENTAS
 //////////////////////////////
 
+// COMPRAS TOTALES MES
+router.get("/totalcompras", async(req,res)=>{
+  
+  const {anio,mes,empnit} = req.query;
+ 
+  let qr = `SELECT        SUM(TOTALCOSTO) AS TOTALCOSTO, SUM(TOTALVENTA) AS TOTALVENTA
+  FROM            ISC_RPT_DOCUMENTOS
+  WHERE        (TIPODOC = 'COM') AND (EMPNIT = '${empnit}') AND (MES = ${mes}) AND (ANIO = ${anio})`
+
+	execute.Query(res,qr);
+
+});
+
+
 // VENTAS POR DIA
 router.get("/ventasmesdia", async(req,res)=>{
   

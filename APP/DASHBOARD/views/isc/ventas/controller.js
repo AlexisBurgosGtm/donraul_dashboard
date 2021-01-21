@@ -52,6 +52,7 @@ function getEmpresas(){
             GlobalEmpnit = emp.value;
             
             await getVentasDia('tblVentas','cmbMeses','cmbAnio');
+            await getTotalCompras(GlobalEmpnit,'cmbMeses','cmbAnio');
             await getComparativaDias();
 
         }, (error) => {
@@ -155,6 +156,22 @@ async function getVentasDia(idcontenedor,idMes,idAnio){
         //console.log(error);
         container.innerHTML = `<h1 class="text-danger">Error al cargar datos.. ${error}</h1>`
     });
+};
+
+async function getTotalCompras(empnit,idmes,idanio){
+          
+  let mes = document.getElementById(idmes).value;
+  let anio = document.getElementById(idanio).value;
+
+  axios.get(`/reports/totalcompras?empnit=${empnit}&mes=${mes}&anio=${anio}`)
+  .then(async(response) => {
+      const data = response.data;        
+      data.recordset.map((rows)=>{
+          document.getElementById('txtTotalCompras').innerText = funciones.setMoneda(rows.TOTALVENTA,'Q ')
+      })
+  }, (error) => {
+      console.log(error);
+  });
 };
 
 async function getDataVentas(empnit,dia){
