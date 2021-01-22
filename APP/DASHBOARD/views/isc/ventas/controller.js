@@ -15,17 +15,21 @@ async function fcnIniciarVista(){
     //EMPRESAS
     cmbEmpresas.addEventListener('change',async()=>{
         GlobalEmpnit = cmbEmpresas.value;
-        await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
+        await getVentasDia('tblVentas', 'cmbMeses', 'cmbAnio');    
+        await getTotalCompras(GlobalEmpnit, 'cmbMeses', 'cmbAnio');
         await getComparativaDias();
     });
     //MES
     cmbMeses.addEventListener('change',async()=>{
-        await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
+        await getVentasDia('tblVentas', 'cmbMeses', 'cmbAnio');
+        await getTotalCompras(GlobalEmpnit, 'cmbMeses', 'cmbAnio');
+        await getComparativaDias();
     });
     
     //ANIO
     cmbAnio.addEventListener('change',async()=>{
-        await getVentasDia('tblVentas','cmbMeses','cmbAnio');    
+        await getVentasDia('tblVentas', 'cmbMeses', 'cmbAnio');
+        await getTotalCompras(GlobalEmpnit, 'cmbMeses', 'cmbAnio');
         await getComparativaDias();
     });
 
@@ -163,6 +167,8 @@ async function getTotalCompras(empnit,idmes,idanio){
   let mes = document.getElementById(idmes).value;
   let anio = document.getElementById(idanio).value;
 
+  document.getElementById('txtTotalCompras').innerText = "Q 0";
+
   axios.get(`/reports/totalcompras?empnit=${empnit}&mes=${mes}&anio=${anio}`)
   .then(async(response) => {
       const data = response.data;        
@@ -171,7 +177,7 @@ async function getTotalCompras(empnit,idmes,idanio){
       })
   }, (error) => {
           console.log(error);
-          document.getElementById('txtTotalCompras').innerText = "Q 0.00";
+          document.getElementById('txtTotalCompras').innerText = "Q 0";
   });
 };
 
