@@ -7,10 +7,16 @@ function getView(){
                 <div class="card col-12">
                     <div class="card-header">
                         <h3>Lista de productos Agotados</h3>
+                        <hr class="solid">
+                        
                     </div>
                     <div class="card-body">
+                        <div class="form-group">
+                            <label>Buscar</label>
+                            <input type="text" class="form-control border-primary shadow col-4" id="txtBuscar" placeholder="Escriba para buscar...">
+                        </div>
                         <div class="table-responsive">
-                            <table class="table table-responsive table-striped table-hover">
+                            <table class="table table-responsive table-striped table-hover" id="tblProductos">
                                 <thead class="bg-trans-gradient text-white">
                                     <tr>
                                         <td>CODIGO</td>
@@ -40,6 +46,11 @@ async function addListeners(){
 
     await gettblAgotados('tblAgotados');
 
+    let txtBuscar = document.getElementById('txtBuscar')
+    txtBuscar.addEventListener('keyup',()=>{
+        funciones.FiltrarTabla('tblProductos','txtBuscar');
+    })
+    
 }
 
 
