@@ -58,7 +58,7 @@ function gettblAgotados(idcontainer){
                         <td>${rows.DESPROD}</td>
                         <td>${funciones.setMoneda(rows.COSTO,'Q')}</td>
                         <td>${rows.EXISTENCIA}</td>
-                        <td>${rows.LASTSALE}</td>
+                        <td>${funciones.convertDate(rows.LASTSALE)}</td>
                     </tr>`;
         })
         container.innerHTML = str;
@@ -67,4 +67,9 @@ function gettblAgotados(idcontainer){
         container.innerHTML ='No se pudo cargar ...'
     });
     
+}
+
+function fcnIniciarVista(){
+    getView();
+    addListeners();
 }

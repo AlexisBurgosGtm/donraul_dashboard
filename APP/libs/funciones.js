@@ -887,7 +887,10 @@ let funciones = {
           {CODDEPTO:'021',DESDEPTO:'JALAPA'},
           {CODDEPTO:'022',DESDEPTO:'JUTIAPA'}
           
-      ]}
+      ]},
+      convertDate:(fecha)=>{
+        return fecha.replace('T00:00:00.000Z','')
+      }
 };
 
 //export default funciones;

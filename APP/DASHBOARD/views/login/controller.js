@@ -46,6 +46,7 @@ async function fcnIniciar(application){
             btnMenuCortes.style = "visibility:visible";
             btnMenuCortes.style = "visibility:visible";
             btnMenuMapa.style = "visibility:visible";
+            btnMenuAgotados.style = "visibility:visible";
         
             classNavegar.dashventas();
             
