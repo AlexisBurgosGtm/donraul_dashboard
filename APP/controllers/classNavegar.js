@@ -8,6 +8,12 @@ let classNavegar = {
             })
         })
     },
+    agotados: async()=>{
+            funciones.loadScript('./DASHBOARD/views/agotados.js','root')
+            .then(()=>{
+                fcnIniciarVista();
+            })
+    },
     inventarios: async()=>{
         switch (GlobalSistema) {
             case "ISC":

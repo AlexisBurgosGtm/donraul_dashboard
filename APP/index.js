@@ -8,12 +8,14 @@ let btnMenuVentas = document.getElementById('btnMenuVentas');
 let btnMenuProductos = document.getElementById('btnMenuProductos');
 let btnMenuCortes = document.getElementById('btnMenuCortes');
 let btnMapa = document.getElementById('btnMenuMapa');
+let btnMenuAgotados = document.getElementById('btnMenuAgotados');
 
 btnMenuInventarios.style = "visibility:hidden";
 btnMenuVentas.style = "visibility:hidden";
 btnMenuProductos.style = "visibility:hidden";
 btnMenuCortes.style = "visibility:hidden";
 btnMenuMapa.style = "visibility:hidden";
+btnMenuAgotados.style = "visibility:hidden";
 
 function InicializarBotonesMenu(){
 
@@ -42,6 +44,10 @@ function InicializarBotonesMenu(){
           // LISTENER DE MAPAS
           btnMenuMapa.addEventListener('click',()=>{
             classNavegar.maparuta();
+          })
+
+          btnMenuAgotados.addEventListener('click',()=>{
+            classNavegar.agotados();
           })
                             
 }
