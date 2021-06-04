@@ -212,7 +212,7 @@ async function getDataVentas(empnit,dia){
             if(Number(rows.COSTO2)==0){cost=Number(rows.COSTO)}else{cost=Number(rows.COSTO2)}
             //calcula la utilidad
             util = Number(rows.IMPORTE) - cost;
-            str += `<tr ondblclick("getDetalleFactura('${rows.FELUDDI}')")>
+            str += `<tr ondblclick="getDetalleFactura('${rows.FELUDDI}')">
                         <td>${rows.CODDOC}</td>
                         <td>${rows.CORRELATIVO}</td>                     
                         <td>${rows.CLIENTE}</td>
