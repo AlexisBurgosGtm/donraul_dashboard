@@ -1,3 +1,4 @@
+const { UniqueIdentifier } = require("mssql");
 
 async function fcnIniciarVista(){
    
@@ -32,6 +33,12 @@ async function fcnIniciarVista(){
         await getTotalCompras(GlobalEmpnit, 'cmbMeses', 'cmbAnio');
         await getComparativaDias();
     });
+
+    //inicia la busqueda en la lista de documentos facturas
+    document.getElementById('txtBuscarFactura').addEventListener('keyup',()=>{
+      funciones.FiltrarTabla('tblListaDocumentos','txtBuscarFactura');
+    })
+
 
     // INICIALES
     await getEmpresas();
@@ -162,6 +169,11 @@ async function getVentasDia(idcontenedor,idMes,idAnio){
     });
 };
 
+function getDetalleFactura(feluddi){
+  let infileurl = `https://report.feel.com.gt/ingfacereport/ingfacereport_documento?uuid=${feluddi}`
+  window.open(infileurl);
+};
+
 async function getTotalCompras(empnit,idmes,idanio){
           
   let mes = document.getElementById(idmes).value;
@@ -200,7 +212,7 @@ async function getDataVentas(empnit,dia){
             if(Number(rows.COSTO2)==0){cost=Number(rows.COSTO)}else{cost=Number(rows.COSTO2)}
             //calcula la utilidad
             util = Number(rows.IMPORTE) - cost;
-            str += `<tr>
+            str += `<tr ondblclick("getDetalleFactura('${rows.FELUDDI}')")>
                         <td>${rows.CODDOC}</td>
                         <td>${rows.CORRELATIVO}</td>                     
                         <td>${rows.CLIENTE}</td>
