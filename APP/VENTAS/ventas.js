@@ -1979,8 +1979,8 @@ async function fcnFinalizarPedido(){
                     fcnEliminarTempVentas(GlobalUsuario);
 
                     //intenta enviar pedido por whatsaap
-                    let whatsapp = document.getElementById('txtNumerow').value;
-                    await sendPedidowhatsapp(coddoc,correlativo,whatsapp);
+                    let whatsapp = document.getElementById('txtNumero').value;
+                    sendPedidowhatsapp(coddoc,correlativo,whatsapp);
 
                     //prepara todo para un nuevo pedido
                     fcnNuevoPedido();
