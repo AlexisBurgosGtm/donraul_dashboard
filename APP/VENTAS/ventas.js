@@ -1764,7 +1764,7 @@ async function fcnCargarGridTempVentas(idContenedor){
     let strClass = '';
 
     GlobalSelectedString = '';
-    GlobalSelectedString = `Pedido a nombre de ${document.getElementById('txtNombre')} \n`
+    GlobalSelectedString = `Pedido a nombre de ${document.getElementById('txtNombre').value} \n`
     let total = 0;
 
     try {
@@ -2254,9 +2254,8 @@ async function fcnCargarComboTipoPrecio(){
 
 
 function sendPedidowhatsapp(coddoc,correlativo,numero){
-
-    funciones.Aviso('Proceso de envio por whatsapp');     
-    window.open('https://api.whatsapp.com/send?phone='+numero+'&text='+ GlobalSelectedString);    
+ 
+    window.open('https://api.whatsapp.com/send?phone=502' + numero + '&text=' + GlobalSelectedString);    
    
     GlobalSelectedString = '';
 }
