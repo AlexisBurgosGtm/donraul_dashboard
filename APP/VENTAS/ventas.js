@@ -92,7 +92,7 @@ function getView(){
                     <div class="panel-content">
                         <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
                             <div class="input-group">
-                                <select class="form-control col-0" id="cmbTipoPrecio" disabled>
+                                <select class="form-control col-1 hidden" id="cmbTipoPrecio" disabled>
                                     <option value="P">DET</option>
                                     <option value="C">MayC</option>
                                     <option value="B">MayB</option>
