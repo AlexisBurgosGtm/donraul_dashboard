@@ -1762,6 +1762,11 @@ async function fcnCargarGridTempVentas(idContenedor){
     tabla.innerHTML = GlobalLoader;
     let coddoc = document.getElementById('cmbCoddoc').value;
     let strClass = '';
+
+    GlobalSelectedString = '';
+    GlobalSelectedString = `Pedido a nombre de ${document.getElementById('txtNombre')} \n`
+    let total = 0;
+
     try {
         
         const response = await fetch('/ventas/tempventas?empnit=' + GlobalEmpnit + '&coddoc=' + coddoc + '&usuario=' + GlobalUsuario +  '&app=' + GlobalSistema)
@@ -1780,8 +1785,11 @@ async function fcnCargarGridTempVentas(idContenedor){
                     break;
 
             }
-            
+            total = total + Number(rows.TOTALPRECIO);
             idcant = idcant + 1;
+            GlobalSelectedString = GlobalSelectedString + `
+                * ${rows.CODPROD} - ${rows.DESPROD}, CANTIDAD ${rows.CANTIDAD} - ${rows.CODMEDIDA}, SUBT:${funciones.setMoneda(rows.TOTALPRECIO,'Q')} \n
+            `
             return `<tr  id="${rows.ID.toString()}">
                         <td class="text-left">
                             ${rows.DESPROD}
@@ -1815,7 +1823,7 @@ async function fcnCargarGridTempVentas(idContenedor){
        }).join('\n');
        
        tabla.innerHTML = data;
-      
+      GlobalSelectedString = GlobalSelectedString + `----------------------\n Total: ${funciones.setMoneda(total,'Q')}`
     } catch (error) {
         console.log('NO SE LOGRO CARGAR LA LISTA ' + error);
         tabla.innerHTML = 'No se logró cargar la lista...';
@@ -2247,6 +2255,8 @@ async function fcnCargarComboTipoPrecio(){
 
 function sendPedidowhatsapp(coddoc,correlativo,numero){
 
-    funciones.Aviso('Proceso de envio por whatsapp');
-
+    funciones.Aviso('Proceso de envio por whatsapp');     
+    window.open('https://api.whatsapp.com/send?phone='+numero+'&text='+ GlobalSelectedString);    
+   
+    GlobalSelectedString = '';
 }
