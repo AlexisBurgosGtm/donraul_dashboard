@@ -92,14 +92,14 @@ function getView(){
                     <div class="panel-content">
                         <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
                             <div class="input-group">
-                                <select class="form-control col-3" id="cmbTipoPrecio" disabled>
+                                <select class="form-control col-0" id="cmbTipoPrecio" disabled>
                                     <option value="P">DET</option>
                                     <option value="C">MayC</option>
                                     <option value="B">MayB</option>
                                     <option value="A">MayA</option>
                                     <option value="K">CAMBIO</option>
                                 </select>
-                                <input id="txtBusqueda" type="text" ref="txtBusqueda" class="form-control col-7" placeholder="Buscar código o descripción..." aria-label="" aria-describedby="button-addon4" />
+                                <input id="txtBusqueda" type="text" ref="txtBusqueda" class="form-control col-12 border-warning shadow" placeholder="Buscar código o descripción..." aria-label="" aria-describedby="button-addon4" />
                                 <div class="input-group-prepend">
                                     <button class="btn btn-info waves-effect waves-themed" type="button" id="btnBuscarProducto">
                                         <i class="fal fa-search"></i>
@@ -698,6 +698,16 @@ function getView(){
                                     <div class="row">
                                         <label class="text-white" id="lbDocLat">0</label>
                                         <label class="text-white" id="lbDocLong">0</label class="text-white">
+                                    </div>
+
+
+                                    <hr class="solid">
+                                    <div class="row">
+                                        <div class="form-group">
+                                            <label>Escriba un número al cual se enviará el pedido por whatsapp</label>
+                                            <input type="number" class="form-control" id="txtNumero" value="46516685">
+                                        </div>
+
                                     </div>
                                     
                                     <br>
@@ -1959,6 +1969,11 @@ async function fcnFinalizarPedido(){
 
                     //elimina el temp ventas asociado al empleado
                     fcnEliminarTempVentas(GlobalUsuario);
+
+                    //intenta enviar pedido por whatsaap
+                    let whatsapp = document.getElementById('txtNumerow').value;
+                    await sendPedidowhatsapp(coddoc,correlativo,whatsapp);
+
                     //prepara todo para un nuevo pedido
                     fcnNuevoPedido();
                 }
@@ -2228,3 +2243,10 @@ async function fcnCargarComboTipoPrecio(){
    }
    
 };
+
+
+function sendPedidowhatsapp(coddoc,correlativo,numero){
+
+    funciones.Aviso('Proceso de envio por whatsapp');
+
+}
