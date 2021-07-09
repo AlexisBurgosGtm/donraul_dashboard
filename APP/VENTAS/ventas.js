@@ -1787,9 +1787,8 @@ async function fcnCargarGridTempVentas(idContenedor){
             }
             total = total + Number(rows.TOTALPRECIO);
             idcant = idcant + 1;
-            GlobalSelectedString = GlobalSelectedString + `
-                * ${rows.CODPROD} - ${rows.DESPROD}, CANTIDAD ${rows.CANTIDAD} - ${rows.CODMEDIDA}, SUBT:${funciones.setMoneda(rows.TOTALPRECIO,'Q')} \n
-            `
+            GlobalSelectedString = GlobalSelectedString + '* ' + rows.CODPROD.toString() + '-' + rows.DESPROD + ', CANTIDAD ' + rows.CANTIDAD.toString()  + ' - ' + rows.CODMEDIDA + ', SUBT:' + funciones.setMoneda(rows.TOTALPRECIO,'Q').toString() + '\n'
+            
             return `<tr  id="${rows.ID.toString()}">
                         <td class="text-left">
                             ${rows.DESPROD}
@@ -1823,7 +1822,7 @@ async function fcnCargarGridTempVentas(idContenedor){
        }).join('\n');
        
        tabla.innerHTML = data;
-      GlobalSelectedString = GlobalSelectedString + `----------------------\n Total: ${funciones.setMoneda(total,'Q')}`
+      GlobalSelectedString = GlobalSelectedString + '----------------------' + '\n' + 'Total: ' + funciones.setMoneda(total,'Q').toString();
     } catch (error) {
         console.log('NO SE LOGRO CARGAR LA LISTA ' + error);
         tabla.innerHTML = 'No se logró cargar la lista...';
