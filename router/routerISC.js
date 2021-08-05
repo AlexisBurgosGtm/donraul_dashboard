@@ -231,7 +231,7 @@ router.get("/ventasdiaproductos", async(req,res)=>{
             WHERE (FECHA = '${dia}') AND (TOKEN = '${token}') AND (ANIO=${anio}) AND (MES=${mes}) AND (TIPODOC='FAC')
             GROUP BY EMPNIT, CODPROD, DESPROD
             HAVING (EMPNIT = '${empnit}')
-            ORDER BY DESPROD`
+            ORDER BY SUM(VENTA) DESC`
   
 	execute.Query(res,qr);
 

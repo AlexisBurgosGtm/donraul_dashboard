@@ -1,4 +1,14 @@
 let funciones = {
+  convertDate2(date) {
+    const [yy, mm, dd] = date.split(/-/g);
+    return `${dd}/${mm}/${yy}`.replace('T00:00:00.000Z', '');
+  },
+  getHora(){
+    let f = new Date(); 
+    let h = f.getHours();
+    let m = f.getMinutes();
+    return `${h.toString()}:${m.toString()}`;
+  },
     GetDataNit: async (idNit,idCliente,idDireccion)=>{
 
       return new Promise((resolve, reject) => {
@@ -94,6 +104,39 @@ let funciones = {
         } catch (error) {
             
         }
+    },
+    getPassword : (titulo,nivel)=>{
+      if(nivel==1){
+        return new Promise(async(resolve,reject)=>{
+
+          const { value: password } =  await Swal.fire({
+            title: 'Escriba su contraseña',
+            input: 'password',
+            inputLabel: 'Password',
+            inputPlaceholder: 'Escriba aqui...',
+            inputAttributes: {
+              maxlength: 10,
+              autocapitalize: 'off',
+              autocorrect: 'off'
+            }
+          })
+          
+          if (password) {
+            if(password==GlobalPassUsuario){
+              resolve(password);
+            }else{
+              reject('no');
+            }
+          }else{
+            reject('no');
+          }
+
+        })
+
+      }else{
+        funciones.AvisoError('Usted no tiene permiso de realizar esta acción');
+      }
+      
     },
     FiltrarListaProductos: function(idTabla){
         swal({
@@ -487,6 +530,13 @@ let funciones = {
 
       fecha = y + '-' + DDM + '-' + DDI;
       return fecha;
+    },
+    quitarCaracteres2: (texto) =>{
+      texto = texto.replace(/[\\^$.|?*+()[{]/g, "\\$&");
+      texto = texto.replace(/\$(?=[$&`"'\d])/g, "$$$$");
+
+      return texto;
+      
     },
     quitarCaracteres: ( texto, reemplazarQue, reemplazarCon, ignorarMayMin) =>{
       var reemplazarQue = reemplazarQue.replace(/[\\^$.|?*+()[{]/g, "\\$&"),

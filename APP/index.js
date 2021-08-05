@@ -1,8 +1,5 @@
 ﻿var socket = io();
 
-//let btnReportes = document.getElementById('btnReportes');
-//let btnConfig = document.getElementById('btnConfig');
-
 let btnMenuInventarios = document.getElementById('btnMenuInventarios');
 let btnMenuVentas = document.getElementById('btnMenuVentas');
 let btnMenuProductos = document.getElementById('btnMenuProductos');
@@ -16,6 +13,11 @@ btnMenuProductos.style = "visibility:hidden";
 btnMenuCortes.style = "visibility:hidden";
 btnMenuMapa.style = "visibility:hidden";
 btnMenuAgotados.style = "visibility:hidden";
+
+let btnMenuPrincipal = document.getElementById('btnMenuPrincipal');
+btnMenuPrincipal.addEventListener('click',()=>{
+  $('#modalMenuPrincipal').modal('show');
+})
 
 function InicializarBotonesMenu(){
 

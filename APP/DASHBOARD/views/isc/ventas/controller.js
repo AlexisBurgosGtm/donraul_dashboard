@@ -1,5 +1,3 @@
-const { UniqueIdentifier } = require("mssql");
-
 async function fcnIniciarVista(){
    
     let cmbEmpresas = document.getElementById('cmbEmpresas');
@@ -84,7 +82,7 @@ async function getVentasDia(idcontenedor,idMes,idAnio){
     let totalcosto =0;
     let diasprom = 0;
     
-    container.innerHTML = '<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>'
+    container.innerHTML = GlobalLoader;// '<div class="spinner-border" role="status"><span class="sr-only">Loading...</span></div>'
     let str = ``;
 
     //para la grafica
@@ -105,7 +103,7 @@ async function getVentasDia(idcontenedor,idMes,idAnio){
             totalcosto +=costreal;
             diasprom += 1;
             totalUtilidad += utilreal;//Number(rows.UTILIDAD);
-            str += `<tr>
+            str += `<tr class="hand border-bottom">
                         <td>${rows.FECHA.replace('T00:00:00.000Z','')}</td>
                         <td>${funciones.setMoneda(costreal,'Q')}</td>
                         <td>${funciones.setMoneda(rows.TOTALVENTAS,'Q')}</td>
@@ -212,17 +210,19 @@ async function getDataVentas(empnit,dia){
             if(Number(rows.COSTO2)==0){cost=Number(rows.COSTO)}else{cost=Number(rows.COSTO2)}
             //calcula la utilidad
             util = Number(rows.IMPORTE) - cost;
-            str += `<tr ondblclick="getDetalleFactura('${rows.FELUDDI}')">
-                        <td>${rows.CODDOC}</td>
-                        <td>${rows.CORRELATIVO}</td>                     
+            str += `<tr class="hand border-bottom">
+                        <td class="negrita">${rows.CODDOC}<br>${rows.CORRELATIVO}</td>
+                        <td>
+                           <button class="btn btn-sm btn-secondary btn-circle" onclick="getDetalleFactura('${rows.FELUDDI}')">
+                              <i class="fal fa-download"></i>
+                            </button>
+                        </td>                     
                         <td>${rows.CLIENTE}</td>
                         <td>${funciones.setMoneda(cost,'Q')}</td>
-                        <td>${funciones.setMoneda(rows.PRECIO,'Q')}</td>
-                        <td>${funciones.setMoneda(rows.DESCUENTO,'Q')}</td>
                         <td>${funciones.setMoneda(rows.IMPORTE,'Q')}</td>
                         <td>${funciones.setMoneda(util,'Q')}
                         <br>
-                            <small class="text-success">${((util/cost)*100).toFixed(2)} %</small>
+                            <small class="text-success negrita">${((util/cost)*100).toFixed(2)} %</small>
                         </td>                        
                     </tr>`;
         })

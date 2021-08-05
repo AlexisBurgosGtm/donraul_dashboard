@@ -17,6 +17,18 @@
     }
 }
 
+.hand {
+    cursor:pointer;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.negrita {
+    font-weight: bold;
+}
+
 .foot {
     bottom: 0;
 }
