@@ -144,6 +144,12 @@ let classNavegar = {
                 IniciarVistaMapa();
             })
         })
+    },
+    appCotizaciones: async()=>{
+        funciones.loadScript('./DASHBOARD/views/cotizaciones/cotizaciones.js','root')
+        .then(()=>{
+            GlobalSelectedForm= 'COTIZACIONES';
+            iniciarVista('CF','CONSUMIDOR FINAL','CIUDAD');
+        })          
     }
-
 }
