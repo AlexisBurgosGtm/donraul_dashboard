@@ -1,5 +1,3 @@
 don Raul:
 https://github.com/AlexisBurgosGtm/donraul_dashboard.git
 
-mercados efectivos:
-https://github.com/AlexisBurgosGtm/mercadosefectivos-dashboard.git

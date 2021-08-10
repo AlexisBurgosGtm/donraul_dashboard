@@ -1,5 +1,37 @@
 function getView(){
     let view = {
+        tabsCotizacion :()=>{
+            return `
+            <div class="panel-container show">
+                <div class="panel-content">
+                    <ul class="nav nav-pills nav-justified" role="tablist">
+                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#panelListado" id="btnTabListado">Historial</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#panelProductos" id="btnTabProductos">Productos</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#panelCliente" id="btnTabCliente">Cliente</a></li>
+                    </ul>
+                    <div class="tab-content py-3">
+
+                        <div class="tab-pane fade active show" id="panelListado" role="tabpanel">
+
+
+                        </div>
+                        
+                        <div class="tab-pane fade" id="panelProductos" role="tabpanel">
+                            ${view.gridTempVenta() + view.btnCobrar() 
+                                + view.modalBusquedaCliente() 
+                                + view.modalNuevoCliente() 
+                                + view.modalTerminar()}
+                        </div>
+
+                        <div class="tab-pane fade" id="panelCliente" role="tabpanel">
+                            ${view.encabezadoClienteDocumento()}
+                        </div>
+   
+                    </div>
+                </div>
+            </div>
+            `
+        },
         encabezadoClienteDocumento :()=>{
             return `
         <div class="row">
@@ -638,17 +670,14 @@ function getView(){
         }
     }
 
-    //+ view.cajabusquedaproducto()  antes de gridtempventas
-    root.innerHTML = view.encabezadoClienteDocumento() 
+  
+    root.innerHTML = view.tabsCotizacion() /*view.encabezadoClienteDocumento() 
                 + view.gridTempVenta() 
                 + view.btnCobrar() 
-                //+ view.modalBusquedaProductos() 
-                //+ view.modalCantidadProducto()
                 + view.modalBusquedaCliente() 
-                //+ view.modalCobro() 
                 + view.modalNuevoCliente() 
                 + view.modalTerminar(); 
-                //+ view.modalCantidadCalculadora();
+                */
 
     let containerModalesVentas = document.getElementById('containerModalesVentas');
     containerModalesVentas.innerHTML = view.modalBusquedaProductos() 
