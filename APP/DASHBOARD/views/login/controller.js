@@ -71,7 +71,8 @@ async function fcnIniciar(application){
             btnMenuMapa.style = "visibility:visible";
             btnMenuAgotados.style = "visibility:visible";
             btnMenuPrincipal.style = "visibility:visible";
-
+            btnMenuCotizaciones.style = "visibility:visible";
+            
             classNavegar.dashventas();
             
             break;

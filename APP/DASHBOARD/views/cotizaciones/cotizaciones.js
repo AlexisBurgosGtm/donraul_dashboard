@@ -12,8 +12,7 @@ function getView(){
                     <div class="tab-content py-3">
 
                         <div class="tab-pane fade active show" id="panelListado" role="tabpanel">
-
-
+                            ${view.listadoCotizaciones()}
                         </div>
                         
                         <div class="tab-pane fade" id="panelProductos" role="tabpanel">
@@ -32,56 +31,50 @@ function getView(){
             </div>
             `
         },
+        listadoCotizaciones: ()=>{
+            return `
+                    <div class="table-responsive">
+                        <table class="table table-responsive table-striped">
+                            <thead class="bg-trans-gradient text-white">
+                                <tr>
+                                    <td>FECHA</td>
+                                    <td>CLIENTE</td>
+                                    <td>IMPORTE</td>
+                                </tr>
+                            </thead>
+                            <tbody id="tblHistorial"></tbody>
+                        </table>
+                    </div>
+                    <div id="fixed-btn2">
+                        <button class="btn btn-success btn-lg waves-themed waves-effect shadow hand" id="btnNuevaCotizacion">
+                            <i class="fal fa-plus"></i>
+                        </button>
+                    </div>
+            `
+        },
         encabezadoClienteDocumento :()=>{
             return `
         <div class="row">
-            
-            <div class="hidden-md-down col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                <div id="panel-2" class="panel col-12">
-                    <div class="panel-hdr">
-                        <h2>Datos del Cliente</h2>
-                        <div class="panel-toolbar">
-                            <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
-                            <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"></button>
-                            
-                        </div>
+
+            <div class="col-6 card p-4">
+                <div class="input-group">
+                    <input id="txtNit" type="text" ref="txtNit" class="form-control" placeholder="Código del cliente.." aria-label="" aria-describedby="button-addon4" />
+                    <div class="input-group-prepend">
+                        <button class="btn btn-info waves-effect waves-themed" type="button" id="btnBusquedaClientes">
+                            <i class="fal fa-search"></i>
+                        </button>
+                        <div class="card"></div>
+                        <button class="btn btn-success waves-effect waves-themed" id="btnNuevoCliente">
+                            +
+                        </button>
                     </div>
-                    <div class="panel-container collapse">
-                        <div class="panel-content">
-                            <div class="">
-                                <div class="input-group">
-                                    <input id="txtNit" type="text" ref="txtNit" class="form-control" placeholder="Código del cliente.." aria-label="" aria-describedby="button-addon4" />
-                                    <div class="input-group-prepend">
-                                        <button class="btn btn-info waves-effect waves-themed" type="button" id="btnBusquedaClientes">
-                                            <i class="fal fa-search"></i>
-                                        </button>
-                                        <div class="card"></div>
-                                        <button class="btn btn-success waves-effect waves-themed" id="btnNuevoCliente">
-                                            +
-                                        </button>
-                                    </div>
-                                    
-                                </div>
-                                <input class="form-control" id="txtNombre" placeholder="Nombre de cliente..">
-                                <input class="form-control" id="txtDireccion" placeholder="Dirección cliente">
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
+                <input class="form-control" id="txtNombre" placeholder="Nombre de cliente..">
+                <input class="form-control" id="txtDireccion" placeholder="Dirección cliente">
             </div>
             
-            <div class="hidden-md-down col-sm-12 col-md-6 col-lg-6 col-xl-6">
-                <div id="panel-3" class="panel col-12">
-                    <div class="panel-hdr">
-                        <h2>Datos del Documento</h2>
-                        <div class="panel-toolbar">
-                            <button class="btn btn-panel" data-action="panel-collapse" data-toggle="tooltip" data-offset="0,10" data-original-title="Collapse"></button>
-                            <button class="btn btn-panel" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen"></button>
-                            
-                        </div>
-                    </div>
-                    <div class="panel-container collapse"> <!--show-->
-                        <div class="panel-content">
+                        <div class="col-6 card p-4">
                             <div class="row">
                                 <div class="col-6">
                                     <input type="text" class="form-control input-sm" id="cmbCoddoc">
@@ -102,28 +95,19 @@ function getView(){
                             </div>
                             
                         </div>
-                    </div>
-                </div>
-            </div>
 
-        </div>
             `
             //<select class="form-control input-sm" id="cmbCoddoc"></select>
             //<select class="form-control" id="cmbVendedor"></select>
         },
         gridTempVenta :()=>{
             return `
-        <div class="row">
+        
             <div id="panel-2" class="panel col-12">
 
-                <div class="panel-hdr">
-                    <h2 id="txtTotalVenta" class="text-danger"></h2>
-                    <div class="panel-toolbar">
-                                               
-                        <button class="btn btn-warning" data-action="panel-fullscreen" data-toggle="tooltip" data-offset="0,10" data-original-title="Fullscreen">
-                            <i class="fal fa-angle-double-up"></i>
-                        </button>
-                    </div>
+                <div class="panel-hdr text-right">
+                    <h1 id="txtTotalVenta" class="text-danger"></h1>
+                    
                 </div>
                 <div class="panel-container show">
                     <div class="panel-content">
@@ -161,7 +145,7 @@ function getView(){
                 <div id="containerModalesVentas"></div>
 
             </div>
-        </div>  
+          
             `
         },
         gridTempVentaModalBusquedaProductos :()=>{
@@ -845,6 +829,8 @@ async function iniciarVista(nit,nombre,direccion){
     
     //inicia los eventos de la ventana Cantidad al agregar productos
     fcnIniciarModalCantidadProductos();
+
+    funciones.slideAnimationTabs();
 
 };
 

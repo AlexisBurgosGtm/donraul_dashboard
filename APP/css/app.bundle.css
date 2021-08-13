@@ -789,7 +789,7 @@ html body {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
-  height: 4.125rem;
+  height: 2.125rem;
   position: relative;
   z-index: 1000;
   -webkit-box-ordinal-group: 2;
@@ -1066,7 +1066,7 @@ html body {
   top: 0; }
 
 .header-function-fixed:not(.nav-function-top) .page-content {
-  margin-top: 4.125rem; }
+  margin-top: 2.125rem; }
 
 .header-function-fixed:not(.nav-function-top):not(.nav-function-fixed) {
   /* bug fix for nav hidden other than chrome...*/ }
@@ -1695,7 +1695,7 @@ html body {
       .nav-function-top .page-header .header-icon:not(.btn)[data-toggle="dropdown"] + .dropdown-menu {
         top: 4.125rem !important; }
     .nav-function-top .page-content-wrapper {
-      margin-top: 7.625rem; }
+      margin-top: 3.625rem; }
     .nav-function-top .page-wrapper {
       padding-left: 0; }
       .nav-function-top .page-wrapper .page-footer {
@@ -5701,7 +5701,7 @@ $grid-breakpoints: (
       -webkit-box-shadow: none !important;
               box-shadow: none !important; }
     .header-function-fixed .page-content {
-      margin-top: 4.125rem; }
+      margin-top: 1.125rem; }
   /* Push content */
   .nav-mobile-push:not(.nav-mobile-slide-out) .page-wrapper .page-sidebar {
     -webkit-transform: translate3d(-16.875rem, 0, 0);

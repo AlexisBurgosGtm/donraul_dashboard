@@ -29,6 +29,19 @@
     font-weight: bold;
 }
 
+.text-campesino {
+    color:#fd7e14;
+}
+
+.border-campesino {
+    border-color:#fd7e14;
+}
+
+.bg-campesino{
+    background-color: #fd7e14;
+}
+
+
 .foot {
     bottom: 0;
 }

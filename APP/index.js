@@ -6,6 +6,7 @@ let btnMenuProductos = document.getElementById('btnMenuProductos');
 let btnMenuCortes = document.getElementById('btnMenuCortes');
 let btnMapa = document.getElementById('btnMenuMapa');
 let btnMenuAgotados = document.getElementById('btnMenuAgotados');
+let btnMenuCotizaciones = document.getElementById('btnMenuCotizaciones');
 
 btnMenuInventarios.style = "visibility:hidden";
 btnMenuVentas.style = "visibility:hidden";
@@ -13,6 +14,7 @@ btnMenuProductos.style = "visibility:hidden";
 btnMenuCortes.style = "visibility:hidden";
 btnMenuMapa.style = "visibility:hidden";
 btnMenuAgotados.style = "visibility:hidden";
+btnMenuCotizaciones.style = "visibility:hidden";
 
 let btnMenuPrincipal = document.getElementById('btnMenuPrincipal');
 btnMenuPrincipal.addEventListener('click',()=>{
@@ -51,6 +53,10 @@ function InicializarBotonesMenu(){
           btnMenuAgotados.addEventListener('click',()=>{
             classNavegar.agotados();
           })
+
+          btnMenuCotizaciones.addEventListener('click',()=>{
+            classNavegar.appCotizaciones();
+          })
                             
 }
 
@@ -82,12 +88,13 @@ function requestPermission() {
 InicializarBotonesMenu();
 
 // socket handler
+
 socket.on('ventas nueva', async function(msg){
   if(GlobalSelectedForm=='CAJA'){
     try {
       let cmbTipoListaPedidos = document.getElementById('cmbTipoListaPedidos');
       if(cmbTipoListaPedidos.value=='AUT'){
-        //await api.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
+      
       }else{
         await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
       }
