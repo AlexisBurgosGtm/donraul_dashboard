@@ -5,9 +5,9 @@ function getView(){
             <div class="panel-container show">
                 <div class="panel-content">
                     <ul class="nav nav-pills nav-justified" role="tablist">
-                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#panelListado" id="btnTabListado">Historial</a></li>
-                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#panelProductos" id="btnTabProductos">Productos</a></li>
-                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#panelCliente" id="btnTabCliente">Cliente</a></li>
+                        <li class="nav-item hidden"><a class="nav-link active" data-toggle="tab" href="#panelListado" id="btnTabListado">Historial</a></li>
+                        <li class="nav-item hidden"><a class="nav-link" data-toggle="tab" href="#panelProductos" id="btnTabProductos">Productos</a></li>
+                        <li class="nav-item hidden"><a class="nav-link" data-toggle="tab" href="#panelCliente" id="btnTabCliente">Cliente</a></li>
                     </ul>
                     <div class="tab-content py-3">
 
@@ -16,14 +16,14 @@ function getView(){
                         </div>
                         
                         <div class="tab-pane fade" id="panelProductos" role="tabpanel">
-                            ${view.gridTempVenta() + view.btnCobrar() 
+                            ${view.gridTempVenta()  
                                 + view.modalBusquedaCliente() 
                                 + view.modalNuevoCliente() 
                                 + view.modalTerminar()}
                         </div>
 
                         <div class="tab-pane fade" id="panelCliente" role="tabpanel">
-                            ${view.encabezadoClienteDocumento()}
+                            ${view.encabezadoClienteDocumento() + view.btnCobrar()}
                         </div>
    
                     </div>
@@ -40,13 +40,14 @@ function getView(){
                                     <td>FECHA</td>
                                     <td>CLIENTE</td>
                                     <td>IMPORTE</td>
+                                    <td></td>
                                 </tr>
                             </thead>
                             <tbody id="tblHistorial"></tbody>
                         </table>
                     </div>
                     <div id="fixed-btn2">
-                        <button class="btn btn-success btn-lg waves-themed waves-effect shadow hand" id="btnNuevaCotizacion">
+                        <button class="btn btn-success waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnNuevaCotizacion">
                             <i class="fal fa-plus"></i>
                         </button>
                     </div>
@@ -106,21 +107,14 @@ function getView(){
             <div id="panel-2" class="panel col-12">
 
                 <div class="panel-hdr text-right">
-                    <h1 id="txtTotalVenta" class="text-danger"></h1>
-                    
+                    <h1 id="txtTotalVenta" class="text-danger"></h1>             
                 </div>
+
                 <div class="panel-container show">
                     <div class="panel-content">
                         <div class="col-sm-12 col-md-8 col-lg-8 col-xl-8">
                             <div class="input-group">
-                                <select class="form-control col-3 shadow border-info" id="cmbTipoPrecio">
-                                    <option value="P">DET</option>
-                                    <option value="C">PreB</option>
-                                    <option value="B">PreA</option>
-                                    <option value="A">MAY</option>
-                                    <option value="K">CAMBIO</option>
-                                </select>
-                                <input id="txtBusqueda" type="text" ref="txtBusqueda" class="form-control col-7  shadow border-info" placeholder="Buscar código o descripción..." aria-label="" aria-describedby="button-addon4" />
+                                <input id="txtBusqueda" type="text" ref="txtBusqueda" class="form-control shadow border-info" placeholder="Buscar código o descripción..." aria-label="" aria-describedby="button-addon4" />
                                 <div class="input-group-prepend">
                                     <button class="btn btn-info waves-effect waves-themed shadow" type="button" id="btnBuscarProducto">
                                         <i class="fal fa-search"></i>
@@ -142,6 +136,22 @@ function getView(){
                     </div>
                 </div>
                 
+                <div id="fixed-btn2">
+                    <div class="row">
+                        <div class="col-6">
+                            <button class="btn btn-secondary waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnAtrasCotizacion">
+                                <i class="fal fa-angle-left"></i>
+                            </button>    
+                        </div>
+                        <div class="col-6">
+                            <button class="btn btn-success waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnFinalizarCotizacion">
+                                <i class="fal fa-angle-right"></i>
+                            </button>    
+                        </div>
+                    </div>
+                    
+                </div>
+
                 <div id="containerModalesVentas"></div>
 
             </div>
@@ -702,6 +712,7 @@ async function iniciarVista(nit,nombre,direccion){
             $('#ModalBusqueda').modal('show');
         }
     });
+
     document.getElementById('btnBuscarProducto').addEventListener('click',()=>{
         fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
         $('#ModalBusqueda').modal('show');
@@ -827,8 +838,22 @@ async function iniciarVista(nit,nombre,direccion){
     document.getElementById('txtNombre').value = nombre;
     document.getElementById('txtDireccion').value = direccion;
     
-    //inicia los eventos de la ventana Cantidad al agregar productos
-    fcnIniciarModalCantidadProductos();
+
+    //METODOS NUEVOS 
+    let btnNuevaCotizacion = document.getElementById('btnNuevaCotizacion');
+    btnNuevaCotizacion.addEventListener('click',()=>{
+        document.getElementById('btnTabProductos').click();
+    });
+
+    let btnAtrasCotizacion = document.getElementById('btnAtrasCotizacion');
+    btnAtrasCotizacion.addEventListener('click',()=>{
+        document.getElementById('btnTabListado').click();
+    });
+
+    let btnFinalizarCotizacion = document.getElementById('btnFinalizarCotizacion');
+    btnFinalizarCotizacion.addEventListener('click',()=>{
+        document.getElementById('btnTabCliente').click();
+    })
 
     funciones.slideAnimationTabs();
 

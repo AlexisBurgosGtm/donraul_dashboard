@@ -51,14 +51,22 @@
 position: fixed;
 z-index: 1088;
 right: 21px;
-bottom: 15px;
+bottom: 10px;
 }
 
 #fixed-btn3 { 
     position: fixed;
     z-index: 1088;
     left: 21px;
-    bottom: 15px;
+    bottom: 10px;
+}
+
+
+#fixed-btnleft { 
+    position: fixed;
+    z-index: 1088;
+    left: 21px;
+    bottom: 10px;
 }
 
 .btn-circle.btn-xl {
