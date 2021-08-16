@@ -23,7 +23,7 @@ function getView(){
                         </div>
 
                         <div class="tab-pane fade" id="panelCliente" role="tabpanel">
-                            ${view.encabezadoClienteDocumento() + view.btnCobrar()}
+                            ${view.documento() + view.btnCobrar()}
                         </div>
    
                     </div>
@@ -53,11 +53,11 @@ function getView(){
                     </div>
             `
         },
-        encabezadoClienteDocumento :()=>{
+        documento :()=>{
             return `
         <div class="row">
 
-            <div class="col-6 card p-4">
+            <div class="col-12 card p-4">
                 <div class="input-group">
                     <input id="txtNit" type="text" ref="txtNit" class="form-control" placeholder="Código del cliente.." aria-label="" aria-describedby="button-addon4" />
                     <div class="input-group-prepend">
@@ -74,32 +74,55 @@ function getView(){
                 <input class="form-control" id="txtNombre" placeholder="Nombre de cliente..">
                 <input class="form-control" id="txtDireccion" placeholder="Dirección cliente">
             </div>
-            
-                        <div class="col-6 card p-4">
-                            <div class="row">
-                                <div class="col-6">
-                                    <input type="text" class="form-control input-sm" id="cmbCoddoc">
-                                    
-                                </div>
-                                <div class="col-6">
-                                    <input type="text" class="form-control" value="0" id="txtCorrelativo" readonly="true">
-                                </div>
-                            </div>
+
+        </div>
+        <br>
+
+        <div class="row">
+            <div class="card p-4">
+                <div class="row">
+                    <div class="col-6">
+                        <select class="form-control input-sm" id="cmbCoddoc">
+                            <option value="COTIZ">COTIZACION 1</option>
+                            <option value="COTZ2">COTIZACION 2</option>
+                            <option value="COTZ3">COTIZACION 3</option>
+                            <option value="COTZ4">COTIZACION 4</option>
+                            <option value="COTZ5">COTIZACION 5</option>
+                            <option value="COTZ6">COTIZACION 6</option>
+                            <option value="COTZ7">COTIZACION 7</option>
+                            <option value="COTZ8">COTIZACION 8</option>
+                            <option value="COTZ9">COTIZACION 9</option>
+                            <option value="COT10">COTIZACION 10</option>
+                        </select>
+                        <input type="text" class="form-control" value="0" id="txtCorrelativo" readonly="true">
+                    </div> 
+                </div>
+                
                             <div class="row">
                                 <div class="col-6">
                                     Fecha: <input type="date" class="form-control bg-subtlelight pl-4 text-sm" id="txtFecha">
                                 </div>
-                                <div class="col-6">
-                                    Vendedor:
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="form-group">
+                                    <label>Creado por..</label>
                                     <input type="text" class="form-control" id="cmbVendedor">
                                 </div>
+                               
                             </div>
-                            
+                            <br>
+                            <div class="row">
+                                               
+                                <div class="form-group">
+                                    <label>Observaciones</label>
+                                    <textarea class="form-control" rows="4" id="txtObs"></textarea>
+                                </div>
+                            </div>
+                            <br>
                         </div>
-
+        </div>
             `
-            //<select class="form-control input-sm" id="cmbCoddoc"></select>
-            //<select class="form-control" id="cmbVendedor"></select>
         },
         gridTempVenta :()=>{
             return `
@@ -855,8 +878,12 @@ async function iniciarVista(nit,nombre,direccion){
         document.getElementById('btnTabCliente').click();
     })
 
+    getListadoCotizaciones('tblHistorial',2021,8)
+
     funciones.slideAnimationTabs();
 
+    //actulización de productos
+    deleteProductos().then(async()=>{await downloadProductosTodos()})
 };
 
 function addEventsModalCambioCantidad(){
@@ -927,7 +954,7 @@ function fcnIniciarModalCantidadProductos(){
 
 function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
     
-    let cmbTipoPrecio = document.getElementById(idTipoPrecio);
+    //let cmbTipoPrecio = document.getElementById(idTipoPrecio);
 
     let filtro = document.getElementById(idFiltro).value;
     
@@ -948,7 +975,7 @@ function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
                 if(Number(rows.EXISTENCIA<=0)){strC='bg-danger text-white'}else{strC='bg-success text-white'};
                 let totalexento = 0;
                 if (rows.EXENTO==1){totalexento=Number(rows.PRECIO)}
-                
+                /*
                 switch (cmbTipoPrecio.value) {
                     case 'P':
                         pre = Number(rows.PRECIO)
@@ -966,8 +993,8 @@ function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
                         pre = Number(0.01)
                         break;
      
-                }
-
+                }*/
+                pre = Number(rows.PRECIO);
                 str += `<tr id="${rows.CODPROD}" onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${pre},${totalexento},${Number(rows.EXISTENCIA)});" class="border-bottom">
                 <td >
                     ${funciones.quitarCaracteres(rows.DESPROD,'"'," pulg",true)}
@@ -1662,3 +1689,55 @@ async function fcnCargarComboTipoPrecio(){
 };
 
 
+
+//COTIZACIONES
+function getListadoCotizaciones(idContenedor,anio,mes){
+    
+    let container = document.getElementById(idContenedor);
+    container.innerHTML = GlobalLoader;
+            
+    let strdata = ''; 
+
+    axios.post('/cotizaciones/listado', {
+        anio:anio,
+        mes:mes
+    })
+    .then((response) => {
+        const data = response.data.recordset;
+        
+        data.map((rows)=>{                    
+                    strdata = strdata + `
+                <tr class='border-bottom border-info'>
+                    <td>${rows.FECHA.replace('T00:00:00.000Z','')}
+                        <br>
+                        <small>Doc: ${rows.CODDOC}-${rows.CORRELATIVO}</small>
+                    </td>
+                    <td>${rows.CLIENTE}
+                        <br>
+                        <small>${rows.DIRECCION}</small>
+                        <br>
+                        <small class="negrita text-secondary">TEL: ${rows.TELEFONO} / Email:${rows.EMAIL}</small>
+                        <br>
+                        <small>Obs:${rows.OBS}</small>
+                    </td>
+                    <td>${funciones.setMoneda(rows.TOTALPRECIO,'Q')}
+                        <br>
+                        <small>Flete:${funciones.setMoneda(rows.FLETE,'Q')}</small>
+                    
+                    </td>
+                    <td>
+                        <button class="btn btn-info btn-sm btn-circle" onclick="">
+                            <i class="fal fa-list"></i>
+                        </button>
+                    </td>
+                </tr>`      
+        })
+        container.innerHTML = strdata;
+    }, (error) => {
+        funciones.AvisoError('Error en la solicitud');
+        strdata = '';
+        container.innerHTML = 'No se pudo cargar la lista';
+    });
+    
+    
+}

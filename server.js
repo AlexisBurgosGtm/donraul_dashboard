@@ -13,6 +13,7 @@ var routerSupervisor = require('./router/routerSupervisor');
 var routerapi = require('./router/routerapi');
 var routerEmpleados = require('./router/routerEmpleados');
 var routerTipoDocs = require('./router/routerTipoDocs');
+var routerCotizaciones = require('./router/routerCotizaciones')
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -75,6 +76,9 @@ app.use('/empleados', routerEmpleados);
 
 // Router para Tipodocumentos
 app.use('/tipodocumentos', routerTipoDocs);
+
+// Cotizaciones
+app.use('/cotizaciones', routerCotizaciones);
 
 
 app.use("/",router);
