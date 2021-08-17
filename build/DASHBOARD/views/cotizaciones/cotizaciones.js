@@ -776,9 +776,9 @@ async function iniciarVista(nit,nombre,direccion){
     //classTipoDocumentos.comboboxTipodoc('PED','cmbCoddoc');
     cmbCoddoc.value = GlobalCoddoc;
 
-    cmbCoddoc.addEventListener('change',async ()=>{
-       await classTipoDocumentos.fcnCorrelativoDocumento('PED',cmbCoddoc.value,'txtCorrelativo');
-    });
+    //cmbCoddoc.addEventListener('change',async ()=>{
+      // await classTipoDocumentos.fcnCorrelativoDocumento('PED',cmbCoddoc.value,'txtCorrelativo');
+    //});
 
     let cmbVendedor = document.getElementById('cmbVendedor');
 
@@ -836,9 +836,8 @@ async function iniciarVista(nit,nombre,direccion){
     // carga el grid
    
     
-    await classTipoDocumentos.fcnCorrelativoDocumento('PED',cmbCoddoc.value,'txtCorrelativo');
+    //await classTipoDocumentos.fcnCorrelativoDocumento('PED',cmbCoddoc.value,'txtCorrelativo');
     await fcnCargarGridTempVentas('tblGridTempVentas');
-    //await fcnCargarTotal('txtTotalVenta','txtTotalVentaCobro');
 
     cmbVendedor.value = GlobalCodUsuario;
 
@@ -876,6 +875,7 @@ async function iniciarVista(nit,nombre,direccion){
 
     let btnBajarProductos = document.getElementById('btnBajarProductos');
     btnBajarProductos.addEventListener('click',async()=>{
+       
         btnBajarProductos.disabled = true;
         btnBajarProductos.innerHTML = '<i class="fal fa-sync fa-spin"></i>';
 
@@ -1072,7 +1072,7 @@ async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equiva
     document.getElementById('btnAgregarProducto').disabled = true;
 
     //document.getElementById('tblResultadoBusqueda').innerHTML = '';
-    let cmbTipoPrecio = document.getElementById('cmbTipoPrecio');
+    //let cmbTipoPrecio = document.getElementById('cmbTipoPrecio');
         let totalcosto = Number(costo) * Number(cantidad);
         let totalprecio = Number(precio) * Number(cantidad);
         console.log('intenta agregar la fila')
@@ -1094,7 +1094,7 @@ async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equiva
                     TOTALPRECIO:totalprecio,
                     EXENTO:exento,
                     USUARIO:GlobalUsuario,
-                    TIPOPRECIO:cmbTipoPrecio.value
+                    TIPOPRECIO:'P'
                 };
 
                 insertTempVentas(data)

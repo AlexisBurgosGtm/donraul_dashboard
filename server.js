@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 4100;
 
 app.use(bodyParser.json());
 
-app.use(express.static('APP'));
+app.use(express.static('build'));
 
 var path = __dirname + '/'
 

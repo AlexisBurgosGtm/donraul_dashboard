@@ -28,6 +28,7 @@ async function fcnLogin(idUser,idPass,idApp){
                     if(rows.USUARIO==usuario){
                         GlobalToken=rows.TOKEN;
                         GlobalUser = rows.USUARIO;
+                        GlobalUsuario = rows.USUARIO;
                         GlobalSistema = rows.SISTEMA;
                         GlobalCoddoc = rows.CODDOC;
                         fcnIniciar(App);
@@ -42,6 +43,7 @@ async function fcnLogin(idUser,idPass,idApp){
             }else{
                 GlobalToken = ""
                 GlobalUser = '';
+                GlobalUsuario = '';
                 GlobalSistema = '';
                 GlobalCoddoc= '';
                 funciones.AvisoError('Usuario o Contraseña incorrectos')

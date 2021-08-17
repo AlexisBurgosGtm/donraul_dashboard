@@ -19,7 +19,7 @@ let rootMenuLateral = document.getElementById('rootMenuLateral');
 const showMenuLateral =(titulo)=>{ $("#modalMenu").modal('show'); lbMenuTitulo.innerText = titulo;};
 const hideMenuLateral =()=>{ $("#modalMenu").modal('hide'); lbMenuTitulo.innerText = '';};
 
-let GlobalCodSucursal = '';
+let GlobalCodSucursal = 'DONRAUL';
 
 let GlobalCodUsuario = 0; //99999;
 let GlobalUsuario = 'DONRAUL';
@@ -58,6 +58,7 @@ let GlobalSelectedCosto = 0;
 let GlobalSelectedPrecio = 0;
 let GlobalSelectedModif = 0;
 let GlobalSelectedPrecioMinimo = 0;
+let GlobalSelectedExistencia =0;
 
 // global vars para cantidad producto
 
