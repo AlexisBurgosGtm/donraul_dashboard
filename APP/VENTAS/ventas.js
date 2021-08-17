@@ -1123,14 +1123,14 @@ async function iniciarVistaVentas(nit,nombre,direccion){
     let btnListaPedidos = document.getElementById('btnListaPedidos');
     btnListaPedidos.addEventListener('click',async ()=>{
         let cmbTipoListaPedidos = document.getElementById('cmbTipoListaPedidos');
-        await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
+        await apix.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
         $('#ModalListaPedidos').modal('show');
     })
 
     let cmbTipoListaPedidos = document.getElementById('cmbTipoListaPedidos');
     cmbTipoListaPedidos.addEventListener('change',async()=>{
         
-        await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
+        await apix.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
     });
 
 
@@ -1414,7 +1414,7 @@ async function getDetallePedido(fecha,coddoc,correlativo){
     console.log('obteniendo el detalle del pedido ' + coddoc + correlativo)
     GlobalSelectedFecha = fecha;
     $('#ModalDetallePedido').modal('show');
-    await api.cajaDetallePedido(fecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')  
+    await apix.cajaDetallePedido(fecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')  
 };
 
 function deleteProductoPedido(idRow,coddoc,correlativo,totalprecio,totalcosto){
@@ -1427,14 +1427,14 @@ function deleteProductoPedido(idRow,coddoc,correlativo,totalprecio,totalcosto){
         .then((value)=>{
             if(value==true){
 
-                api.cajaQuitarRowPedido(idRow,coddoc,correlativo,totalprecio,totalcosto)
+                apix.cajaQuitarRowPedido(idRow,coddoc,correlativo,totalprecio,totalcosto)
                 .then(async()=>{
                 
                 
-                    await api.cajaDetallePedido(GlobalSelectedFecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')
+                    await apix.cajaDetallePedido(GlobalSelectedFecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')
                 
                   
-                    await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
+                    await apix.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
                 
                     funciones.Aviso('Item removido exitosamente !!')
                 })
@@ -1972,7 +1972,7 @@ async function fcnFinalizarPedido(){
                     //actualiza la ubicación del empleado
                     await classEmpleados.updateMyLocation();
                     //actualiza la última venta del cliente
-                    //api.updateClientesLastSale(nit,'VENTA');
+                    //apix.updateClientesLastSale(nit,'VENTA');
 
                     //elimina el temp ventas asociado al empleado
                     fcnEliminarTempVentas(GlobalUsuario);
@@ -2254,7 +2254,7 @@ async function fcnCargarComboTipoPrecio(){
 
 function sendPedidowhatsapp(coddoc,correlativo,numero){
  
-    window.open('https://api.whatsapp.com/send?phone=502' + numero + '&text=' + GlobalSelectedString);    
+    window.open('https://apix.whatsapp.com/send?phone=502' + numero + '&text=' + GlobalSelectedString);    
    
     GlobalSelectedString = '';
 }

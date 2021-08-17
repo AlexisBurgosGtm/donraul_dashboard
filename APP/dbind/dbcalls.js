@@ -1,0 +1,577 @@
+
+function downloadProductosTodos (){
+    console.log('bajando productos...')
+     axios.post('/cotizaciones/listaproductos')  
+    .then(async(response) => {
+        console.log('insertando productos')
+        const data = response.data;
+        let contador = 1;       
+        let totalrows = 0;
+        if(data.rowsAffected[0]==0){
+            //tabla.innerHTML= 'No existe nada relacionado a: ' + filtro + ', o no hay productos cargados'
+            funciones.AvisoError('No hay productos');
+            //$('#modalWait').modal('hide');
+        }else{  
+            totalrows = Number(data.rowsAffected[0]);
+                  
+            data.recordset.map(async(rows)=>{
+                var datosdb = {
+                    CODSUCURSAL:rows.CODSUCURSAL,
+                    CODPROD:rows.CODPROD,
+                    DESPROD:rows.DESPROD,
+                    CODMEDIDA:rows.CODMEDIDA,
+                    EQUIVALE:rows.EQUIVALE,
+                    COSTO:rows.COSTO,
+                    PRECIO:rows.PRECIO,
+                    PRECIOA:rows.PRECIOA,
+                    PRECIOB:rows.PRECIOB,
+                    PRECIOC:rows.PRECIOC,
+                    DESMARCA:rows.DESMARCA,
+                    EXENTO:rows.EXENTO,
+                    EXISTENCIA:rows.EXISTENCIA,
+                    DESPROD3:rows.DESPROD3
+                }                
+                var noOfRowsInserted = await connection.insert({
+                    into: "productos",
+                    values: [datosdb], //you can insert multiple values at a time
+                });
+                if (noOfRowsInserted > 0) {
+                    //setLog(`<label>Productos agregados: ${contador} </label>`,'rootWait')
+                    contador += 1;
+                    if(totalrows==contador){
+                        //$('#modalWait').modal('hide');
+                        funciones.Aviso('Productos descargados exitosamente!!')
+                    }
+                }
+            });
+            
+        }
+    }, (error) => {
+        console.log(error);
+        funciones.AvisoError('No pude guardar los productos');
+        //$('#modalWait').modal('hide');
+    });
+   
+};
+
+
+function downloadProductos (){
+    //setLog(`<label>Productos agregados: 0</label>`,'rootWait')
+    //funciones.showToast('Descargando productos')
+    //descargando productos
+    
+     axios.get('/ventas/buscarproductotodos?sucursal=' + GlobalCodSucursal)  
+    .then(async(response) => {
+        const data = response.data;
+        let contador = 1;       
+        let totalrows = 0;
+        if(data.rowsAffected[0]==0){
+            //tabla.innerHTML= 'No existe nada relacionado a: ' + filtro + ', o no hay productos cargados'
+            funciones.AvisoError('No hay productos');
+            $('#modalWait').modal('hide');
+        }else{  
+            totalrows = Number(data.rowsAffected[0]);
+                  
+            data.recordset.map(async(rows)=>{
+                var datosdb = {
+                    CODSUCURSAL:rows.CODSUCURSAL,
+                    CODPROD:rows.CODPROD,
+                    DESPROD:rows.DESPROD,
+                    CODMEDIDA:rows.CODMEDIDA,
+                    EQUIVALE:rows.EQUIVALE,
+                    COSTO:rows.COSTO,
+                    PRECIO:rows.PRECIO,
+                    PRECIOA:rows.PRECIOA,
+                    PRECIOB:rows.PRECIOB,
+                    PRECIOC:rows.PRECIOC,
+                    DESMARCA:rows.DESMARCA,
+                    EXENTO:rows.EXENTO,
+                    EXISTENCIA:rows.EXISTENCIA,
+                    DESPROD3:rows.DESPROD3
+                }                
+                var noOfRowsInserted = await connection.insert({
+                    into: "productos",
+                    values: [datosdb], //you can insert multiple values at a time
+                });
+                if (noOfRowsInserted > 0) {
+                    setLog(`<label>Productos agregados: ${contador} </label>`,'rootWait')
+                    contador += 1;
+                    if(totalrows==contador){
+                        $('#modalWait').modal('hide');
+                        funciones.Aviso('Productos descargados exitosamente!!')
+                    }
+                }
+            });
+            
+        }
+    }, (error) => {
+        console.log(error);
+        funciones.AvisoError('No pude guardar los productos');
+        $('#modalWait').modal('hide');
+    });
+
+ 
+   
+};
+
+function deleteProductos(){
+    console.log('Elimnando productos...')
+    return new Promise((resolve,reject)=>{
+        //setLog(`<label class="text-danger">Eliminando productos...</label>`,'rootWait');
+        let del = connection.clear('productos');
+        if(del){
+            resolve();
+        }else{
+            reject();
+        }
+    })            
+};
+
+function selectProducto(filtro) {
+
+    return new Promise(async(resolve,reject)=>{
+        var response = await connection.select({
+            from: "productos",
+            limit: 40,
+            where: {
+                CODPROD: filtro,
+                or: {
+                    DESPROD: {
+                        like: '%' + filtro + '%'
+                    }   
+                }
+            }
+           
+        });
+        resolve(response)
+    });
+};
+
+
+function downloadClientes (){
+    //setLog(`<label>Productos agregados: 0</label>`,'rootWait')
+    //funciones.showToast('Descargando productos')
+    //descargando productos
+    
+    axios.post('/clientes/listavendedortodos', {
+        sucursal: GlobalCodSucursal,
+        codven:GlobalCodUsuario
+    })  
+    .then(async(response) => {
+        const data = response.data;
+        let contador = 1;       
+        let totalrows = 0;
+        if(data.rowsAffected[0]==0){
+            //tabla.innerHTML= 'No existe nada relacionado a: ' + filtro + ', o no hay productos cargados'
+            funciones.AvisoError('No hay productos');
+            $('#modalWait').modal('hide');
+        }else{  
+            totalrows = Number(data.rowsAffected[0]);
+                  
+            data.recordset.map(async(rows)=>{
+                var datosdb = {
+                    CODSUCURSAL:rows.CODSUCURSAL,
+                    CODIGO:rows.CODIGO,
+                    DESMUNI:rows.DESMUNI,
+                    DIRCLIE:rows.DIRCLIE,
+                    LASTSALE:rows.LASTSALE,
+                    LAT:rows.LAT,
+                    LONG:rows.LONG,
+                    NIT:rows.NIT,
+                    NOMCLIE:rows.NOMCLIE,
+                    REFERENCIA:rows.REFERENCIA,
+                    STVISITA:rows.STVISITA,
+                    VISITA:rows.VISITA,
+                    TELEFONO:rows.TELEFONO
+                }                
+                var noOfRowsInserted = await connection.insert({
+                    into: "clientes",
+                    values: [datosdb], //you can insert multiple values at a time
+                });
+                if (noOfRowsInserted > 0) {
+                    setLog(`<label>Clientes agregados: ${contador} </label>`,'rootWait')
+                    contador += 1;
+                    if(totalrows==contador){
+                        $('#modalWait').modal('hide');
+                        funciones.Aviso('Clientes descargados exitosamente!!')
+                    }
+                }
+            });
+            
+        }
+    }, (error) => {
+        console.log(error);
+        funciones.AvisoError('No pude guardar los productos');
+        $('#modalWait').modal('hide');
+    });
+
+ 
+   
+};
+
+function deleteClientes(){
+    return new Promise((resolve,reject)=>{
+        setLog(`<label class="text-danger">Eliminando Clientes...</label>`,'rootWait');
+        let del = connection.clear('clientes');
+        if(del){
+            resolve();
+        }else{
+            reject();
+        }
+    })            
+};
+
+function selectCliente(dia) {
+
+    return new Promise(async(resolve,reject)=>{
+        var response = await connection.select({
+            from: "clientes",
+            limit: 40,
+            where: {
+                VISITA: dia
+                }
+           
+        });
+        resolve(response)
+    });
+};
+
+async function updateSaleCliente(codigo) {
+
+    var noOfRowsUpdated = await connection.update({ 
+            in: "clientes",
+          set: {
+              LASTSALE:funciones.getFecha()
+          },
+          where: {
+              CODIGO:codigo.toString()
+          }
+    });
+    console.log('Cliente actualizado, rows: ' + noOfRowsUpdated.toString())
+
+};
+
+
+
+
+
+function insertTempVentas(datos){
+    return new Promise((resolve,reject)=>{
+        connection.insert({
+            into: "tempventa",
+            values: [datos], //you can insert multiple values at a time
+        })
+        .then(()=>{
+            resolve();
+        })
+        .catch(()=>{
+            reject();
+        })
+    }) 
+
+};
+
+function deleteItemVenta(id){
+    return new Promise(async(resolve,reject)=>{
+        var rowsDeleted = await connection.remove({
+            from: "tempventa",
+            where: {
+                ID: id
+            }
+        });
+        if(rowsDeleted>0){resolve()}else{reject()}
+    })            
+};
+
+function selectTempventas(usuario) {
+
+    return new Promise(async(resolve,reject)=>{
+        var response = await connection.select({
+            from: "tempventa",
+            where: {
+                    USUARIO: usuario
+                },
+            order: { by: 'ID', type: 'asc' }
+        });
+        resolve(response)
+    });
+};
+
+function selectDataRowVenta(id,nuevacantidad) {
+    let costo = 0; let precio = 0; let equivale =0; let exento=0; let cantidad= nuevacantidad;
+    return new Promise(async(resolve,reject)=>{
+        var response = await connection.select({
+            from: "tempventa",
+            where: {
+                    ID: id
+                }
+        });
+        response.map((rows)=>{
+            costo = rows.COSTO;
+            precio = rows.PRECIO;
+            equivale = rows.EQUIVALE;
+            exento = rows.EXENTO;
+        });
+        let totalcosto = Number(costo) * Number(cantidad);
+        let totalprecio = Number(precio) * Number(cantidad);
+        let totalexento = Number(exento) * Number(cantidad);
+        let totalunidades = Number(equivale) * Number(cantidad);
+        //actualiza la fila
+        let updatedrow = await connection.update({
+            in: "tempventa",
+            set: {
+                CANTIDAD:Number(nuevacantidad),
+                TOTALUNIDADES:totalunidades,
+                TOTALCOSTO:totalcosto,
+                TOTALPRECIO:totalprecio,
+                EXENTO:totalexento
+            },
+            where: {
+                ID: id
+            }
+        })
+        if(updatedrow>0){
+            resolve();
+        }else{
+            reject();
+        }
+
+    });
+};
+
+
+function gettempDocproductos(usuario){
+    
+    return new Promise(async(resolve,reject)=>{
+        var response = await connection.select({
+            from: "tempventa",
+            where: {
+                    USUARIO: usuario
+                },
+            order: { by: 'ID', type: 'asc' }
+        })
+        if(Number(response.length)>0){
+            resolve(response);
+        }else{
+            reject('No hay productos agregados');
+        }
+    })
+    
+
+
+    
+
+}
+
+function deleteTempVenta(usuario){
+    return new Promise(async(resolve,reject)=>{
+        var rowsDeleted = await connection.remove({
+            from: "tempventa",
+            where: {
+                USUARIO: usuario
+            }
+        });
+        if(rowsDeleted>0){resolve()}else{resolve()}
+    })            
+};
+
+
+//PEDIDOS GUARDADOS EN EL CEL
+
+//INSERTA LOCALMENTE UN PEDIDO
+function insertVenta(datos){
+    console.log('intentando ingresar en tabla documentos')
+    return new Promise((resolve,reject)=>{
+        connection.insert({
+            into: "documentos",
+            values: [datos], //you can insert multiple values at a time
+        })
+        .then(()=>{
+            resolve();
+        })
+        .catch(()=>{
+            reject();
+        })
+    }) 
+
+};
+
+//carga el json con la lista de pedidos pendientes
+function selectVentasPendientes(usuario) {
+    
+    return new Promise(async(resolve,reject)=>{
+        var response = await connection.select({
+
+            from: "documentos",
+            where: {
+                    USUARIO: usuario
+                },
+            order: { by: 'ID', type: 'asc' }
+        });
+        resolve(response)
+    });
+};
+
+//carga la lista de pedidos
+function dbCargarPedidosPendientes(){
+    
+    selectVentasPendientes(GlobalUsuario)
+    .then((response)=>{
+        let container = document.getElementById('tblPedidosPendientes');
+        container.innerHTML = GlobalLoader;
+        
+        let str = '';
+        let contador = 0;
+
+        response.map((rs)=>{
+            contador = contador + 1;
+            str = str + `<tr>
+                            <td>${rs.FECHA}
+                                <br>
+                                <small class="negrita">${rs.CODDOC}-${rs.ID}</small>
+                            </td>
+                            <td>${rs.NOMCLIE}
+                                <br>
+                                <small>${rs.DIRCLIE}</small>
+                            </td>
+                            <td>${funciones.setMoneda(rs.TOTALPRECIO,'Q')}
+                            </td>
+                            <td>
+                                <button class="btn btn-success btn-circle" onclick="dbSendPedido(${rs.ID});">
+                                    <i class="fal fa-paper-plane"></i>
+                                </button>
+                            </td>
+                        </tr>`    
+        })
+        container.innerHTML = str;
+        btnPedidosPend.innerHTML = `<i class="fal fa-bell"></i>${contador}`;
+
+    });
+};
+
+function deletePedidoEnviado(id){
+    return new Promise(async(resolve,reject)=>{
+        var rowsDeleted = await connection.remove({
+            from: "documentos",
+            where: {
+                ID: Number(id)
+            }
+        });
+        if(rowsDeleted>0){resolve()}else{resolve()}
+    })            
+};
+
+function getPedidoEnviar(id){
+
+    return new Promise(async(resolve,reject)=>{
+        var response = await connection.select({
+            
+            from: "documentos",
+            where: {
+                    ID: Number(id)
+                }
+        });
+        resolve(response)
+    });
+}
+
+function dbSendPedido(id){
+   
+        funciones.Confirmacion('¿Está seguro que desea Enviar este Pedido')
+        .then((value)=>{
+            if(value==true){
+                
+                setLog(`<label class="text-danger">Intentando obtener el correlativo de documentos...</label>`,'rootWait');
+                $('#modalWait').modal('show');
+
+                classTipoDocumentos.getCorrelativoDocumento('PED',GlobalCoddoc)
+                .then((correlativo)=>{
+                    //lee el documento de la base de datos local y lo intenta enviar
+                    setLog(`<label class="text-danger">Cargando los datos del documento para intentarlo enviar...</label>`,'rootWait');
+                        
+                    let data; 
+                    let nit;
+                    getPedidoEnviar(id)
+                    .then((response)=>{
+                        response.map((rs)=>{
+                            nit = rs.NITCLIE;
+                            GlobalSelectedCodCliente = rs.CODCLIE;
+                            data = {
+                                jsondocproductos:rs.JSONPRODUCTOS,
+                                codsucursal:rs.CODSUCURSAL,
+                                empnit: rs.EMPNIT,
+                                coddoc:rs.CODDOC,
+                                correl: correlativo.toString(),
+                                anio:rs.ANIO,
+                                mes:rs.MES,
+                                dia:rs.DIA,
+                                fecha:rs.FECHA,
+                                fechaentrega:rs.FECHAENTREGA,
+                                formaentrega:rs.FORMAENTREGA,
+                                codbodega:GlobalCodBodega,
+                                codcliente: rs.CODCLIE,
+                                nomclie:rs.NOMCLIE,
+                                totalcosto:rs.TOTALCOSTO,
+                                totalprecio:rs.TOTALPRECIO,
+                                nitclie:rs.NITCLIE,
+                                dirclie:rs.DIRCLIE,
+                                obs:rs.OBS,
+                                direntrega:rs.DIRENTREGA,
+                                usuario:rs.USUARIO,
+                                codven:rs.CODVEN,
+                                lat:rs.LAT,
+                                long:rs.LONG
+                            }
+                        })
+                        
+                        setLog(`<label class="text-info">Intentando enviar el pedido...</label>`,'rootWait');
+                
+                        axios.post('/ventas/insertventa', data)
+                        .then(async(response) => {
+                            const data = response.data;
+                            if (data.rowsAffected[0]==0){
+                                funciones.AvisoError('No se logró Enviar este pedido, se intentará guardarlo en el teléfono');   
+                            }else{
+                                funciones.Aviso('Pedido Enviado Exitosamente !!!')
+                            
+                                //actualiza la ubicación del empleado
+                                await classEmpleados.updateMyLocation();
+                                //actualiza la última venta del cliente
+                                await apigen.updateClientesLastSale(nit,'VENTA');
+                                deletePedidoEnviado(id)
+                                .then(()=>{
+                                    dbCargarPedidosPendientes();
+                                })
+                                                                                
+                            }
+                            $('#modalWait').modal('hide');
+                        }, (error) => {
+                            
+                            funciones.AvisoError('Ha ocurrido un error y no se pudo enviar');
+                            $('#modalWait').modal('hide');
+                        })
+                        .catch((error)=>{
+                            funciones.AvisoError('Error: ' + error);
+                            $('#modalWait').modal('hide');
+                        })
+        
+                    })
+
+
+                })
+                .catch(()=>{
+                    $('#modalWait').modal('hide');
+                    funciones.AvisoError('No se pudo obtener el correlativo del documento a generar, revise su conexión a internet')
+                })
+                
+                            
+                
+          
+
+            }
+        })
+};
+
+
+
+

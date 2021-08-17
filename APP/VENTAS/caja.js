@@ -121,9 +121,9 @@ async function iniciarVistaCaja(){
     let cmbTipoListaPedidos = document.getElementById('cmbTipoListaPedidos');
     cmbTipoListaPedidos.addEventListener('change',async()=>{
         if(cmbTipoListaPedidos.value=='AUT'){
-            await api.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
+            await apix.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
         }else{
-            await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
+            await apix.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
         }
         
         
@@ -135,9 +135,9 @@ async function iniciarVistaCaja(){
         .then((value)=>{
             if(value==true){
 
-                api.cajaFacturarPedido(GlobalSelectedCoddoc,GlobalSelectedCorrelativo)
+                apix.cajaFacturarPedido(GlobalSelectedCoddoc,GlobalSelectedCorrelativo)
                 .then(async()=>{
-                    await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
+                    await apix.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
                     funciones.Aviso('Pedido Marcado como Facturado!!')
                     $('#ModalDetallePedido').modal('hide');
                 })    
@@ -153,9 +153,9 @@ async function iniciarVistaCaja(){
         funciones.Confirmacion('¿Está seguro que desea Anular este Pedido?')
         .then((value)=>{
             if(value==true){
-                api.cajaBloquearPedido(GlobalSelectedCoddoc,GlobalSelectedCorrelativo)
+                apix.cajaBloquearPedido(GlobalSelectedCoddoc,GlobalSelectedCorrelativo)
                 .then(async()=>{
-                    await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
+                    await apix.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
                     funciones.Aviso('Pedido Anulado Exitosamente!!')
                     $('#ModalDetallePedido').modal('hide');
                 })    
@@ -168,7 +168,7 @@ async function iniciarVistaCaja(){
     })
 
 
-    await api.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
+    await apix.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
     
 
 };
@@ -185,7 +185,7 @@ async function getDetallePedido(fecha,coddoc,correlativo,nit,cliente,direccion,d
     document.getElementById('lbPedidoFechentrega').innerText = fechaentrega;
 
     $('#ModalDetallePedido').modal('show');
-    await api.cajaDetallePedido(fecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')  
+    await apix.cajaDetallePedido(fecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')  
 };
 
 function deleteProductoPedido(idRow,coddoc,correlativo,totalprecio,totalcosto){
@@ -198,13 +198,13 @@ function deleteProductoPedido(idRow,coddoc,correlativo,totalprecio,totalcosto){
         .then((value)=>{
             if(value==true){
 
-                api.cajaQuitarRowPedido(idRow,coddoc,correlativo,totalprecio,totalcosto)
+                apix.cajaQuitarRowPedido(idRow,coddoc,correlativo,totalprecio,totalcosto)
                 .then(async()=>{
                 
                 
-                    await api.cajaDetallePedido(GlobalSelectedFecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')
+                    await apix.cajaDetallePedido(GlobalSelectedFecha,coddoc,correlativo,'tblDetallePedido','lbTotalDetallePedido')
 
-                    await api.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
+                    await apix.cajaPedidosVendedor(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value);
                 
                     funciones.Aviso('Item removido exitosamente !!')
                 })
@@ -232,11 +232,11 @@ async function postAutorization(rowid,desprod,preciosolicitado,costo){
     funciones.Confirmacion(msn)
     .then(async(value)=>{
         if(value==true){
-            api.cajaAutorizarPrecio(rowid)
+            apix.cajaAutorizarPrecio(rowid)
             .then(async()=>{
                 funciones.Aviso('Precio aprobado exitosamente!!')
                 socket.emit('solicitudes precioaprobada',`Precio de ${funciones.setMoneda(preciosolicitado,'Q')} para ${desprod} fué aprobado!!`);
-                await api.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
+                await apix.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
             })
             .catch(()=>{
                 funciones.AvisoError('Error en la solicitud')
@@ -251,11 +251,11 @@ async function postDenegar(rowid,desprod,preciosolicitado){
     funciones.Confirmacion('¿Está seguro de DENEGAR el precio solicitado?')
     .then(async(value)=>{
         if(value==true){
-            api.cajaDenegarPrecio(rowid)
+            apix.cajaDenegarPrecio(rowid)
             .then(async()=>{
                 funciones.Aviso('Precio aprobado exitosamente!!')
                 socket.emit('solicitudes preciodenegado',`Precio de ${funciones.setMoneda(preciosolicitado,'Q')} para ${desprod}, no ha sido autorizado`);
-                await api.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
+                await apix.cajaPedidosVendedorAutorizar(GlobalCodSucursal,GlobalCodUsuario,'tblListaPedidos','lbListaPedidosTotal',cmbTipoListaPedidos.value)
             })
             .catch(()=>{
                 funciones.AvisoError('Error en la solicitud')

@@ -1,4 +1,4 @@
-let api = {
+let apix = {
     cajaPedidosVendedor: async(sucursal,codven,idContenedor,idLbTotal,st)=>{
 
         let container = document.getElementById(idContenedor);
@@ -1077,7 +1077,7 @@ let api = {
                                     Vendedor
                                 </small>
                             </h5>
-                            <a href="https://api.whatsapp.com/send?phone=502${rows.TELEFONO}&text=${rows.NOMBRE.replace(' ','%20')}" target="blank">${rows.TELEFONO}</a>
+                            <a href="https://apix.whatsapp.com/send?phone=502${rows.TELEFONO}&text=${rows.NOMBRE.replace(' ','%20')}" target="blank">${rows.TELEFONO}</a>
                             <div class="text-right">
                                 <button class="btn btn-info btn-circle btn-lg" onclick="getGerenciaVendedorLogro(${rows.CODIGO},'${rows.NOMBRE}');">
                                 +
