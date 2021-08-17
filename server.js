@@ -18,7 +18,7 @@ var routerCotizaciones = require('./router/routerCotizaciones')
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 4100;
 
 app.use(bodyParser.json());
 
