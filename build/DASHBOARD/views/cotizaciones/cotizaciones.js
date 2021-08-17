@@ -80,7 +80,7 @@ function getView(){
 
         <div class="row">
             <div class="card p-4">
-             
+                <div class="input-group">
                         <select class="form-control input-sm" id="cmbCoddoc">
                             <option value="COTIZ">COTIZACION 1</option>
                             <option value="COTZ2">COTIZACION 2</option>
@@ -93,31 +93,41 @@ function getView(){
                             <option value="COTZ9">COTIZACION 9</option>
                             <option value="COT10">COTIZACION 10</option>
                         </select>
-                        <input type="text" class="form-control" value="0" id="txtCorrelativo" readonly="true">
+                        <div class="input-group-prepend">
+                            <input type="text" class="form-control" value="0" id="txtCorrelativo" readonly="true">
+                        </div>
+                </div>
             </div>
         </div>
                 
         <div class="row">
-            <div class="col-6">
-                Fecha: <input type="date" class="form-control bg-subtlelight pl-4 text-sm" id="txtFecha">
+            <div class="card p-4">
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" class="form-control bg-subtlelight pl-4 text-sm" id="txtFecha">
+                </div>
             </div>
         </div>
         
         <br>
         
         <div class="row">
-            <div class="form-group">
-                <label>Creado por..</label>
-                <input type="text" class="form-control" id="cmbVendedor">
-            </div>
-                               
+            <div class="card p-4">
+                <div class="form-group">
+                    <label>Creado por..</label>
+                    <input type="text" class="form-control" id="cmbVendedor">
+                </div>
+            </div>              
         </div>
+
         <br>
         
-        <div class="row"> 
-            <div class="form-group">
+        <div class="row">
+            <div class="card p-4">
+                <div class="form-group">
                     <label>Observaciones</label>
                     <textarea class="form-control" rows="4" id="txtObs"></textarea>
+                </div>
             </div>
         </div>
        
@@ -846,6 +856,7 @@ async function iniciarVista(nit,nombre,direccion){
     // inicializa la calculadora de cantidad
     //iniciarModalCantidad();
     addEventsModalCambioCantidad();
+    fcnIniciarModalCantidadProductos();
 
     //carga los datos del cliente
     document.getElementById('txtNit').value = nit;
@@ -871,32 +882,32 @@ async function iniciarVista(nit,nombre,direccion){
 
     getListadoCotizaciones('tblHistorial',2021,8)
 
-    funciones.slideAnimationTabs();
-
+    
     let btnBajarProductos = document.getElementById('btnBajarProductos');
-    btnBajarProductos.addEventListener('click',async()=>{
+    btnBajarProductos.addEventListener('click',()=>{
+       console.log('Deberia estar girando...')
        
-        btnBajarProductos.disabled = true;
-        btnBajarProductos.innerHTML = '<i class="fal fa-sync fa-spin"></i>';
-
-        //actulización de productos
-        deleteProductos()
-        .then(()=>{
+       btnBajarProductos.disabled = true;
+       document.getElementById('btnBajarProductos').innerHTML = '<i class="fal fa-sync fa-spin"></i>';
+        //actulización de productos     
+     
             downloadProductosTodos()
             .then(()=>{
                 btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
                 btnBajarProductos.disabled = false;
+                funciones.Aviso('Catálogo de productos actualizado exitosamente!!')
             })
             .catch(()=>{
                 btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
                 btnBajarProductos.disabled = false;
+                funciones.AvisoError('No se pudieron descargar los productos, revise su conexión a internet')
             });
-        })
-        .catch(()=>{
-            btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
-            btnBajarProductos.disabled = false;
-        });
+   
+       
     })
+
+
+    funciones.slideAnimationTabs();
     
 };
 
@@ -1027,8 +1038,7 @@ function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
 
 //gestiona la apertura de la cantidad
 function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,totalunidades,costo,precio,exento,existencia){
-    console.log('existencia: ' + existencia);
-
+    console.log('')
     if(parseInt(existencia)>0){
     }else{
         funciones.showToast('Producto SIN EXISTENCIA')
@@ -1068,6 +1078,7 @@ async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equiva
         //return;
     //};
 
+    console.log('intentando agregar producto')
     document.getElementById('btnAgregarProducto').innerHTML = GlobalLoader;
     document.getElementById('btnAgregarProducto').disabled = true;
 
@@ -1120,6 +1131,8 @@ async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equiva
                   )
         
         } catch (error) {
+            console.log('error al agregar producto.. ')
+            console.log(error)
             document.getElementById('btnAgregarProducto').innerHTML  = `<i class="fal fa-check"></i>Agregar`;
             document.getElementById('btnAgregarProducto').disabled = false;
         }

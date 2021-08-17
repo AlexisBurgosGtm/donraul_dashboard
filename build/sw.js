@@ -1,5 +1,5 @@
 
-var CACHE = 'donraul';
+var CACHE = 'donraul2';
 const staticAssets = [
   './',
   './manifest.json',

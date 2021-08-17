@@ -1,4 +1,5 @@
 let classTipoDocumentos = {
+    getCorrelativoDocumento:()=>{},
     comboboxTipodoc : async(tipo,idContainer)=>{
 
         return new Promise((resolve, reject) => {
