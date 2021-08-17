@@ -876,8 +876,8 @@ async function iniciarVista(nit,nombre,direccion){
 
     let btnBajarProductos = document.getElementById('btnBajarProductos');
     btnBajarProductos.addEventListener('click',async()=>{
-        document.getElementById('btnBajarProductos').innerHTML = '..'
-        //btnBajarProductos.innerHTML = GlobalWaitElement;
+        btnBajarProductos.disabled = true;
+        btnBajarProductos.innerHTML = '<i class="fal fa-sync fa-spin"></i>';
 
         //actulización de productos
         deleteProductos()
@@ -885,16 +885,17 @@ async function iniciarVista(nit,nombre,direccion){
             downloadProductosTodos()
             .then(()=>{
                 btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
-                
+                btnBajarProductos.disabled = false;
             })
             .catch(()=>{
                 btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
-                
+                btnBajarProductos.disabled = false;
             });
         })
         .catch(()=>{
             btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
-              });
+            btnBajarProductos.disabled = false;
+        });
     })
     
 };
