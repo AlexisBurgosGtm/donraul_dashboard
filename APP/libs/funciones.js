@@ -938,10 +938,10 @@ let funciones = {
           {CODDEPTO:'022',DESDEPTO:'JUTIAPA'}
           
       ]},
-      convertDate:(fecha)=>{
+    convertDate:(fecha)=>{
         return fecha.replace('T00:00:00.000Z','')
-      },
-      slideAnimationTabs: ()=>{
+    },
+    slideAnimationTabs: ()=>{
         //inicializa el slide de las tabs en censo
         $('a[data-toggle="tab"]').on('hide.bs.tab', function (e) {
             var $old_tab = $($(e.target).attr("href"));
@@ -978,7 +978,18 @@ let funciones = {
         $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
             // your code on active tab shown
         });
-      }
+    },
+    showToast: (text)=>{
+        //depente de la libreria noty
+        new Noty({
+          type: 'info',
+          layout: 'topRight',
+          timeout: '500',
+          theme: 'metroui',
+          progressBar: false,
+          text,
+        }).show();
+    }
 };
 
 //export default funciones;

@@ -80,8 +80,7 @@ function getView(){
 
         <div class="row">
             <div class="card p-4">
-                <div class="row">
-                    <div class="col-6">
+             
                         <select class="form-control input-sm" id="cmbCoddoc">
                             <option value="COTIZ">COTIZACION 1</option>
                             <option value="COTZ2">COTIZACION 2</option>
@@ -95,33 +94,33 @@ function getView(){
                             <option value="COT10">COTIZACION 10</option>
                         </select>
                         <input type="text" class="form-control" value="0" id="txtCorrelativo" readonly="true">
-                    </div> 
-                </div>
-                
-                            <div class="row">
-                                <div class="col-6">
-                                    Fecha: <input type="date" class="form-control bg-subtlelight pl-4 text-sm" id="txtFecha">
-                                </div>
-                            </div>
-                            <br>
-                            <div class="row">
-                                <div class="form-group">
-                                    <label>Creado por..</label>
-                                    <input type="text" class="form-control" id="cmbVendedor">
-                                </div>
-                               
-                            </div>
-                            <br>
-                            <div class="row">
-                                               
-                                <div class="form-group">
-                                    <label>Observaciones</label>
-                                    <textarea class="form-control" rows="4" id="txtObs"></textarea>
-                                </div>
-                            </div>
-                            <br>
-                        </div>
+            </div>
         </div>
+                
+        <div class="row">
+            <div class="col-6">
+                Fecha: <input type="date" class="form-control bg-subtlelight pl-4 text-sm" id="txtFecha">
+            </div>
+        </div>
+        
+        <br>
+        
+        <div class="row">
+            <div class="form-group">
+                <label>Creado por..</label>
+                <input type="text" class="form-control" id="cmbVendedor">
+            </div>
+                               
+        </div>
+        <br>
+        
+        <div class="row"> 
+            <div class="form-group">
+                    <label>Observaciones</label>
+                    <textarea class="form-control" rows="4" id="txtObs"></textarea>
+            </div>
+        </div>
+       
             `
         },
         gridTempVenta :()=>{
@@ -161,12 +160,17 @@ function getView(){
                 
                 <div id="fixed-btn2">
                     <div class="row">
-                        <div class="col-6">
+                        <div class="col-4">
+                            <button class="btn btn-outline-danger waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnBajarProductos">
+                                <i class="fal fa-sync"></i>
+                            </button>    
+                        </div>
+                        <div class="col-4">
                             <button class="btn btn-secondary waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnAtrasCotizacion">
                                 <i class="fal fa-angle-left"></i>
                             </button>    
                         </div>
-                        <div class="col-6">
+                        <div class="col-4">
                             <button class="btn btn-success waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnFinalizarCotizacion">
                                 <i class="fal fa-angle-right"></i>
                             </button>    
@@ -783,18 +787,6 @@ async function iniciarVista(nit,nombre,direccion){
         fcnFinalizarPedido();
     });
 
-    //BUSQUEDA CLIENTES
-    let frmNuevoCliente = document.getElementById('formNuevoCliente');
-    frmNuevoCliente.addEventListener('submit',(e)=>{
-        e.preventDefault();
-        funciones.Confirmacion('¿Está seguro que desea guardar este cliente?')
-        .then((value)=>{
-            if(value==true){
-                fcnGuardarNuevoCliente(frmNuevoCliente);
-            }
-        })
-
-    });
 
     let btnBusquedaClientes = document.getElementById('btnBusquedaClientes');
     btnBusquedaClientes.addEventListener('click',()=>{
@@ -850,7 +842,7 @@ async function iniciarVista(nit,nombre,direccion){
 
     cmbVendedor.value = GlobalCodUsuario;
 
-    fcnCargarComboTipoPrecio();
+    //fcnCargarComboTipoPrecio();
   
     // inicializa la calculadora de cantidad
     //iniciarModalCantidad();
@@ -882,8 +874,29 @@ async function iniciarVista(nit,nombre,direccion){
 
     funciones.slideAnimationTabs();
 
-    //actulización de productos
-    deleteProductos().then(async()=>{await downloadProductosTodos()})
+    let btnBajarProductos = document.getElementById('btnBajarProductos');
+    btnBajarProductos.addEventListener('click',async()=>{
+        document.getElementById('btnBajarProductos').innerHTML = '..'
+        //btnBajarProductos.innerHTML = GlobalWaitElement;
+
+        //actulización de productos
+        deleteProductos()
+        .then(()=>{
+            downloadProductosTodos()
+            .then(()=>{
+                btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
+                
+            })
+            .catch(()=>{
+                btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
+                
+            });
+        })
+        .catch(()=>{
+            btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
+              });
+    })
+    
 };
 
 function addEventsModalCambioCantidad(){
@@ -975,25 +988,7 @@ function fcnBusquedaProducto(idFiltro,idTablaResultado,idTipoPrecio){
                 if(Number(rows.EXISTENCIA<=0)){strC='bg-danger text-white'}else{strC='bg-success text-white'};
                 let totalexento = 0;
                 if (rows.EXENTO==1){totalexento=Number(rows.PRECIO)}
-                /*
-                switch (cmbTipoPrecio.value) {
-                    case 'P':
-                        pre = Number(rows.PRECIO)
-                        break;
-                    case 'C':
-                        pre = Number(rows.PRECIOC)
-                        break;
-                    case 'B':
-                        pre = Number(rows.PRECIOB)
-                        break;
-                    case 'A':
-                        pre = Number(rows.PRECIOA)
-                        break;
-                    case 'K':
-                        pre = Number(0.01)
-                        break;
-     
-                }*/
+             
                 pre = Number(rows.PRECIO);
                 str += `<tr id="${rows.CODPROD}" onclick="getDataMedidaProducto('${rows.CODPROD}','${funciones.quitarCaracteres(rows.DESPROD,'"'," plg",true)}','${rows.CODMEDIDA}',1,${rows.EQUIVALE},${rows.EQUIVALE},${rows.COSTO},${pre},${totalexento},${Number(rows.EXISTENCIA)});" class="border-bottom">
                 <td >
@@ -1034,6 +1029,10 @@ function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,total
     console.log('existencia: ' + existencia);
 
     if(parseInt(existencia)>0){
+    }else{
+        funciones.showToast('Producto SIN EXISTENCIA')
+    }
+
         GlobalSelectedCodprod = codprod;
         GlobalSelectedDesprod = desprod;
         GlobalSelectedCodmedida = codmedida;
@@ -1053,9 +1052,7 @@ function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,total
         document.getElementById('txtCantidad').value = 1;
     
         $("#ModalCantidadProducto").modal('show');    
-    }else{
-        funciones.AvisoError('Producto SIN EXISTENCIA')
-    }
+  
 
 
 };
@@ -1065,10 +1062,10 @@ function getDataMedidaProducto(codprod,desprod,codmedida,cantidad,equivale,total
 // agrega el producto a temp_ventas
 async function fcnAgregarProductoVenta(codprod,desprod,codmedida,cantidad,equivale,totalunidades,costo,precio,exento){
    
-    if(Number(GlobalSelectedExistencia)<=Number(totalunidades)){
-        funciones.AvisoError('No pude agregar una cantidad mayor a la existencia');
-        return;
-    };
+    //if(Number(GlobalSelectedExistencia)<=Number(totalunidades)){
+        //funciones.AvisoError('No pude agregar una cantidad mayor a la existencia');
+        //return;
+    //};
 
     document.getElementById('btnAgregarProducto').innerHTML = GlobalLoader;
     document.getElementById('btnAgregarProducto').disabled = true;
