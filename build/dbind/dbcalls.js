@@ -3,12 +3,9 @@ function downloadProductosTodos (){
 
     return new Promise((resolve,reject) => {
         console.log('Eliminando productos...')
-        let del = connection.clear('productos');
-        if(del){
-           
-        }else{
-            
-        }
+        //let del = connection.clear('productos');
+        //if(del){
+        //}else{ }
     
         console.log('bajando productos...')
          axios.post('/cotizaciones/listaproductos')  
@@ -18,12 +15,13 @@ function downloadProductosTodos (){
             let contador = 1;       
             let totalrows = 0;
             if(data.rowsAffected[0]==0){
-                //tabla.innerHTML= 'No existe nada relacionado a: ' + filtro + ', o no hay productos cargados'
-                //funciones.AvisoError('No hay productos para descargar');
                 reject();
             }else{  
                 totalrows = Number(data.rowsAffected[0]);
-                      
+                let del = connection.clear('productos');
+                if(del){             
+                }else{                    
+                }      
                 data.recordset.map(async(rows)=>{
                     var datosdb = {
                         CODSUCURSAL:rows.CODSUCURSAL,
@@ -40,7 +38,8 @@ function downloadProductosTodos (){
                         EXENTO:rows.EXENTO,
                         EXISTENCIA:rows.EXISTENCIA,
                         DESPROD3:rows.DESPROD3
-                    }                
+                    }
+
                     var noOfRowsInserted = await connection.insert({
                         into: "productos",
                         values: [datosdb], //you can insert multiple values at a time

@@ -23,7 +23,7 @@ function getView(){
                         </div>
 
                         <div class="tab-pane fade" id="panelCliente" role="tabpanel">
-                            ${view.documento() + view.btnCobrar()}
+                            ${view.documento()}
                         </div>
    
                     </div>
@@ -57,7 +57,7 @@ function getView(){
             return `
         <div class="row">
 
-            <div class="col-12 card p-4">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 card p-4">
                 <div class="input-group">
                     <input id="txtNit" type="text" ref="txtNit" class="form-control" placeholder="Código del cliente.." aria-label="" aria-describedby="button-addon4" />
                     <div class="input-group-prepend">
@@ -75,11 +75,7 @@ function getView(){
                 <input class="form-control" id="txtDireccion" placeholder="Dirección cliente">
             </div>
 
-        </div>
-        <br>
-
-        <div class="row">
-            <div class="card p-4">
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 card p-4 shadow">
                 <div class="input-group">
                         <select class="form-control input-sm" id="cmbCoddoc">
                             <option value="COTIZ">COTIZACION 1</option>
@@ -98,21 +94,32 @@ function getView(){
                         </div>
                 </div>
             </div>
+
         </div>
-                
+
+        <hr class="solid">
+
+                   
         <div class="row">
-            <div class="card p-4">
+            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 card p-4 shadow">
                 <div class="form-group">
                     <label>Fecha</label>
                     <input type="date" class="form-control bg-subtlelight pl-4 text-sm" id="txtFecha">
                 </div>
+
+            </div>
+            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 card p-4 shadow">
+                <div class="form-group">
+                    <label>Fecha Entrega:</label>
+                    <input type="date" class="form-control" id="txtEntregaFecha">
+                </div>
             </div>
         </div>
         
-        <br>
+        <hr class="solid">
         
         <div class="row">
-            <div class="card p-4">
+            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 card p-4 shadow">
                 <div class="form-group">
                     <label>Creado por..</label>
                     <input type="text" class="form-control" id="cmbVendedor">
@@ -120,17 +127,39 @@ function getView(){
             </div>              
         </div>
 
-        <br>
+        <hr class="solid">
         
         <div class="row">
-            <div class="card p-4">
+            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 card p-4 shadow">
                 <div class="form-group">
                     <label>Observaciones</label>
-                    <textarea class="form-control" rows="4" id="txtObs"></textarea>
-                </div>
+                    <textarea rows="4" cols="80" class="form-control" id="txtEntregaObs" placeholder="Escriba aqui sus observaciones..."></textarea>
+                </div>     
             </div>
         </div>
+
+        <div class="row">
+            <label class="text-white" id="lbDocLat">0</label>
+            <label class="text-white" id="lbDocLong">0</label class="text-white">
+        </div>
        
+        <div id="fixed-btn2">
+            <div class="row">
+                <div class="col-6">
+                    <button class="btn btn-secondary waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnAtrasCotizacionGrid">
+                        <i class="fal fa-angle-left"></i>
+                    </button>    
+                </div>
+                <div class="col-6">
+                    <button class="btn btn-outline-danger btn-lg waves-themed waves-effect shadow" id="btnCobrar">
+                        <i class="fal fa-search"></i>
+                        TERMINAR
+                    </button>  
+                </div>
+            </div>
+            
+        </div>
+
             `
         },
         gridTempVenta :()=>{
@@ -337,16 +366,6 @@ function getView(){
         </div>  
             `
         },
-        btnCobrar :()=>{
-            return `
-            <div id="fixed-btn2">
-                <button class="btn btn-outline-danger btn-lg waves-themed waves-effect shadow" id="btnCobrar">
-                    <i class="fal fa-search"></i>
-                    COBRAR
-                </button>
-            </div>
-            `
-        },
         modalBusquedaProductos :()=>{
             return `
             <div class="modal fade  modal-with-scroll" id="ModalBusqueda" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -534,11 +553,7 @@ function getView(){
                             <div class="modal-body shadow">
                                     <div class="">            
                                         
-                                        <div class="form-group">
-                                            <label>Fecha Entrega:</label>
-                                            <input type="date" class="form-control" id="txtEntregaFecha">
-                                        </div>
-
+                                      
                                         <div class="form-group">
                                             <label>Forma de Pago:</label>
                                             <select id="cmbEntregaConcre" class="form-control">
@@ -547,17 +562,10 @@ function getView(){
                                             </select>
                                         </div>
 
-                                        <div class="form-group">
-                                            <label>Observaciones</label>
-                                            <textarea rows="4" cols="80" class="form-control" id="txtEntregaObs" placeholder="Escriba aqui sus observaciones..."></textarea>
-                                        </div>                                                              
-                                            
+                                  
                                     </div>
 
-                                    <div class="row">
-                                        <label class="text-white" id="lbDocLat">0</label>
-                                        <label class="text-white" id="lbDocLong">0</label class="text-white">
-                                    </div>
+                 
                                     
                                     <br>
             
@@ -755,28 +763,21 @@ async function iniciarVista(nit,nombre,direccion){
         $('#ModalBusqueda').modal('show');
     });
 
+
+
     let btnCobrar = document.getElementById('btnCobrar');
     btnCobrar.addEventListener('click',()=>{
        
         
         if(btnCobrar.innerText=='Terminar'){
-            funciones.AvisoError('No puede finalizar un pedido sin productos')
+            funciones.AvisoError('No puede finalizar una cotización sin productos')
         }else{
            if(txtNit.value==''){
-               funciones.AvisoError('Especifique el cliente a quien se carga la venta');
+               funciones.AvisoError('Especifique el cliente a quien se carga la cotización');
            }else{
                funciones.ObtenerUbicacion('lbDocLat','lbDocLong')
-                switch (GlobalTipoCobro) {
-                    case 'COBRO':
-                    
-                        break;
-                    case 'TERMINAR':
-                        $('#ModalFinalizarPedido').modal('show');   
-                        break;
-            
-                    default:
-                        break;
-                }                 
+               $('#ModalFinalizarPedido').modal('show');    
+               
            }
        }
        
@@ -816,6 +817,7 @@ async function iniciarVista(nit,nombre,direccion){
     document.getElementById('btnBuscarCliente').addEventListener('click',()=>{
         fcnBusquedaCliente('txtBusquedaCliente','tblResultadoBusquedaCliente');
     });
+
     document.getElementById('btnNuevoCliente').addEventListener('click',()=>{
         //$('#ModalNuevoCliente').modal('show');
         if(txtNit.value!==''){
@@ -849,7 +851,7 @@ async function iniciarVista(nit,nombre,direccion){
     //await classTipoDocumentos.fcnCorrelativoDocumento('PED',cmbCoddoc.value,'txtCorrelativo');
     await fcnCargarGridTempVentas('tblGridTempVentas');
 
-    cmbVendedor.value = GlobalCodUsuario;
+    cmbVendedor.value = GlobalUsuario;
 
     //fcnCargarComboTipoPrecio();
   
@@ -875,6 +877,11 @@ async function iniciarVista(nit,nombre,direccion){
         document.getElementById('btnTabListado').click();
     });
 
+    let btnAtrasCotizacionGrid = document.getElementById('btnAtrasCotizacionGrid');
+    btnAtrasCotizacionGrid.addEventListener('click',()=>{
+        document.getElementById('btnTabProductos').click();
+    });
+
     let btnFinalizarCotizacion = document.getElementById('btnFinalizarCotizacion');
     btnFinalizarCotizacion.addEventListener('click',()=>{
         document.getElementById('btnTabCliente').click();
@@ -895,7 +902,7 @@ async function iniciarVista(nit,nombre,direccion){
             .then(()=>{
                 btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
                 btnBajarProductos.disabled = false;
-                funciones.Aviso('Catálogo de productos actualizado exitosamente!!')
+                funciones.showToast('Catálogo de productos actualizado exitosamente!!')
             })
             .catch(()=>{
                 btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
