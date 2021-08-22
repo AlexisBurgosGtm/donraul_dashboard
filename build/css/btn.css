@@ -17,6 +17,11 @@
     }
 }
 
+.text-small {
+    font-size: 10px;
+}
+
+
 .hand {
     cursor:pointer;
 }

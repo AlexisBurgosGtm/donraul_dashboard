@@ -59,25 +59,22 @@ function getView(){
 
             <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 card p-4">
                 <div class="input-group">
-                    <input id="txtNit" type="text" ref="txtNit" class="form-control" placeholder="Código del cliente.." aria-label="" aria-describedby="button-addon4" />
+                    <input id="txtNit" type="text" ref="txtNit" class="form-control  text-small" placeholder="Código del cliente.." aria-label="" aria-describedby="button-addon4" />
                     <div class="input-group-prepend">
-                        <button class="btn btn-info waves-effect waves-themed" type="button" id="btnBusquedaClientes">
+                        <button class="btn btn-info waves-effect waves-themed text-small" type="button" id="btnBusquedaClientes">
                             <i class="fal fa-search"></i>
                         </button>
-                        <div class="card"></div>
-                        <button class="btn btn-success waves-effect waves-themed" id="btnNuevoCliente">
-                            +
-                        </button>
                     </div>
-                    
                 </div>
-                <input class="form-control" id="txtNombre" placeholder="Nombre de cliente..">
-                <input class="form-control" id="txtDireccion" placeholder="Dirección cliente">
+                <input class="form-control text-small" id="txtNombre" placeholder="Nombre de cliente.." type="text">
+                <input class="form-control text-small" id="txtDireccion" placeholder="Dirección cliente" type="text">
+                <input class="form-control text-small" id="txtTelefono" placeholder="Telefono de cliente" type="text">
+                <input class="form-control text-small" id="txtEmail" placeholder="Email del cliente" type="email">
             </div>
 
             <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 card p-4 shadow">
                 <div class="input-group">
-                        <select class="form-control input-sm" id="cmbCoddoc">
+                        <select class="form-control text-small" id="cmbCoddoc">
                             <option value="COTIZ">COTIZACION 1</option>
                             <option value="COTZ2">COTIZACION 2</option>
                             <option value="COTZ3">COTIZACION 3</option>
@@ -90,7 +87,7 @@ function getView(){
                             <option value="COT10">COTIZACION 10</option>
                         </select>
                         <div class="input-group-prepend">
-                            <input type="text" class="form-control" value="0" id="txtCorrelativo" readonly="true">
+                            <input type="text" class="form-control text-small" value="0" id="txtCorrelativo" readonly="true">
                         </div>
                 </div>
             </div>
@@ -101,14 +98,14 @@ function getView(){
 
                    
         <div class="row">
-            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 card p-4 shadow">
+            <div class="col-6 card p-4 shadow">
                 <div class="form-group">
                     <label>Fecha</label>
                     <input type="date" class="form-control bg-subtlelight pl-4 text-sm" id="txtFecha">
                 </div>
 
             </div>
-            <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 card p-4 shadow">
+            <div class="col-6 card p-4 shadow">
                 <div class="form-group">
                     <label>Fecha Entrega:</label>
                     <input type="date" class="form-control" id="txtEntregaFecha">
@@ -736,15 +733,27 @@ async function iniciarVista(nit,nombre,direccion){
     let txtNit = document.getElementById('txtNit');
     txtNit.addEventListener('keydown',(e)=>{
         if(e.code=='Enter'){
-            fcnBuscarCliente('txtNit','txtNombre','txtDireccion');    
+            funciones.GetNit('txtNit','txtNombre','txtDireccion')
+            .then((json)=>{
+                document.getElementById('txtNombre').value = json.descripcion;
+                document.getElementById('txtDireccion').value = json.direcciones.direccion; 
+            })   
         }
         if(e.code=='NumpadEnter'){
-            fcnBuscarCliente('txtNit','txtNombre','txtDireccion');    
+            funciones.GetNit('txtNit','txtNombre','txtDireccion')
+            .then((json)=>{
+                document.getElementById('txtNombre').value = json.descripcion;
+                document.getElementById('txtDireccion').value = json.direcciones.direccion; 
+            })    
         }
     });
 
-    document.getElementById('btnBuscarCliente').addEventListener('click',()=>{
-        //fcnBuscarCliente('txtNit','txtNombre','txtDireccion');    
+    document.getElementById('btnBusquedaClientes').addEventListener('click',()=>{
+        funciones.GetNit('txtNit','txtNombre','txtDireccion')
+        .then((json)=>{
+            document.getElementById('txtNombre').value = json.descripcion;
+            document.getElementById('txtDireccion').value = json.direcciones.direccion; 
+        }) 
     });
 
     document.getElementById('txtBusqueda').addEventListener('keyup',(e)=>{
@@ -776,87 +785,35 @@ async function iniciarVista(nit,nombre,direccion){
                funciones.AvisoError('Especifique el cliente a quien se carga la cotización');
            }else{
                funciones.ObtenerUbicacion('lbDocLat','lbDocLong')
-               $('#ModalFinalizarPedido').modal('show');    
-               
+               //$('#ModalFinalizarPedido').modal('show');    
+               funciones.Confirmacion('¿Está seguro que desea terminar esta Cotización?')
+               .then(()=>{
+                
+
+
+               })
            }
        }
        
     });
 
     let cmbCoddoc = document.getElementById('cmbCoddoc');
-    //classTipoDocumentos.comboboxTipodoc('PED','cmbCoddoc');
+
     cmbCoddoc.value = GlobalCoddoc;
-
-    //cmbCoddoc.addEventListener('change',async ()=>{
-      // await classTipoDocumentos.fcnCorrelativoDocumento('PED',cmbCoddoc.value,'txtCorrelativo');
-    //});
-
+  
     let cmbVendedor = document.getElementById('cmbVendedor');
 
     let btnFinalizarPedido = document.getElementById('btnFinalizarPedido');
     btnFinalizarPedido.addEventListener('click',async ()=>{
         fcnFinalizarPedido();
     });
-
-
-    let btnBusquedaClientes = document.getElementById('btnBusquedaClientes');
-    btnBusquedaClientes.addEventListener('click',()=>{
-        $('#ModalBusquedaCliente').modal('show');
-    });
+  
     
-    let txtBusquedaCliente = document.getElementById('txtBusquedaCliente');
-    txtBusquedaCliente.addEventListener('keyup',(e)=>{
-        if(e.code=='Enter'){
-            fcnBusquedaCliente('txtBusquedaCliente','tblResultadoBusquedaCliente');
-        }
-        if(e.code=='NumpadEnter'){
-            fcnBusquedaCliente('txtBusquedaCliente','tblResultadoBusquedaCliente');
-        }
-    });
-
-    document.getElementById('btnBuscarCliente').addEventListener('click',()=>{
-        fcnBusquedaCliente('txtBusquedaCliente','tblResultadoBusquedaCliente');
-    });
-
-    document.getElementById('btnNuevoCliente').addEventListener('click',()=>{
-        //$('#ModalNuevoCliente').modal('show');
-        if(txtNit.value!==''){
-            fcnBuscarCliente('txtNit','txtNombre','txtDireccion');
-        }else{
-            funciones.AvisoError('Escriba el NIT o código de cliente para comprobar');
-        };
-        
-    })
-
-     
-    // EVENTOS DE LOS BOTONES
-    document.body.addEventListener('keyup',(e)=>{
-        if(GlobalSelectedForm=='VENTAS'){
-            switch (e.keyCode) {
-                case 118: //f7
-                    btnCobrar.click();
-                    break;
-                case 113: //f2
-                    btnBusquedaClientes.click();
-                    //createNotification('hola mundo');
-                default:
-                    break;
-            }    
-        }
-    });
-
-    // carga el grid
-   
-    
-    //await classTipoDocumentos.fcnCorrelativoDocumento('PED',cmbCoddoc.value,'txtCorrelativo');
     await fcnCargarGridTempVentas('tblGridTempVentas');
 
     cmbVendedor.value = GlobalUsuario;
 
-    //fcnCargarComboTipoPrecio();
-  
-    // inicializa la calculadora de cantidad
-    //iniciarModalCantidad();
+
     addEventsModalCambioCantidad();
     fcnIniciarModalCantidadProductos();
 
@@ -948,7 +905,6 @@ function fcnIniciarModalCantidadProductos(){
         GlobalSelectedCantidad = Number(txtCantidad.value);
         let totalunidades = (Number(GlobalSelectedEquivale) * Number(GlobalSelectedCantidad));
         let totalexento = GlobalSelectedCantidad * GlobalSelectedExento;
-
         
         
         fcnAgregarProductoVenta(GlobalSelectedCodprod,GlobalSelectedDesprod,GlobalSelectedCodmedida,GlobalSelectedCantidad,GlobalSelectedEquivale,totalunidades,GlobalSelectedCosto,GlobalSelectedPrecio,totalexento);
@@ -1267,6 +1223,7 @@ async function fcnBuscarCliente(idNit,idNombre,idDireccion){
     let nombre = document.getElementById(idNombre);
     let direccion = document.getElementById(idDireccion);
 
+
     axios.get('/ventas/buscarcliente?empnit=' + GlobalEmpnit + '&nit=' + nit.value  + '&app=' + GlobalSistema)
     .then((response) => {
         const data = response.data;
@@ -1401,11 +1358,6 @@ async function fcnGuardarNuevoCliente(form){
 //FINALIZAR PEDIDO
 async function fcnFinalizarPedido(){
     
-    if(Number(GlobalTotalDocumento)<Number(GlobalVentaMinima)){
-        funciones.AvisoError('Pedido menor al mínimo de venta');
-        funciones.hablar('Advertencia. Este pedido es menor al mínimo de venta permitido');
-        //socket.emit('avisos','venta menor al minimo', `El vendedor ${GlobalUsuario} ha intentado ingresar un pedido de ${funciones.setMoneda(GlobalTotalDocumento,'Q')}`);
-    };
 
     let codcliente = GlobalSelectedCodCliente;
     let ClienteNombre = document.getElementById('txtNombre').value;
@@ -1413,7 +1365,7 @@ async function fcnFinalizarPedido(){
     let obs = document.getElementById('txtEntregaObs').value; 
     let direntrega = "SN"; //document.getElementById('txtEntregaDireccion').value; //CAMPO MATSOLI
     let codbodega = GlobalCodBodega;
-    let cmbTipoEntrega = document.getElementById('cmbEntregaConcre').value; //campo TRANSPORTE
+    let cmbTipoEntrega = 'CON' //document.getElementById('cmbEntregaConcre').value; //campo TRANSPORTE
 
 
     let txtFecha = new Date(document.getElementById('txtFecha').value);
@@ -1440,18 +1392,16 @@ async function fcnFinalizarPedido(){
     let latdoc = document.getElementById('lbDocLat').innerText;
     let longdoc = document.getElementById('lbDocLong').innerText;
 
-    funciones.Confirmacion('¿Está seguro que desea Finalizar este Pedido')
+    funciones.Confirmacion('¿Está seguro que desea Finalizar esta Cotización?')
     .then((value)=>{
         if(value==true){
-            setLog(`<label class="text-danger">Creando el pedido a enviar...</label>`,'rootWait');
-            $('#modalWait').modal('show');
-            
-            //document.getElementById('btnFinalizarPedido').innerHTML = GlobalLoader;
            
+            //$('#modalWait').modal('show');
+           
+               
             gettempDocproductos(GlobalUsuario)
             .then((response)=>{
                 
-                setLog(`<label class="text-info">Pedido creado, enviado pedido...</label>`,'rootWait');
                 //,,obs,usuario,codven
                 axios.post('/ventas/insertventa', {
                     jsondocproductos:JSON.stringify(response),
@@ -1527,20 +1477,20 @@ async function fcnFinalizarPedido(){
                             //elimina el temp ventas asociado al empleado
                             deleteTempVenta(GlobalUsuario)
     
-                            $('#modalWait').modal('hide');
+                            //$('#modalWait').modal('hide');
 
                             //prepara todo para un nuevo pedido
                             fcnNuevoPedido();
                         })
                         .catch(()=>{
-                            funciones.AvisoError('No se pudo guardar este pedido')
-                            $('#modalWait').modal('hide');
+                            funciones.AvisoError('No se pudo guardar esta Cotización')
+                            //$('#modalWait').modal('hide');
                         })
 
                     }else{
                         
 
-                        funciones.Aviso('Pedido Generado Exitosamente !!!')
+                        funciones.Aviso('Cotización Generada Exitosamente !!!')
                        
                         document.getElementById('btnEntregaCancelar').click();
                                                
