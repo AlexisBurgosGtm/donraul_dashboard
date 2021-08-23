@@ -33,6 +33,33 @@ function getView(){
         },
         listadoCotizaciones: ()=>{
             return `
+            <div class="row card shadow p-4">        
+                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-right">
+                    <div class="form-group">
+                        <label>Mes y Año</label>
+                        <div class="input-group">
+                            <select class="form-control shadow negrita input-sm" id="cmbMeses">
+                                <option value="10">Octubre</option>
+                            </select>
+                            <select class="form-control shadow negrita input-sm" id="cmbAnio">
+                                <option value="2019">2019</option>
+                                <option value="2020">2020</option>
+                                <option value="2021">2021</option>
+                                <option value="2022">2022</option>
+                                <option value="2023">2023</option>
+                                <option value="2024">2024</option>
+                                <option value="2025">2025</option>
+                                <option value="2026">2026</option>
+                                <option value="2027">2027</option>
+                                <option value="2028">2028</option>
+                                <option value="2029">2029</option>
+                                <option value="2030">2030</option>
+                            </select>
+                        </div>
+                    </div>                              
+                </div>
+        
+            </div>
                     <div class="table-responsive">
                         <table class="table table-responsive table-striped">
                             <thead class="bg-trans-gradient text-white">
@@ -786,8 +813,8 @@ async function iniciarVista(nit,nombre,direccion){
                                  
                funciones.Confirmacion('¿Está seguro que desea terminar esta Cotización?')
                .then(()=>{
-                
-
+                    btnCobrar.innerHTML = "<i class='fal fa-save fa-spin'></i>";
+                    btnCobrar.disabled = true;
 
                })
            }
@@ -818,29 +845,34 @@ async function iniciarVista(nit,nombre,direccion){
     
 
     //METODOS NUEVOS 
+
+    //TAB LISTADOS
+    let cmbMeses = document.getElementById('cmbMeses');
+    let cmbAnio = document.getElementById('cmbAnio');
+
+    cmbMeses.innerHTML = funciones.ComboMeses();
+    cmbAnio.innerHTML = funciones.ComboAnio();
+    
+    let f = new Date();
+    cmbAnio.value = f.getFullYear().toString();
+    cmbMeses.value = f.getMonth()+1;
+
+    cmbAnio.addEventListener('change', ()=>{
+        getListadoCotizaciones('tblHistorial',cmbAnio.value,cmbMeses.value);
+    });
+    cmbMeses.addEventListener('change', ()=>{
+        getListadoCotizaciones('tblHistorial',cmbAnio.value,cmbMeses.value);
+    });
+
+    getListadoCotizaciones('tblHistorial',cmbAnio.value,cmbMeses.value)
+
     let btnNuevaCotizacion = document.getElementById('btnNuevaCotizacion');
     btnNuevaCotizacion.addEventListener('click',()=>{
         document.getElementById('btnTabProductos').click();
     });
 
-    let btnAtrasCotizacion = document.getElementById('btnAtrasCotizacion');
-    btnAtrasCotizacion.addEventListener('click',()=>{
-        document.getElementById('btnTabListado').click();
-    });
 
-    let btnAtrasCotizacionGrid = document.getElementById('btnAtrasCotizacionGrid');
-    btnAtrasCotizacionGrid.addEventListener('click',()=>{
-        document.getElementById('btnTabProductos').click();
-    });
-
-    let btnFinalizarCotizacion = document.getElementById('btnFinalizarCotizacion');
-    btnFinalizarCotizacion.addEventListener('click',()=>{
-        document.getElementById('btnTabCliente').click();
-    })
-
-    getListadoCotizaciones('tblHistorial',2021,8)
-
-    
+    //TAB DETALLE COTIZACIÓN    
     let btnBajarProductos = document.getElementById('btnBajarProductos');
     btnBajarProductos.addEventListener('click',()=>{
        console.log('Deberia estar girando...')
@@ -863,6 +895,24 @@ async function iniciarVista(nit,nombre,direccion){
    
        
     })
+
+    let btnAtrasCotizacion = document.getElementById('btnAtrasCotizacion');
+    btnAtrasCotizacion.addEventListener('click',()=>{
+        document.getElementById('btnTabListado').click();
+    });
+
+    //TAB FINALIZAR COTIZACION
+    let btnAtrasCotizacionGrid = document.getElementById('btnAtrasCotizacionGrid');
+    btnAtrasCotizacionGrid.addEventListener('click',()=>{
+        document.getElementById('btnTabProductos').click();
+    });
+
+    let btnFinalizarCotizacion = document.getElementById('btnFinalizarCotizacion');
+    btnFinalizarCotizacion.addEventListener('click',()=>{
+        document.getElementById('btnTabCliente').click();
+    });
+
+
 
     funciones.slideAnimationTabs();
     
@@ -1662,7 +1712,8 @@ function getListadoCotizaciones(idContenedor,anio,mes){
 
     axios.post('/cotizaciones/listado', {
         anio:anio,
-        mes:mes
+        mes:mes,
+        coddoc:GlobalCoddoc
     })
     .then((response) => {
         const data = response.data.recordset;

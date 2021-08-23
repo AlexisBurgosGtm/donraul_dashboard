@@ -5,12 +5,12 @@ const router = express.Router();
 
 router.post("/listado", async(req,res)=>{
 
-    const {mes,anio}  = req.body;
+    const {mes,anio,coddoc}  = req.body;
 
     let qry = '';
     qry = `SELECT CODDOC, CORRELATIVO,FECHA, CLIENTE, DIRECCION, EMAIL, OBS, TELEFONO, FLETE, TOTALPRECIO 
     FROM DONRAUL_COTIZACIONES 
-    WHERE ANIO=${anio} AND MES=${mes}`
+    WHERE CODDOC='${coddoc}' AND ANIO=${anio} AND MES=${mes}`
     
     execute.Query(res,qry);
 
