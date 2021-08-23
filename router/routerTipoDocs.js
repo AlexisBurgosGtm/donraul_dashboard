@@ -25,13 +25,25 @@ router.get("/tipopedido", async(req,res)=>{
 
 });
 
-// VENTAS BUSCAR PRODUCTO POR DESCRIPCION
+
 router.get("/correlativodoc", async(req,res)=>{
     const {app,empnit,tipo,coddoc} = req.query;
         
     let qry ='';
 
     qry = `SELECT CODDOC,CORRELATIVO FROM ME_TIPODOCUMENTOS WHERE TIPODOC='${tipo}' AND CODDOC='${coddoc}'`     
+    
+    execute.Query(res,qry);
+
+});
+
+
+router.get("/correlativocot", async(req,res)=>{
+    const {empnit,coddoc} = req.query;
+        
+    let qry ='';
+
+    qry = `SELECT CODDOC,CORRELATIVO FROM DONRAUL_TIPODOC WHERE CODDOC='${coddoc}'`     
     
     execute.Query(res,qry);
 

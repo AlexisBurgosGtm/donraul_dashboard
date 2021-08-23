@@ -70,6 +70,21 @@ let classTipoDocumentos = {
         });
 
         
+    },
+    fcnCorrelativoCot: async(coddoc,idContainerCorrelativo)=>{
+        
+        let correlativo = document.getElementById(idContainerCorrelativo);
+    
+        axios.get('/tipodocumentos/correlativocot?empnit=' + GlobalEmpnit + '&coddoc=' + coddoc)
+        .then((response) => {
+            const data = response.data;        
+            data.recordset.map((rows)=>{
+                correlativo.value = `${rows.CORRELATIVO}`
+            })            
+        }, (error) => {
+            correlativo.value = 0;
+            console.log(error);
+        });
     }
 
 }

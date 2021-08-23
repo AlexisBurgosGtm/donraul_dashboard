@@ -58,6 +58,7 @@ function getView(){
         <div class="row">
 
             <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 card p-4">
+                <label class="negrita">Datos del cliente</label>
                 <div class="input-group">
                     <input id="txtNit" type="text" ref="txtNit" class="form-control  text-small" placeholder="Código del cliente.." aria-label="" aria-describedby="button-addon4" />
                     <div class="input-group-prepend">
@@ -73,8 +74,10 @@ function getView(){
             </div>
 
             <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 card p-4 shadow">
+                <label class="negrita">Datos del documento</label>
+               
                 <div class="input-group">
-                        <select class="form-control text-small" id="cmbCoddoc">
+                        <select class="form-control text-small input-sm" id="cmbCoddoc">
                             <option value="COTIZ">COTIZACION 1</option>
                             <option value="COTZ2">COTIZACION 2</option>
                             <option value="COTZ3">COTIZACION 3</option>
@@ -87,8 +90,22 @@ function getView(){
                             <option value="COT10">COTIZACION 10</option>
                         </select>
                         <div class="input-group-prepend">
-                            <input type="text" class="form-control text-small" value="0" id="txtCorrelativo" readonly="true">
+                            <input type="text" class="form-control text-small input-sm" value="0" id="txtCorrelativo" readonly="true">
                         </div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" class="form-control bg-subtlelight pl-4 text-sm" id="txtFecha">
+                </div>
+                
+                <div class="form-group">
+                    <label>Creado por..</label>
+                    <input type="text" class="form-control text-small" id="cmbVendedor">
+                </div>
+                <div class="form-group">
+                    <label>Total Cotización:</label>
+                    <h1 class="text-danger" id="lbTotalCotizacion">-</h1>
                 </div>
             </div>
 
@@ -98,43 +115,26 @@ function getView(){
 
                    
         <div class="row">
-            <div class="col-6 card p-4 shadow">
-                <div class="form-group">
-                    <label>Fecha</label>
-                    <input type="date" class="form-control bg-subtlelight pl-4 text-sm" id="txtFecha">
-                </div>
-
-            </div>
-            <div class="col-6 card p-4 shadow">
+                  
+            <div class="col-md-6 col-lg-6 col-xl-6 col-sm-12 card p-4 shadow">
+                <label class="negrita">Datos de la entrega</label>
                 <div class="form-group">
                     <label>Fecha Entrega:</label>
                     <input type="date" class="form-control" id="txtEntregaFecha">
                 </div>
-            </div>
-        </div>
-        
-        <hr class="solid">
-        
-        <div class="row">
-            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 card p-4 shadow">
-                <div class="form-group">
-                    <label>Creado por..</label>
-                    <input type="text" class="form-control" id="cmbVendedor">
-                </div>
-            </div>              
-        </div>
 
-        <hr class="solid">
-        
-        <div class="row">
-            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-4 card p-4 shadow">
                 <div class="form-group">
                     <label>Observaciones</label>
                     <textarea rows="4" cols="80" class="form-control" id="txtEntregaObs" placeholder="Escriba aqui sus observaciones..."></textarea>
-                </div>     
-            </div>
-        </div>
+                </div>   
 
+            </div>
+
+        </div>
+        
+        <hr class="solid">
+        
+ 
         <div class="row">
             <label class="text-white" id="lbDocLat">0</label>
             <label class="text-white" id="lbDocLong">0</label class="text-white">
@@ -148,9 +148,8 @@ function getView(){
                     </button>    
                 </div>
                 <div class="col-6">
-                    <button class="btn btn-outline-danger btn-lg waves-themed waves-effect shadow" id="btnCobrar">
-                        <i class="fal fa-search"></i>
-                        TERMINAR
+                    <button class="btn btn-info waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnCobrar">
+                        <i class="fal fa-save"></i>                    
                     </button>  
                 </div>
             </div>
@@ -776,16 +775,15 @@ async function iniciarVista(nit,nombre,direccion){
 
     let btnCobrar = document.getElementById('btnCobrar');
     btnCobrar.addEventListener('click',()=>{
-       
-        
-        if(btnCobrar.innerText=='Terminar'){
+               
+        if(document.getElementById('lbTotalCotizacion').innerText=='Q 0'){
             funciones.AvisoError('No puede finalizar una cotización sin productos')
         }else{
            if(txtNit.value==''){
                funciones.AvisoError('Especifique el cliente a quien se carga la cotización');
            }else{
                funciones.ObtenerUbicacion('lbDocLat','lbDocLong')
-               //$('#ModalFinalizarPedido').modal('show');    
+                                 
                funciones.Confirmacion('¿Está seguro que desea terminar esta Cotización?')
                .then(()=>{
                 
@@ -797,22 +795,18 @@ async function iniciarVista(nit,nombre,direccion){
        
     });
 
+    //CODDOC
     let cmbCoddoc = document.getElementById('cmbCoddoc');
-
     cmbCoddoc.value = GlobalCoddoc;
-  
-    let cmbVendedor = document.getElementById('cmbVendedor');
-
-    let btnFinalizarPedido = document.getElementById('btnFinalizarPedido');
-    btnFinalizarPedido.addEventListener('click',async ()=>{
-        fcnFinalizarPedido();
+    await classTipoDocumentos.fcnCorrelativoCot(cmbCoddoc.value,'txtCorrelativo');
+    cmbCoddoc.addEventListener('change',()=>{
+        classTipoDocumentos.fcnCorrelativoCot(cmbCoddoc.value,'txtCorrelativo');
     });
-  
     
-    await fcnCargarGridTempVentas('tblGridTempVentas');
-
+    let cmbVendedor = document.getElementById('cmbVendedor');
     cmbVendedor.value = GlobalUsuario;
 
+    await fcnCargarGridTempVentas('tblGridTempVentas'); 
 
     addEventsModalCambioCantidad();
     fcnIniciarModalCantidadProductos();
@@ -854,7 +848,7 @@ async function iniciarVista(nit,nombre,direccion){
        btnBajarProductos.disabled = true;
        document.getElementById('btnBajarProductos').innerHTML = '<i class="fal fa-sync fa-spin"></i>';
         //actulización de productos     
-     
+            funciones.showToast('Descargando el catálogo de precios');
             downloadProductosTodos()
             .then(()=>{
                 btnBajarProductos.innerHTML = '<i class="fal fa-sync"></i>';
@@ -869,7 +863,6 @@ async function iniciarVista(nit,nombre,direccion){
    
        
     })
-
 
     funciones.slideAnimationTabs();
     
@@ -1129,14 +1122,14 @@ async function fcnCargarGridTempVentas(idContenedor){
     tabla.innerHTML = GlobalLoader;
 
     let varTotalVenta = 0; let varTotalCosto = 0;
-
-    let btnCobrarTotal = document.getElementById('btnCobrar')
-    btnCobrarTotal.innerText =  'Terminar';
    
     let coddoc = document.getElementById('cmbCoddoc').value;
     
     let containerTotalVenta = document.getElementById('txtTotalVenta');
     containerTotalVenta.innerHTML = '0';
+
+    let lbTotalCotizacion = document.getElementById('lbTotalCotizacion');
+    lbTotalCotizacion.innerText = '-';
 
     try {
         selectTempventas(GlobalUsuario)
@@ -1179,13 +1172,13 @@ async function fcnCargarGridTempVentas(idContenedor){
            GlobalTotalDocumento = varTotalVenta;
            GlobalTotalCostoDocumento = varTotalCosto;
            containerTotalVenta.innerHTML = `${funciones.setMoneda(GlobalTotalDocumento,'Q ')}`;
-           btnCobrarTotal.innerHTML = '<h1>Terminar : ' + funciones.setMoneda(GlobalTotalDocumento,'Q ') + '</h1>';
+           lbTotalCotizacion.innerText =  funciones.setMoneda(GlobalTotalDocumento,'Q ');
         })
     } catch (error) {
         console.log('NO SE LOGRO CARGAR LA LISTA ' + error);
         tabla.innerHTML = 'No se logró cargar la lista...';
         containerTotalVenta.innerHTML = '0';
-        btnCobrarTotal.innerText =  'Terminar';
+        lbTotalCotizacion.innerText = '-';
     }
 };
 
@@ -1363,6 +1356,7 @@ async function fcnFinalizarPedido(){
     let ClienteNombre = document.getElementById('txtNombre').value;
     let dirclie = document.getElementById('txtDireccion').value; // CAMPO DIR_ENTREGA
     let obs = document.getElementById('txtEntregaObs').value; 
+    obs = funciones.quitarCaracteres2(obs);
     let direntrega = "SN"; //document.getElementById('txtEntregaDireccion').value; //CAMPO MATSOLI
     let codbodega = GlobalCodBodega;
     let cmbTipoEntrega = 'CON' //document.getElementById('cmbEntregaConcre').value; //campo TRANSPORTE
