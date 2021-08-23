@@ -775,7 +775,7 @@ router.post("/insertventa", async (req,res)=>{
   
     let nuevocorrelativo = Number(correlativo) + 1;
 
-    let qrycorrelativo =`   UPDATE DONRAUL_TIPODOC SET CORRELATIVO=${nuevocorrelativo} WHERE CODDOC='${coddoc}';
+    qrycorrelativo =`   UPDATE DONRAUL_TIPODOC SET CORRELATIVO=${nuevocorrelativo} WHERE CODDOC='${coddoc}';
                                     `
 
     let qryDoc = `
