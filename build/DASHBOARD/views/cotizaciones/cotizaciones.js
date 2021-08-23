@@ -909,6 +909,7 @@ async function iniciarVista(nit,nombre,direccion){
                     btnCobrar.innerHTML = "<i class='fal fa-save fa-spin'></i>";
                     btnCobrar.disabled = true;
 
+                    fcnFinalizarPedido
 
                })
            }
@@ -1405,6 +1406,8 @@ async function fcnGuardarNuevoCliente(form){
 //FINALIZAR PEDIDO
 async function fcnFinalizarPedido(){
     
+    let btnCobrarF = document.getElementById('btnCobrar')
+                       
 
     let codcliente = GlobalSelectedCodCliente;
     let ClienteNombre = document.getElementById('txtNombre').value;
@@ -1518,53 +1521,34 @@ async function fcnFinalizarPedido(){
                         insertVenta(datospedido)
                         .then(async()=>{
                             funciones.Aviso('La cotización será guardado localmente, recuerde enviarlo');
-                           
-                            document.getElementById('btnEntregaCancelar').click();
-                                                                           
-                            //actualiza la ubicación del empleado
-                            //await classEmpleados.updateMyLocation();
-                            
-                            //actualiza la última venta del cliente
-                            //apigen.updateClientesLastSale(nit,'VENTA');
-                            
-                            //elimina el temp ventas asociado al empleado
+                            btnCobrarF.innerHTML = "<i class='fal fa-save'></i>";
+                            btnCobrarF.disabled = false;
+
                             deleteTempVenta(GlobalUsuario)
     
-                            //$('#modalWait').modal('hide');
-
-                            //prepara todo para un nuevo pedido
                             fcnNuevoPedido();
                         })
                         .catch(()=>{
                             funciones.AvisoError('No se pudo guardar esta Cotización')
-                     
+                            btnCobrarF.innerHTML = "<i class='fal fa-save'></i>";
+                            btnCobrarF.disabled = false;
                         })
 
                     }else{
                         
-
                         funciones.Aviso('Cotización Generada Exitosamente !!!')
-                       
-                        document.getElementById('btnEntregaCancelar').click();
-                                               
-                        //actualiza la ubicación del empleado
-                        //await classEmpleados.updateMyLocation();
-                        
-                        //actualiza la última venta del cliente
-                        //apigen.updateClientesLastSale(nit,'VENTA');
-                        //elimina el temp ventas asociado al empleado
-                        deleteTempVenta(GlobalUsuario)
+                        btnCobrarF.innerHTML = "<i class='fal fa-save'></i>";
+                        btnCobrarF.disabled = false;
 
-                        $('#modalWait').modal('hide');
-                        //prepara todo para un nuevo pedido
+                        deleteTempVenta(GlobalUsuario)
+                       
                         fcnNuevoPedido();
                     }
                 }, (error) => {
                     console.log(error);
                    
                     funciones.AvisoError('Ha ocurrido un error y no se pudo enviar, se intentará guardar en el teléfono');
-                    //$('#modalWait').modal('hide');
-                    
+              
                                          //guarda el pedido localmente
                                          var datospedido = {
                                             CODSUCURSAL:GlobalCodSucursal,
@@ -1598,31 +1582,27 @@ async function fcnFinalizarPedido(){
                                         .then(async()=>{
                                             funciones.Aviso('El pedido será guardado localmente, recuerde enviarlo');
                                             
-                                            document.getElementById('btnEntregaCancelar').click();
-                                               
-                                            //actualiza la ubicación del empleado
-                                            await classEmpleados.updateMyLocation();
-                                            
-                                            //actualiza la última venta del cliente
-                                            apigen.updateClientesLastSale(nit,'VENTA');
-                                            //elimina el temp ventas asociado al empleado
+                                            btnCobrarF.innerHTML = "<i class='fal fa-save'></i>";
+                                            btnCobrarF.disabled = false;
+
                                             deleteTempVenta(GlobalUsuario)
                                            
-                                            $('#modalWait').modal('hide');
+                                         
                                             //prepara todo para un nuevo pedido
                                             fcnNuevoPedido();
                                         })
                                         .catch(()=>{
                                             funciones.AvisoError('No se pudo guardar este pedido')
+                                            btnCobrarF.innerHTML = "<i class='fal fa-save'></i>";
+                                            btnCobrarF.disabled = false;
                                         }) 
                                     });        
 
             })
             .catch((error)=>{
-                //$('#modalWait').modal('hide');
                 funciones.AvisoError('No pude crear la tabla de productos del pedido ' + error);
-                $('#modalWait').modal('hide');
-                //document.getElementById('btnFinalizarPedido').innerHTML = '<i class="fal fa-check mr-1"></i>Finalizar';
+                btnCobrarF.innerHTML = "<i class='fal fa-save'></i>";
+                btnCobrarF.disabled = false;
             })
 
              
@@ -1654,7 +1634,7 @@ async function fcnEliminarTempVentas(usuario){
 
 async function fcnNuevoPedido(){
     
-    classNavegar.inicio(GlobalTipoUsuario);
+    document.getElementById('btnTabListado').click();
     
 };
 
