@@ -782,67 +782,12 @@ async function iniciarVista(nit,nombre,direccion){
         }) 
     });
 
-    document.getElementById('txtBusqueda').addEventListener('keyup',(e)=>{
-        if(e.code=='Enter'){
-            fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
-            $('#ModalBusqueda').modal('show');
-        }
-        if(e.code=='NumpadEnter'){
-            fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
-            $('#ModalBusqueda').modal('show');
-        }
-    });
-
-    document.getElementById('btnBuscarProducto').addEventListener('click',()=>{
-        fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
-        $('#ModalBusqueda').modal('show');
-    });
-
-
-
-    let btnCobrar = document.getElementById('btnCobrar');
-    btnCobrar.addEventListener('click',()=>{
-               
-        if(document.getElementById('lbTotalCotizacion').innerText=='Q 0'){
-            funciones.AvisoError('No puede finalizar una cotización sin productos')
-        }else{
-           if(txtNit.value==''){
-               funciones.AvisoError('Especifique el cliente a quien se carga la cotización');
-           }else{
-               funciones.ObtenerUbicacion('lbDocLat','lbDocLong')
-                                 
-               funciones.Confirmacion('¿Está seguro que desea terminar esta Cotización?')
-               .then(()=>{
-                    btnCobrar.innerHTML = "<i class='fal fa-save fa-spin'></i>";
-                    btnCobrar.disabled = true;
-
-               })
-           }
-       }
-       
-    });
-
-    //CODDOC
-    let cmbCoddoc = document.getElementById('cmbCoddoc');
-    cmbCoddoc.value = GlobalCoddoc;
-    await classTipoDocumentos.fcnCorrelativoCot(cmbCoddoc.value,'txtCorrelativo');
-    cmbCoddoc.addEventListener('change',()=>{
-        classTipoDocumentos.fcnCorrelativoCot(cmbCoddoc.value,'txtCorrelativo');
-    });
-    
-    let cmbVendedor = document.getElementById('cmbVendedor');
-    cmbVendedor.value = GlobalUsuario;
-
-    await fcnCargarGridTempVentas('tblGridTempVentas'); 
+     
 
     addEventsModalCambioCantidad();
     fcnIniciarModalCantidadProductos();
 
-    //carga los datos del cliente
-    document.getElementById('txtNit').value = nit;
-    document.getElementById('txtNombre').value = nombre;
-    document.getElementById('txtDireccion').value = direccion;
-    
+        
 
     //METODOS NUEVOS 
 
@@ -872,7 +817,25 @@ async function iniciarVista(nit,nombre,direccion){
     });
 
 
-    //TAB DETALLE COTIZACIÓN    
+    //TAB DETALLE COTIZACIÓN
+    document.getElementById('txtBusqueda').addEventListener('keyup',(e)=>{
+        if(e.code=='Enter'){
+            fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
+            $('#ModalBusqueda').modal('show');
+        }
+        if(e.code=='NumpadEnter'){
+            fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
+            $('#ModalBusqueda').modal('show');
+        }
+    });
+
+    document.getElementById('btnBuscarProducto').addEventListener('click',()=>{
+        fcnBusquedaProducto('txtBusqueda','tblResultadoBusqueda','cmbTipoPrecio');
+        $('#ModalBusqueda').modal('show');
+    });
+
+    await fcnCargarGridTempVentas('tblGridTempVentas');
+
     let btnBajarProductos = document.getElementById('btnBajarProductos');
     btnBajarProductos.addEventListener('click',()=>{
        console.log('Deberia estar girando...')
@@ -902,6 +865,22 @@ async function iniciarVista(nit,nombre,direccion){
     });
 
     //TAB FINALIZAR COTIZACION
+    //carga los datos del cliente
+    document.getElementById('txtNit').value = nit;
+    document.getElementById('txtNombre').value = nombre;
+    document.getElementById('txtDireccion').value = direccion;
+
+    let cmbCoddoc = document.getElementById('cmbCoddoc');
+    cmbCoddoc.value = GlobalCoddoc;
+    await classTipoDocumentos.fcnCorrelativoCot(cmbCoddoc.value,'txtCorrelativo');
+    cmbCoddoc.addEventListener('change',()=>{
+        classTipoDocumentos.fcnCorrelativoCot(cmbCoddoc.value,'txtCorrelativo');
+    });
+       
+    let cmbVendedor = document.getElementById('cmbVendedor');
+    cmbVendedor.value = GlobalUsuario;
+    
+
     let btnAtrasCotizacionGrid = document.getElementById('btnAtrasCotizacionGrid');
     btnAtrasCotizacionGrid.addEventListener('click',()=>{
         document.getElementById('btnTabProductos').click();
@@ -910,6 +889,31 @@ async function iniciarVista(nit,nombre,direccion){
     let btnFinalizarCotizacion = document.getElementById('btnFinalizarCotizacion');
     btnFinalizarCotizacion.addEventListener('click',()=>{
         document.getElementById('btnTabCliente').click();
+    });
+
+
+    let btnCobrar = document.getElementById('btnCobrar');
+    btnCobrar.addEventListener('click',()=>{
+               
+        if(document.getElementById('lbTotalCotizacion').innerText=='Q 0'){
+            funciones.AvisoError('No puede finalizar una cotización sin productos')
+        }else{
+           if(txtNit.value==''){
+               funciones.AvisoError('Especifique el cliente a quien se carga la cotización');
+           }else{
+               funciones.ObtenerUbicacion('lbDocLat','lbDocLong')
+                                 
+               funciones.Confirmacion('¿Está seguro que desea terminar esta Cotización?')
+               .then(()=>{
+                    funciones.showToast('Enviado cotización...');
+                    btnCobrar.innerHTML = "<i class='fal fa-save fa-spin'></i>";
+                    btnCobrar.disabled = true;
+
+
+               })
+           }
+       }
+       
     });
 
 
