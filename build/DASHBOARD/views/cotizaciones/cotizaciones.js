@@ -1408,13 +1408,16 @@ async function fcnFinalizarPedido(){
 
     let codcliente = GlobalSelectedCodCliente;
     let ClienteNombre = document.getElementById('txtNombre').value;
-    let dirclie = document.getElementById('txtDireccion').value; // CAMPO DIR_ENTREGA
+    let dirclie = document.getElementById('txtDireccion').value;
+    dirclie = funciones.quitarCaracteres2(dirclie);
+    let telefono = document.getElementById('txtTelefono').value  || '000';
+    let email = document.getElementById('txtEmail').value || 'sn@gmail.com';
     let obs = document.getElementById('txtEntregaObs').value; 
     obs = funciones.quitarCaracteres2(obs);
     let direntrega = "SN"; //document.getElementById('txtEntregaDireccion').value; //CAMPO MATSOLI
     let codbodega = GlobalCodBodega;
     let cmbTipoEntrega = 'CON' //document.getElementById('cmbEntregaConcre').value; //campo TRANSPORTE
-
+    let flete = 0;
 
     let txtFecha = new Date(document.getElementById('txtFecha').value);
     let anio = txtFecha.getFullYear();
@@ -1443,10 +1446,7 @@ async function fcnFinalizarPedido(){
     funciones.Confirmacion('¿Está seguro que desea Finalizar esta Cotización?')
     .then((value)=>{
         if(value==true){
-           
-            //$('#modalWait').modal('show');
-           
-               
+                   
             gettempDocproductos(GlobalUsuario)
             .then((response)=>{
                 
@@ -1464,10 +1464,13 @@ async function fcnFinalizarPedido(){
                     fechaentrega:fechaentrega,
                     formaentrega:cmbTipoEntrega,
                     codbodega:codbodega,
-                    codcliente: codcliente,
+                    codcliente: 0,//codcliente,
                     nomclie:ClienteNombre,
+                    telefono:telefono,
+                    email:email,
                     totalcosto:GlobalTotalCostoDocumento,
                     totalprecio:GlobalTotalDocumento,
+                    flete:flete,
                     nitclie:nit,
                     dirclie:dirclie,
                     obs:obs,
@@ -1479,10 +1482,9 @@ async function fcnFinalizarPedido(){
                 })
                 .then(async(response) => {
                     const data = response.data;
-                    if (data.rowsAffected[0]==0){
-                        
+                    if (data.rowsAffected[0]==0){      
                      
-                        funciones.AvisoError('No se logró Enviar este pedido, se intentará guardarlo en el teléfono');
+                        funciones.AvisoError('No se logró Enviar esta cotización, se intentará guardarlo en el teléfono');
                         
                         //guarda el pedido localmente
                         var datospedido = {
@@ -1499,8 +1501,11 @@ async function fcnFinalizarPedido(){
                             NOMCLIE:ClienteNombre,
                             TOTALCOSTO:GlobalTotalCostoDocumento,
                             TOTALPRECIO:GlobalTotalDocumento,
+                            FLETE:flete,
                             NITCLIE:nit,
                             DIRCLIE:dirclie,
+                            TELEFONO:telefono,
+                            EMAIL:email,
                             OBS:obs,
                             DIRENTREGA:direntrega,
                             USUARIO:GlobalUsuario,
@@ -1512,15 +1517,15 @@ async function fcnFinalizarPedido(){
         
                         insertVenta(datospedido)
                         .then(async()=>{
-                            funciones.Aviso('El pedido será guardado localmente, recuerde enviarlo');
+                            funciones.Aviso('La cotización será guardado localmente, recuerde enviarlo');
                            
                             document.getElementById('btnEntregaCancelar').click();
                                                                            
                             //actualiza la ubicación del empleado
-                            await classEmpleados.updateMyLocation();
+                            //await classEmpleados.updateMyLocation();
                             
                             //actualiza la última venta del cliente
-                            apigen.updateClientesLastSale(nit,'VENTA');
+                            //apigen.updateClientesLastSale(nit,'VENTA');
                             
                             //elimina el temp ventas asociado al empleado
                             deleteTempVenta(GlobalUsuario)
@@ -1532,7 +1537,7 @@ async function fcnFinalizarPedido(){
                         })
                         .catch(()=>{
                             funciones.AvisoError('No se pudo guardar esta Cotización')
-                            //$('#modalWait').modal('hide');
+                     
                         })
 
                     }else{
@@ -1543,10 +1548,10 @@ async function fcnFinalizarPedido(){
                         document.getElementById('btnEntregaCancelar').click();
                                                
                         //actualiza la ubicación del empleado
-                        await classEmpleados.updateMyLocation();
+                        //await classEmpleados.updateMyLocation();
                         
                         //actualiza la última venta del cliente
-                        apigen.updateClientesLastSale(nit,'VENTA');
+                        //apigen.updateClientesLastSale(nit,'VENTA');
                         //elimina el temp ventas asociado al empleado
                         deleteTempVenta(GlobalUsuario)
 
@@ -1571,12 +1576,15 @@ async function fcnFinalizarPedido(){
                                             FECHA:fecha,
                                             FECHAENTREGA:fechaentrega,
                                             FORMAENTREGA:cmbTipoEntrega,
-                                            CODCLIE: codcliente,
+                                            CODCLIE: 0,//codcliente,
                                             NOMCLIE:ClienteNombre,
                                             TOTALCOSTO:GlobalTotalCostoDocumento,
                                             TOTALPRECIO:GlobalTotalDocumento,
+                                            FLETE:flete,
                                             NITCLIE:nit,
                                             DIRCLIE:dirclie,
+                                            TELEFONO:telefono,
+                                            EMAIL:email,
                                             OBS:obs,
                                             DIRENTREGA:direntrega,
                                             USUARIO:GlobalUsuario,

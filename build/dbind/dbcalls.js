@@ -526,6 +526,8 @@ function dbSendPedido(id){
                                 totalcosto:rs.TOTALCOSTO,
                                 totalprecio:rs.TOTALPRECIO,
                                 nitclie:rs.NITCLIE,
+                                telefono:telefono,
+                                email:email,
                                 dirclie:rs.DIRCLIE,
                                 obs:rs.OBS,
                                 direntrega:rs.DIRENTREGA,

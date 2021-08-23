@@ -1,4 +1,4 @@
-const DbName = "dbdonraul2";
+const DbName = "dbdonraul3";
 
 var tblDocumentos = {
     name: 'documentos',
@@ -17,8 +17,11 @@ var tblDocumentos = {
         CODCLIE:{dataType: "string"},
         NOMCLIE:{dataType: "string"},
         DIRCLIE:{dataType: "string"},
+        TELEFONO:{dataType: "string"},
+        EMAIL:{dataType: "string"},
         TOTALCOSTO:{dataType: "number"},
         TOTALPRECIO:{dataType: "number"},
+        FLETE:{dataType: "number"},
         DIRENTREGA:{dataType: "string"},
         OBS:{dataType: "string"},
         USUARIO:{dataType: "string"},
