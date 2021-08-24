@@ -909,7 +909,7 @@ async function iniciarVista(nit,nombre,direccion){
                     btnCobrar.innerHTML = "<i class='fal fa-save fa-spin'></i>";
                     btnCobrar.disabled = true;
 
-                    fcnFinalizarPedido
+                    fcnFinalizarPedido();
 
                })
            }
