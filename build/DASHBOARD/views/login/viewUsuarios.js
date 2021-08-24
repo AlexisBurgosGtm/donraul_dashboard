@@ -91,7 +91,7 @@ function getView(){
                     <button class="btn btn-secondary" data-dismiss="modal">
                         <i class="fal fa-angle-double-left"></i>Cancelar
                     </button>
-                    <button class="btn btn-info">
+                    <button class="btn btn-info" id="btnGuardar">
                         <i class="fal fa-save"></i>Guardar
                     </button>
                 </div>
@@ -113,6 +113,40 @@ function addListeners(){
 
     getListado('tblListado');
 
+    let btnGuardar = document.getElementById('btnGuardar');
+    btnGuardar.addEventListener('click', ()=>{
+        funciones.Confirmacion('¿Está seguro que desea Guardar este Nuevo Usuario?')
+        .then((value)=>{
+            if(value==true){
+
+                let usuario = document.getElementById('txtUsuario').value;
+                let clave = document.getElementById('txtClave').value;
+                let nivel = document.getElementById('cmbNivel').value;
+                let coddoc = document.getElementById('cmbCoddoc').value;
+
+                btnGuardar.innerHTML = '<i class="fal fa-save fa-spin"></i>';
+                btnGuardar.disable = true;
+
+                insertUsuario(usuario,clave,nivel,coddoc)
+                .then(() => {
+                    funciones.Aviso('Usuario Creado Exitosamente!!');
+                    getListado('tblListado');
+
+                    btnGuardar.innerHTML = '<i class="fal fa-save"></i>';
+                    btnGuardar.disable = false;
+
+                    $("#ModalNuevo").modal('hide');
+
+                    cleanUserData();
+
+                })
+                .catch(() => {
+                    funciones.AvisoError('No se pudo crear este usuario')
+                })
+
+            }
+        })
+    });
 };
 
 function fcnIniciarVista(){
@@ -120,7 +154,6 @@ function fcnIniciarVista(){
     addListeners();
 
 };
-
 
 function getListado(idContenedor){
 
@@ -197,5 +230,35 @@ function deleteUsuario(id){
             });
     
         })
+
+};
+
+function insertUsuario(usuario,clave,nivel,coddoc){
+    return new Promise((resolve, reject)=>{
+        axios.post('/usuarios/insert', {
+            usuario:usuario,
+            clave:clave,
+            coddoc:coddoc,
+            nivel:nivel
+        })
+        .then((response) => {
+            const data = response.data;
+            if (data.rowsAffected[0]==0){
+                reject();
+            }else{
+                resolve();
+            }
+        }, (error) => {
+            console.log(error);
+            reject();
+        });
+
+    })
+
+};
+
+function cleanUserData(){
+  document.getElementById('txtUsuario').value = '';  
+  document.getElementById('txtPass').value = '';
 
 };
