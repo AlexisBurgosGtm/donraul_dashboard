@@ -1801,7 +1801,7 @@ function deleteCotizacion(coddoc, correlativo){
 
 function deleteCotizacionSelected(coddoc,correlativo){
     return new Promise((resolve, reject)=>{
-        axios.post('/ventas/tempVentastodos', {
+        axios.post('/cotizaciones/eliminar', {
             coddoc: coddoc,
             correlativo:correlativo
         })

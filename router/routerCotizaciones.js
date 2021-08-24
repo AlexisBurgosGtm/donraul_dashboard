@@ -3,6 +3,21 @@ const express = require('express');
 const router = express.Router();
 
 
+router.post("/eliminar", async(req,res)=>{
+
+    const {coddoc,correlativo}  = req.body;
+
+    let qry = '';
+    qry = `DELETE FROM DONRAUL_COTIZACIONES 
+    WHERE CODDOC='${coddoc}' AND CORRELATIVO=${correlativo};
+    DELETE FROM DONRAUL_COTIZACIONES_DET 
+    WHERE CODDOC='${coddoc}' AND CORRELATIVO=${correlativo};`
+    
+    execute.Query(res,qry);
+
+})
+
+
 router.post("/listado", async(req,res)=>{
 
     const {mes,anio,coddoc}  = req.body;
