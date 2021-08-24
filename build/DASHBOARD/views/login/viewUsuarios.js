@@ -116,8 +116,8 @@ function addListeners(){
 };
 
 function fcnIniciarVista(){
-    getview();
-    addlisteners();
+    getView();
+    addListeners();
 
 };
 
@@ -159,6 +159,6 @@ function getListado(idContenedor){
 
 function deleteUsuario(user,clave){
 
-    
+
 
 };
