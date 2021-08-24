@@ -7,6 +7,7 @@ let btnMenuCortes = document.getElementById('btnMenuCortes');
 let btnMapa = document.getElementById('btnMenuMapa');
 let btnMenuAgotados = document.getElementById('btnMenuAgotados');
 let btnMenuCotizaciones = document.getElementById('btnMenuCotizaciones');
+let btnMenuUsuarios = document.getElementById('btnMenuUsuarios');
 
 btnMenuInventarios.style = "visibility:hidden";
 btnMenuVentas.style = "visibility:hidden";
@@ -15,6 +16,7 @@ btnMenuCortes.style = "visibility:hidden";
 btnMenuMapa.style = "visibility:hidden";
 btnMenuAgotados.style = "visibility:hidden";
 btnMenuCotizaciones.style = "visibility:hidden";
+btnMenuUsuarios.style = "visibility:hidden";
 
 let btnMenuPrincipal = document.getElementById('btnMenuPrincipal');
 btnMenuPrincipal.addEventListener('click',()=>{
@@ -56,7 +58,11 @@ function InicializarBotonesMenu(){
 
           btnMenuCotizaciones.addEventListener('click',()=>{
             classNavegar.appCotizaciones();
-          })
+          });
+
+          btnMenuUsuarios.addEventListener('click',()=>{
+            classNavegar.usuarios();
+          });
                             
 }
 

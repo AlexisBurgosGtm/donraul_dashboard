@@ -8,6 +8,12 @@ let classNavegar = {
             })
         })
     },
+    usuarios: async()=>{
+        funciones.loadScript('./DASHBOARD/views/login/viewUsuarios.js','root')
+        .then(()=>{
+            fcnIniciarVista();
+        })
+    },
     agotados: async()=>{
             funciones.loadScript('./DASHBOARD/views/agotados.js','root')
             .then(()=>{
