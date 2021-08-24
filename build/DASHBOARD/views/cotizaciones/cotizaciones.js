@@ -1432,7 +1432,7 @@ async function fcnFinalizarPedido(){
     let direntrega = "SN"; //document.getElementById('txtEntregaDireccion').value; //CAMPO MATSOLI
     let codbodega = GlobalCodBodega;
     let cmbTipoEntrega = 'CON' //document.getElementById('cmbEntregaConcre').value; //campo TRANSPORTE
-    let flete = document.getElementById('txtFlete').value || 0;
+    let flete = Number(document.getElementById('txtFlete').value) || 0;
 
     let txtFecha = new Date(document.getElementById('txtFecha').value);
     let anio = txtFecha.getFullYear();
