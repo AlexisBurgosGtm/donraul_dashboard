@@ -45,7 +45,18 @@ router.post("/delete", async(req,res)=>{
 
 });
 
+//EDITAR
+router.post("/edit", async(req,res)=>{
 
+	const {usuario,clave,nivel,coddoc,id} = req.body;
+
+	let qr = `UPDATE COMMUNITY_USUARIOS SET USUARIO='${usuario}',
+				CLAVE='${clave}',APP='${nivel}',CODDOC='${coddoc}' 
+				WHERE ID=${id}`
+
+	execute.Query(res,qr);
+
+});
 
 
 module.exports = router;
