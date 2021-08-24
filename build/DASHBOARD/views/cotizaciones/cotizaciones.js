@@ -102,7 +102,22 @@ function getView(){
 
             <div class="col-sm-12 col-md-6 col-lg-6 col-xl-4 card p-4 shadow">
                 <label class="negrita">Datos del documento</label>
-               
+                <div class="row">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label>Total Cotización:</label>
+                            <h1 class="text-danger" id="lbTotalCotizacion">-</h1>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label>Flete:</label>
+                            <input type="number" class="form-control col-6" id="txtFlete" value=0>
+                        </div>
+                    </div>
+                </div>
+
+
                 <div class="input-group">
                         <select class="form-control text-small input-sm" id="cmbCoddoc">
                             <option value="COTIZ">COTIZACION 1</option>
@@ -130,10 +145,7 @@ function getView(){
                     <label>Creado por..</label>
                     <input type="text" class="form-control text-small" id="cmbVendedor">
                 </div>
-                <div class="form-group">
-                    <label>Total Cotización:</label>
-                    <h1 class="text-danger" id="lbTotalCotizacion">-</h1>
-                </div>
+              
             </div>
 
         </div>
@@ -842,7 +854,7 @@ async function iniciarVista(nit,nombre,direccion){
        console.log('Deberia estar girando...')
        
        btnBajarProductos.disabled = true;
-       document.getElementById('btnBajarProductos').innerHTML = '<i class="fal fa-sync fa-spin"></i>';
+       document.getElementById('btnBajarProductos').innerHTML = '<i class="fal fa-sync fa-spin fa-5x"></i>';
         //actulización de productos     
             funciones.showToast('Descargando el catálogo de precios');
             downloadProductosTodos()
@@ -903,9 +915,7 @@ async function iniciarVista(nit,nombre,direccion){
                funciones.AvisoError('Especifique el cliente a quien se carga la cotización');
            }else{
                funciones.ObtenerUbicacion('lbDocLat','lbDocLong')
-               funciones.showToast('Enviado cotización...');
-               btnCobrar.innerHTML = "<i class='fal fa-save fa-spin'></i>";
-               btnCobrar.disabled = true;
+               
 
                fcnFinalizarPedido();  
                
@@ -1403,6 +1413,12 @@ async function fcnGuardarNuevoCliente(form){
 //FINALIZAR PEDIDO
 async function fcnFinalizarPedido(){
     
+
+    funciones.showToast('Enviado cotización...');
+    document.getElementById('btnCobrar').innerHTML = "<i class='fal fa-save fa-spin'></i>";
+    document.getElementById('btnCobrar').disabled = true;
+
+
     let btnCobrarF = document.getElementById('btnCobrar')
                        
 
@@ -1417,7 +1433,7 @@ async function fcnFinalizarPedido(){
     let direntrega = "SN"; //document.getElementById('txtEntregaDireccion').value; //CAMPO MATSOLI
     let codbodega = GlobalCodBodega;
     let cmbTipoEntrega = 'CON' //document.getElementById('cmbEntregaConcre').value; //campo TRANSPORTE
-    let flete = 0;
+    let flete = document.getElementById('txtFlete').value || 0;
 
     let txtFecha = new Date(document.getElementById('txtFecha').value);
     let anio = txtFecha.getFullYear();
@@ -1634,12 +1650,14 @@ async function fcnNuevoPedido(){
     document.getElementById('btnTabListado').click();
     
     fcnCargarGridTempVentas('tblGridTempVentas');
+    let cmbAnio = document.getElementById('cmbAnio');let cmbMeses = document.getElementById('cmbMeses');
     getListadoCotizaciones('tblHistorial',cmbAnio.value,cmbMeses.value);
     
     document.getElementById('txtNit').value = 'CF';
     document.getElementById('txtNombre').value = 'CONSUMIDOR FINAL';
     document.getElementById('txtDireccion').value = 'CIUDAD';
-    document.getElementById('txtObs').value = 'SN';
+    document.getElementById('txtEntregaObs').value = 'SN';
+    document.getElementById('txtFlete').value = 0;
     classTipoDocumentos.fcnCorrelativoCot(document.getElementById('cmbCoddoc').value,'txtCorrelativo');
     
 };
@@ -1737,8 +1755,8 @@ function getListadoCotizaciones(idContenedor,anio,mes){
                     
                     </td>
                     <td>
-                        <button class="btn btn-info btn-sm btn-circle" onclick="">
-                            <i class="fal fa-list"></i>
+                        <button class="btn btn-danger btn-sm btn-circle" onclick="deleteCotizacion('${rows.CODDOC}',${rows.CORRELATIVO})">
+                            <i class="fal fa-trash"></i>
                         </button>
                     </td>
                 </tr>`      
@@ -1751,4 +1769,54 @@ function getListadoCotizaciones(idContenedor,anio,mes){
     });
     
     
-}
+};
+
+
+function deleteCotizacion(coddoc, correlativo){
+
+    funciones.Confirmacion('¿Está seguro que desea Eliminar esta Cotización?')
+    .then((value)=>{
+        if(value==true){
+            funciones.Confirmacion('¿Está PERFETAMENTE seguro que desea Eliminar esta Cotización?')
+            .then((value)=>{
+                if(value==true){
+        
+                    deleteCotizacionSelected(coddoc,correlativo)
+                    .then(()=>{
+                        funciones.Aviso('Cotización eliminada exitosamente!!');
+                        let cmbAnio = document.getElementById('cmbAnio');let cmbMeses = document.getElementById('cmbMeses');
+                        getListadoCotizaciones('tblHistorial',cmbAnio.value,cmbMeses.value);
+                    })
+                    .catch(()=>{
+                        funciones.AvisoError('No se pudo eliminar esta Cotización')
+                    })
+        
+                }
+            });
+        }
+    });
+
+};
+
+
+function deleteCotizacionSelected(coddoc,correlativo){
+    return new Promise((resolve, reject)=>{
+        axios.post('/ventas/tempVentastodos', {
+            coddoc: coddoc,
+            correlativo:correlativo
+        })
+        .then((response) => {
+            const data = response.data;
+            if (data.rowsAffected[0]==0){
+                reject();
+            }else{
+                resolve();
+            }
+        }, (error) => {
+            console.log(error);
+            reject();
+        });
+
+    })
+    
+};
