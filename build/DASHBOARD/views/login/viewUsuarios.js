@@ -18,7 +18,7 @@ function getView(){
                                     <td></td>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="tblListado">
                             
                             </tbody>
                         </table>
@@ -111,7 +111,7 @@ function addListeners(){
         $("#ModalNuevo").modal('show');
     });
 
-    getListado();
+    getListado('tblListado');
 
 };
 
@@ -141,7 +141,7 @@ function getListado(idContenedor){
                     <td>${rows.APP}</td>
                     <td>${rows.CODDOC}</td>
                     <td>
-                        <button class="btn btn-danger btn-sm btn-circle" onclick="deleteUsuario('${rows.USUARIO}','${rows.CLAVE}')">
+                        <button class="btn btn-danger btn-sm btn-circle" onclick="deleteUsuarioSeleccionado(${rows.ID})" id="btn${rows.ID}">
                             <i class="fal fa-trash"></i>
                         </button>
                     </td>
@@ -156,9 +156,46 @@ function getListado(idContenedor){
 
 };
 
+function deleteUsuarioSeleccionado(id){
+    funciones.Confirmacion('¿Está Seguro que desea ELIMINAR este usuario?')
+    .then((value)=>{
+        if(value==true){
 
-function deleteUsuario(user,clave){
+            let boton = document.getElementById('btn' + id.toString());
+            boton.innerHTML = '<i class="fal fa-trash fa-spin"></i>'; boton.disabled = true;
 
+            deleteUsuario(id)
+            .then(()=>{
+                funciones.Aviso('Usuario eliminado exitosamente');
+                getListado('tblListado');
+                boton.innerHTML = '<i class="fal fa-trash"></i>'; boton.disabled = false;
+            })
+            .catch((err)=>{
+                funciones.AvisoError('No se pudo eliminar este usuario')
+                boton.innerHTML = '<i class="fal fa-trash"></i>'; boton.disabled = false;
+            })
+        }
+    })
+};
 
+function deleteUsuario(id){
+    
+        return new Promise((resolve, reject)=>{
+            axios.post('/usuarios/delete', {
+                id:id
+            })
+            .then((response) => {
+                const data = response.data;
+                if (data.rowsAffected[0]==0){
+                    reject();
+                }else{
+                    resolve();
+                }
+            }, (error) => {
+                console.log(error);
+                reject();
+            });
+    
+        })
 
 };

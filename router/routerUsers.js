@@ -15,7 +15,7 @@ router.post("/login", async(req,res)=>{
 // LISTADO DE USUARIOS
 router.post("/listado", async(req,res)=>{
 
-	let qr = `SELECT USUARIO, CLAVE, APP, CODDOC FROM COMMUNITY_USUARIOS`
+	let qr = `SELECT ID, USUARIO, CLAVE, APP, CODDOC FROM COMMUNITY_USUARIOS`
 
 	execute.Query(res,qr);
 
@@ -26,8 +26,8 @@ router.post("/insert", async(req,res)=>{
 
 	const {usuario,clave,nivel,coddoc} = req.body;
 
-	let qr = `INSERT INTO COMMUNITY_USUARIOS (USUARIO,CLAVE,APP,CODDOC,SISTEMA) 
-	VALUES ('${usuario}','${clave}','${nivel}','${coddoc}','ISC');`
+	let qr = `INSERT INTO COMMUNITY_USUARIOS (USUARIO,CLAVE,APP,CODDOC,SISTEMA,TOKEN) 
+	VALUES ('${usuario}','${clave}','${nivel}','${coddoc}','ISC','DONRAUL');`
 
 	execute.Query(res,qr);
 
@@ -36,10 +36,10 @@ router.post("/insert", async(req,res)=>{
 // DELETE USUARIO
 router.post("/delete", async(req,res)=>{
 
-	const {usuario,clave} = req.body;
+	const {id} = req.body;
 	
 	let qr = `DELETE FROM COMMUNITY_USUARIOS
-				 WHERE USUARIO='${usuario}' AND CLAVE='${clave}';`
+				 WHERE ID=${id};`
 
 	execute.Query(res,qr);
 
