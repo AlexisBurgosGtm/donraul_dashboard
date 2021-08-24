@@ -854,7 +854,7 @@ async function iniciarVista(nit,nombre,direccion){
        console.log('Deberia estar girando...')
        
        btnBajarProductos.disabled = true;
-       document.getElementById('btnBajarProductos').innerHTML = '<i class="fal fa-sync fa-spin fa-5x"></i>';
+       document.getElementById('btnBajarProductos').innerHTML = '<i class="fal fa-sync fa-spin"></i>';
         //actulización de productos     
             funciones.showToast('Descargando el catálogo de precios');
             downloadProductosTodos()
@@ -1415,8 +1415,7 @@ async function fcnFinalizarPedido(){
     
 
     funciones.showToast('Enviado cotización...');
-    document.getElementById('btnCobrar').innerHTML = "<i class='fal fa-save fa-spin'></i>";
-    document.getElementById('btnCobrar').disabled = true;
+
 
 
     let btnCobrarF = document.getElementById('btnCobrar')
@@ -1462,7 +1461,10 @@ async function fcnFinalizarPedido(){
     funciones.Confirmacion('¿Está seguro que desea Finalizar esta Cotización?')
     .then((value)=>{
         if(value==true){
-                   
+
+            document.getElementById('btnCobrar').innerHTML = "<i class='fal fa-save fa-spin'></i>";
+            document.getElementById('btnCobrar').disabled = true;
+            
             gettempDocproductos(GlobalUsuario)
             .then((response)=>{
                 
