@@ -1410,7 +1410,7 @@ async function fcnGuardarNuevoCliente(form){
 };
 
 
-//FINALIZAR PEDIDO
+//FINALIZA LA COTIZACION
 async function fcnFinalizarPedido(){
     
 
@@ -1421,7 +1421,7 @@ async function fcnFinalizarPedido(){
     let btnCobrarF = document.getElementById('btnCobrar')
                        
 
-    let codcliente = GlobalSelectedCodCliente;
+    let codcliente = 0; // GlobalSelectedCodCliente;
     let ClienteNombre = document.getElementById('txtNombre').value;
     let dirclie = document.getElementById('txtDireccion').value;
     dirclie = funciones.quitarCaracteres2(dirclie);
