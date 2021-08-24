@@ -88,12 +88,15 @@ function getView(){
                     </div>
                 </div>
                 <div class="shortcut-menu align-left">
-                    <button class="btn btn-secondary" data-dismiss="modal">
+                    
+                    <button class="btn btn-secondary btn-lg" data-dismiss="modal">
                         <i class="fal fa-angle-double-left"></i>Cancelar
                     </button>
-                    <button class="btn btn-info" id="btnGuardar">
+
+                    <button class="btn btn-info btn-lg" id="btnGuardar">
                         <i class="fal fa-save"></i>Guardar
                     </button>
+
                 </div>
             </div>
             `
@@ -108,6 +111,7 @@ function addListeners(){
     
     let btnNuevo = document.getElementById('btnNuevo');
     btnNuevo.addEventListener('click', ()=>{
+        cleanUserData();
         $("#ModalNuevo").modal('show');
     });
 
@@ -120,7 +124,7 @@ function addListeners(){
             if(value==true){
 
                 let usuario = document.getElementById('txtUsuario').value;
-                let clave = document.getElementById('txtClave').value;
+                let clave = document.getElementById('txtPass').value;
                 let nivel = document.getElementById('cmbNivel').value;
                 let coddoc = document.getElementById('cmbCoddoc').value;
 
@@ -132,7 +136,7 @@ function addListeners(){
                     funciones.Aviso('Usuario Creado Exitosamente!!');
                     getListado('tblListado');
 
-                    btnGuardar.innerHTML = '<i class="fal fa-save"></i>';
+                    btnGuardar.innerHTML = '<i class="fal fa-save"></i>Guardar';
                     btnGuardar.disable = false;
 
                     $("#ModalNuevo").modal('hide');
@@ -147,6 +151,8 @@ function addListeners(){
             }
         })
     });
+
+
 };
 
 function fcnIniciarVista(){
