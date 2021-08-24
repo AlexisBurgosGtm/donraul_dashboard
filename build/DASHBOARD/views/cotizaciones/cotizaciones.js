@@ -835,6 +835,7 @@ async function iniciarVista(nit,nombre,direccion){
     });
 
     await fcnCargarGridTempVentas('tblGridTempVentas');
+    
 
     let btnBajarProductos = document.getElementById('btnBajarProductos');
     btnBajarProductos.addEventListener('click',()=>{
@@ -902,16 +903,12 @@ async function iniciarVista(nit,nombre,direccion){
                funciones.AvisoError('Especifique el cliente a quien se carga la cotización');
            }else{
                funciones.ObtenerUbicacion('lbDocLat','lbDocLong')
-                                 
-               funciones.Confirmacion('¿Está seguro que desea terminar esta Cotización?')
-               .then(()=>{
-                    funciones.showToast('Enviado cotización...');
-                    btnCobrar.innerHTML = "<i class='fal fa-save fa-spin'></i>";
-                    btnCobrar.disabled = true;
+               funciones.showToast('Enviado cotización...');
+               btnCobrar.innerHTML = "<i class='fal fa-save fa-spin'></i>";
+               btnCobrar.disabled = true;
 
-                    fcnFinalizarPedido();
-
-               })
+               fcnFinalizarPedido();  
+               
            }
        }
        
@@ -1635,6 +1632,15 @@ async function fcnEliminarTempVentas(usuario){
 async function fcnNuevoPedido(){
     
     document.getElementById('btnTabListado').click();
+    
+    fcnCargarGridTempVentas('tblGridTempVentas');
+    getListadoCotizaciones('tblHistorial',cmbAnio.value,cmbMeses.value);
+    
+    document.getElementById('txtNit').value = 'CF';
+    document.getElementById('txtNombre').value = 'CONSUMIDOR FINAL';
+    document.getElementById('txtDireccion').value = 'CIUDAD';
+    document.getElementById('txtObs').value = 'SN';
+    classTipoDocumentos.fcnCorrelativoCot(document.getElementById('cmbCoddoc').value,'txtCorrelativo');
     
 };
 
