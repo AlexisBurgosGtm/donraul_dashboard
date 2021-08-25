@@ -1413,13 +1413,8 @@ async function fcnGuardarNuevoCliente(form){
 //FINALIZA LA COTIZACION
 async function fcnFinalizarPedido(){
     
-
-    funciones.showToast('Enviado cotización...');
-
-
-
-    let btnCobrarF = document.getElementById('btnCobrar')
-                       
+   
+    let btnCobrarF = document.getElementById('btnCobrar')                      
 
     let codcliente = 0; // GlobalSelectedCodCliente;
     let ClienteNombre = document.getElementById('txtNombre').value;
@@ -1534,7 +1529,7 @@ async function fcnFinalizarPedido(){
                         };
         
                         insertVenta(datospedido)
-                        .then(async()=>{
+                        .then(()=>{
                             funciones.Aviso('La cotización será guardado localmente, recuerde enviarlo');
                             btnCobrarF.innerHTML = "<i class='fal fa-save'></i>";
                             btnCobrarF.disabled = false;
@@ -1594,7 +1589,7 @@ async function fcnFinalizarPedido(){
                                         };
                         
                                         insertVenta(datospedido)
-                                        .then(async()=>{
+                                        .then(()=>{
                                             funciones.Aviso('El pedido será guardado localmente, recuerde enviarlo');
                                             
                                             btnCobrarF.innerHTML = "<i class='fal fa-save'></i>";
