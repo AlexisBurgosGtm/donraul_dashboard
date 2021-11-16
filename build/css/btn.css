@@ -1,3 +1,17 @@
+.card-rounded{
+    border-top-right-radius: 15px;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;  
+}
+  
+  
+  .bg-amarillo {
+    background-color: beige;
+    font-weight: bold;
+  }
+
+
 @media print{
     .oculto-impresion, .oculto-impresion *{
         display:none !important;
@@ -49,6 +63,20 @@
 
 .foot {
     bottom: 0;
+}
+
+
+.btn-right { 
+    position: fixed;
+    z-index: 1088;
+    left: 21px;
+    bottom: 10px;
+}
+.btn-left { 
+    position: fixed;
+    z-index: 1088;
+    left: 21px;
+    bottom: 10px;
 }
 
 /* BOTON FLOTANTE ESQUINA DERECHA */

@@ -13,7 +13,8 @@ var routerSupervisor = require('./router/routerSupervisor');
 var routerapi = require('./router/routerapi');
 var routerEmpleados = require('./router/routerEmpleados');
 var routerTipoDocs = require('./router/routerTipoDocs');
-var routerCotizaciones = require('./router/routerCotizaciones')
+var routerCotizaciones = require('./router/routerCotizaciones');
+var routerFinca = require('./router/routerFinca');
 
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
@@ -54,6 +55,10 @@ app.get("/api/index",function(req,res){
 
 //Router para ISC
 app.use('/reports', routerISC);
+
+
+//Router para FINCA
+app.use('/finca', routerFinca);
 
 
 //Router para SUPERVISOR
