@@ -14,6 +14,16 @@ router.post("/select_razas", async(req,res)=>{
 });
 
 
+router.post("/insert_animal", async(req,res)=>{
+  
+    const {codigo,nombre,codraza,sexo,color,compra,fechanacimiento,codcateoria,cargada,obs,status} = req.body;
+
+    let qr = `INSERT INTO FINCA_ANIMALES (CODIGO,NOMBRE,CODRAZA,SEXO,COLOR, COMPRA,FECHANACIMIENTO,CODCATEGORIA,CARGADA,OBS,STATUS) 
+        VALUES ('${codigo}','${nombre}',${codraza},'${sexo}','${color}','${compra}','${fechanacimiento}',${codcateoria},'${cargada}','${obs}','${status}')`
+    
+      execute.Query(res,qr);
+  
+});
 
 
 

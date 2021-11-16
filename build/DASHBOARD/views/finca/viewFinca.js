@@ -54,7 +54,7 @@ function getView(){
                             <label class="modal-title text-danger h3" id="">Detalles del Nuevo Animal</label>
                         </div>
 
-                        <div class="modal-body p-4">
+                        <div class="modal-body p-4" style="font-size:80%">
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-group">
@@ -110,12 +110,28 @@ function getView(){
                                 
                                 <div class="col-sm-12 col-lg-6 col-xl-6 col-md-6">
                                     <div class="form-group">
-                                        <label>Categoría</label>
-                                        <select id="cmbCategoria" class="form-control">
-                                            
+                                        <label>Sexo</label>
+                                        <select id="cmbSexo" class="form-control">
+                                            <option value="MACHO">MACHO</option>
+                                            <option value="HEMBRA">HEMBRA</option>
                                         </select>
                                     </div>
                                 </div>
+
+                              
+                            </div>
+                            <br>
+                            <div class="form-group">
+                                <label>Categoría</label>
+                                <select id="cmbCategoria" class="form-control">
+                                    
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                    <label>Observaciones</label>
+                                    <textarea rows="2" id="txtObs" class="form-control" value="SN">
+                                    </textarea>
                             </div>
                             <br>
                             <div class="row">
