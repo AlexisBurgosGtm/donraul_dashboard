@@ -124,4 +124,6 @@ function getListadoAnimales(){
     </div>
     `
 
+    container.innerHTML = view;
+
 };
