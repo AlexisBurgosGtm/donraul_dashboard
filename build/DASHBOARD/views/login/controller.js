@@ -93,7 +93,11 @@ async function fcnIniciar(application){
                 break;
         case 'COTIZACION':
             classNavegar.appCotizaciones(); 
+                break;
+            case 'COTIZACION':
+                classNavegar.finca(); 
     
+                break;
         default:
             break;
     }

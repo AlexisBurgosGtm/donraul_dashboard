@@ -157,5 +157,16 @@ let classNavegar = {
             GlobalSelectedForm= 'COTIZACIONES';
             iniciarVista('CF','CONSUMIDOR FINAL','CIUDAD');
         })          
+    },
+    finca: async()=>{
+        funciones.loadView('../DASHBOARD/views/finca/viewFinca.html','root')
+        .then(()=>{
+            // carga los estilos de la vista
+            funciones.loadScript('./DASHBOARD/views/finca/viewFinca.js','root')
+            .then(()=>{
+                fcnIniciarVista();
+            })
+    
+        })
     }
 }

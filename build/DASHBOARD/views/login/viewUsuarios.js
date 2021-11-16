@@ -67,6 +67,7 @@ function getView(){
                                     <option value="GERENCIA">GERENCIA</option>
                                     <option value="COTIZACION">COTIZACIONES</option>
                                     <option value="VENTAS">VENTAS</option>
+                                    <option value="FINCA">FINCA</option>
                                     <option value="CONTABILIDAD">CONTABILIDAD</option>
                                 </select>
                             </div>
@@ -130,6 +131,7 @@ function getView(){
                                     <option value="GERENCIA">GERENCIA</option>
                                     <option value="COTIZACION">COTIZACIONES</option>
                                     <option value="VENTAS">VENTAS</option>
+                                    <option value="FINCA">FINCA</option>
                                     <option value="CONTABILIDAD">CONTABILIDAD</option>
                                 </select>
                             </div>
