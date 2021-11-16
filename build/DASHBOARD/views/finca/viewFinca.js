@@ -34,7 +34,7 @@ function getView(){
                 <div class="card-header">
                     <h5 class="">Listado de Animales</h5>
                 </div>
-                <div class="card-body" id="tblAnimales">
+                <div class="card-body card-deck" id="tblAnimales">
             
                 </div>
             </div>
