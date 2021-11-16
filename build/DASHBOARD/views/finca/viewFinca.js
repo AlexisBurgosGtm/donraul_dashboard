@@ -122,6 +122,39 @@ function getListadoAnimales(){
             <label>Edad (años)</label>
         </div>
     </div>
+    <div class="card p-3 shadow">
+        <div class="form-group">
+            <label>Nombre del Animal</label>
+        </div>
+        <div class="form-group">
+            <label>Clasificacion</label>
+        </div>
+        <div class="form-group">
+            <label>Edad (años)</label>
+        </div>
+    </div>
+    <div class="card p-3 shadow">
+        <div class="form-group">
+            <label>Nombre del Animal</label>
+        </div>
+        <div class="form-group">
+            <label>Clasificacion</label>
+        </div>
+        <div class="form-group">
+            <label>Edad (años)</label>
+        </div>
+    </div>
+    <div class="card p-3 shadow">
+        <div class="form-group">
+            <label>Nombre del Animal</label>
+        </div>
+        <div class="form-group">
+            <label>Clasificacion</label>
+        </div>
+        <div class="form-group">
+            <label>Edad (años)</label>
+        </div>
+    </div>
     `
 
     container.innerHTML = view;
