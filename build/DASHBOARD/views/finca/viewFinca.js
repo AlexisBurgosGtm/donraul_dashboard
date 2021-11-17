@@ -4,10 +4,12 @@ function getView(){
             return `
             <div class="panel-container show">
                 <div class="panel-content">
-                    <ul class="nav nav-pills nav-justified" role="tablist">
-                        <li class="nav-item hidden"><a class="nav-link active" data-toggle="tab" href="#panelInicio" id="btnTabInicio">Inicio</a></li>
-                        <li class="nav-item hidden"><a class="nav-link" data-toggle="tab" href="#panelProductos" id="btnTabProductos">Productos</a></li>
-                        <li class="nav-item hidden"><a class="nav-link" data-toggle="tab" href="#panelCliente" id="btnTabCliente">Cliente</a></li>
+                    <ul class="nav nav-pills nav-justified border-bottom border-campesino" role="tablist">
+                        <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#panelInicio" id="btnTabInicio">Inicio</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#panelEstadisticas" id="">Estadística</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#panelEmbarazos" id="">Embarazos</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#panelNacimientos" id="">Nacimientos</a></li>
+                        <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#panelGenealogico" id="">Parientes</a></li>
                     </ul>
                     <div class="tab-content py-3">
 
@@ -15,17 +17,30 @@ function getView(){
                           ${view.listadoAnimales() + view.modalDetallesAnimal()}
                         </div>
                         
-                        <div class="tab-pane fade" id="panelProductos" role="tabpanel">
+                        <div class="tab-pane fade" id="panelEstadisticas" role="tabpanel">
                           
                         </div>
 
-                        <div class="tab-pane fade" id="panelCliente" role="tabpanel">
+                        <div class="tab-pane fade" id="panelEmbarazos" role="tabpanel">
                          
                         </div>
-   
+
+                        <div class="tab-pane fade" id="panelNacimientos" role="tabpanel">
+                         
+                        </div>
+
+                        <div class="tab-pane fade" id="panelGenealogico" role="tabpanel">
+                         
+                        </div>
+                        
                     </div>
                 </div>
             </div>
+
+            <div class="row">
+                ${view.botones()}
+            </div>
+           
             `
         },
         listadoAnimales:()=>{
@@ -40,11 +55,7 @@ function getView(){
                     </div>
                 </div>
             </div>
-            <div id="fixed-btn2">
-                <button class="btn btn-success waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnNuevo">
-                    <i class="fal fa-plus"></i>
-                </button>
-            </div>
+           
             `
         },
         modalDetallesAnimal :()=>{
@@ -178,10 +189,65 @@ function getView(){
             </div>
             
             `
+        },
+        modalFiltro :()=>{
+            return `
+            <div class="modal fade  modal-with-scroll" id="modalFiltro" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-right" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <label class="modal-title text-info h3" id="">Datos para Filtrar</label>
+                        </div>
+
+                        <div class="modal-body p-4">
+
+                            <div class="form-group">
+                                <label>opcion</label>
+                                <input id="txtFiltro1" type="checkbox" checked data-toggle="toggle" data-on="Machos" data-off="Hembras" data-onstyle="success" data-offstyle="danger">
+                            </div>
+                                                   
+                         
+                        
+                            <br>                      
+
+                          
+
+
+                        </div>
+                    </div>
+                </div>             
+            </div>
+            
+            `
+           
+        }, 
+        botones:()=>{
+            return `
+            <div id="fixed-btn2">
+                <div class="row">
+                    <div class="col-4">
+                        <button class="btn btn-outline-secondary waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnFiltroF">
+                            <i class="fal fa-paper-plane"></i>
+                        </button>
+
+                    </div>
+                    <div class="col-4">
+                       
+                    </div>
+                    <div class="col-4">
+                        <button class="btn btn-success waves-themed waves-effect shadow hand btn-circle btn-xl" id="btnNuevo">
+                            <i class="fal fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
+          
+            `        
         }
     }
 
-    root.innerHTML = view.body()
+    root.innerHTML = view.body() + view.modalFiltro();
 };
 
 function addListeners(){
@@ -253,8 +319,18 @@ function addListeners(){
     })
     //---------------------------------------------------------------------
 
+
+    let btnFiltroF = document.getElementById('btnFiltroF');
+    btnFiltroF.addEventListener('click',()=>{
+        $('#modalFiltro').modal('show');
+    });
+
+  
+
+
     getListadoAnimales();
 
+    funciones.slideAnimationTabs();
 };
 
 function fcnIniciarVista(){
