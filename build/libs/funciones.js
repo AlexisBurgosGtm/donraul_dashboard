@@ -9,7 +9,7 @@ let funciones = {
     let m = f.getMinutes();
     return `${h.toString()}:${m.toString()}`;
   },
-    GetDataNit: async (idNit,idCliente,idDireccion)=>{
+  GetDataNit: async (idNit,idCliente,idDireccion)=>{
 
       return new Promise((resolve, reject) => {
         let nit = document.getElementById(idNit).value;                    

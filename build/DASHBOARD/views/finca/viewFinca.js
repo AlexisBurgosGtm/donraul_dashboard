@@ -34,8 +34,10 @@ function getView(){
                 <div class="card-header">
                     <h5 class="">Listado de Animales</h5>
                 </div>
-                <div class="card-body card-columns" id="tblAnimales">
-            
+                <div class="card-body">
+                    <div class="row" id="tblAnimales">
+                    
+                    </div>
                 </div>
             </div>
             <div id="fixed-btn2">
@@ -54,7 +56,7 @@ function getView(){
                             <label class="modal-title text-danger h3" id="">Detalles del Nuevo Animal</label>
                         </div>
 
-                        <div class="modal-body p-4" style="font-size:80%">
+                        <div class="modal-body p-4" style="font-size:85%">
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-group">
@@ -90,7 +92,8 @@ function getView(){
                                 <div class="col-sm-12 col-lg-6 col-xl-6 col-md-6">
                                     <div class="form-group">
                                         <label>Color</label>
-                                        <input type="text" id="txtColor" class="form-control">
+                                        <select id="cmbColor" class="form-control">
+                                        </select>
                                     </div>    
                                 </div>
                             </div>
@@ -121,12 +124,30 @@ function getView(){
                               
                             </div>
                             <br>
-                            <div class="form-group">
-                                <label>Categoría</label>
-                                <select id="cmbCategoria" class="form-control">
-                                    
-                                </select>
+
+                            <div class="row">
+                            
+                                <div class="col-sm-12 col-lg-6 col-xl-6 col-md-6">
+                                    <div class="form-group">
+                                        <label>Categoría</label>
+                                        <select id="cmbCategoria" class="form-control">
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-12 col-lg-6 col-xl-6 col-md-6">
+                                    <div class="form-group">
+                                        <label>Cargada</label>
+                                        <select id="cmbCargada" class="form-control">
+                                            <option value="CARGADA">CARGADA</option>
+                                            <option value="VACIA">VACIA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            
                             </div>
+                            <br>                      
 
                             <div class="form-group">
                                     <label>Observaciones</label>
@@ -163,39 +184,71 @@ function getView(){
     root.innerHTML = view.body()
 };
 
-
 function addListeners(){
 
     //---------------------------------------------------------------------
-    getRazas()
-    .then((datos)=>{
+    getRazasCategorias()
+    .then((data)=>{
+     
         let str = '';
-        datos.map((r)=>{
+        data.recordsets[0].map((r)=>{
             str += `<option value="${r.CODRAZA}">${r.DESRAZA}</option>`;
         })
         document.getElementById('cmbRaza').innerHTML = str;
+        str ='';
+        data.recordsets[1].map((r)=>{
+            str += `<option value="${r.CODCATEGORIA}">${r.DESCATEGORIA}</option>`;
+        })
+
+        document.getElementById('cmbCategoria').innerHTML = str;
     });
+
 
     document.getElementById('txtFechaNacimiento').value = funciones.getFecha();
 
-
-
     document.getElementById('btnNuevo').addEventListener('click',()=>{
+
+        document.getElementById('txtCodigo').value='';
+        document.getElementById('txtNombre').value='';
+        document.getElementById('cmbComprada').value='NO';
+        document.getElementById('txtFechaNacimiento').value= funciones.getFecha();
+        document.getElementById('cmbCategoria').value="1";
+        document.getElementById('cmbCargada').value='VACIA';
+        document.getElementById('txtObs').value='SN';
+
         $('#modalNueva').modal('show');
     });
 
-    document.getElementById('cmbCategoria').innerHTML = getCategorias();
-
+    //document.getElementById('cmbCategoria').innerHTML = getCategorias();
+    document.getElementById('cmbColor').innerHTML = getColores();
 
     let bntGuardarNuevo = document.getElementById('bntGuardarNuevo');
     bntGuardarNuevo.addEventListener('click',()=>{
-        bntGuardarNuevo.innerHTML = '<i class="fal fa-save fa-spin"></i>';
-        bntGuardarNuevo.disabled = true;
 
+        funciones.Confirmacion('¿Está seguro que desea Crear este nuevo Animal?')
+        .then((value)=>{
+            if(value==true){
 
-        bntGuardarNuevo.innerHTML = '<i class="fal fa-save"></i>';
-        bntGuardarNuevo.disabled = false;
+                bntGuardarNuevo.innerHTML = '<i class="fal fa-save fa-spin"></i>';
+                bntGuardarNuevo.disabled = true;
+        
+                insert_animal()
+                .then(()=>{
+                    funciones.Aviso('Animal creado Exitosamente !!');
+                    bntGuardarNuevo.innerHTML = '<i class="fal fa-save"></i>';
+                    bntGuardarNuevo.disabled = false;
+                    $('#modalNueva').modal('hide');
+                    getListadoAnimales();
+                })
+                .catch(()=>{
+                    funciones.AvisoError('No se pudo guardar, verifique si el código es repetido o si hay datos incompletos')
+                    bntGuardarNuevo.innerHTML = '<i class="fal fa-save"></i>';
+                    bntGuardarNuevo.disabled = false;
+                 
+                })
 
+            }
+        })
 
     })
     //---------------------------------------------------------------------
@@ -211,33 +264,88 @@ function fcnIniciarVista(){
 
 };
 
-
 function getListadoAnimales(){
     let container = document.getElementById('tblAnimales');
     container.innerHTML = GlobalLoader;
 
-    let view = `
-    <div class="card p-3 shadow card-rounded bg-danger text-white">
-        <div class="form-group">
-            <i class="fal fa-horse-head fa-spin" style="font-size:200%"></i>
-            <label>Nombre del Animal</label>
-        </div>
-        <div class="form-group">
-            <label>Clasificacion</label>
-        </div>
-        <div class="form-group">
-            <label>Edad (años)</label>
-        </div>
-    </div>
+    let str = '';
 
-  
-    `
+    axios.post('/finca/select_animales', {st:'A'})
+    .then((response) => {
+        const data = response.data.recordset;
+        data.map((r)=>{
+            let icono = '';
+            if(r.SEXO=='MACHO'){icono='<i class="fal fa-male"></i>'}else{icono='<i class="fal fa-female"></i>'}
+            str += `
+                <div class="card p-3 shadow card-rounded col-sm-6 col-md-4 col-xl-3 col-lg-3 hand" style="font-size:90%; width:17rem;">
+                    <div class="form-group"> 
+                        
+                        <label class="negrita">Código: ${r.CODIGO}</label>
+                        <br>
+                        <h5>${r.NOMBRE} -  ${icono}</h5>
+                    </div>
+                    <div class="card border-secondary p-4 card-rounded bg-white text-secondary negrita">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Raza: ${r.DESRAZA}</label>
+                                </div>     
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Sexo: ${r.SEXO}</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <br class="solid">
 
-    container.innerHTML = view;
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Color: ${r.COLOR}</label>
+                                </div>     
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Compra: ${r.COMPRA}</label>
+                                </div>
+                            </div>
+                        </div>
 
+                        <br class="solid">
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Nacimiento: ${funciones.convertDate2(r.FECHANACIMIENTO)}</label>
+                                </div>     
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Cargada: ${r.CARGADA}</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="row bg-campesino text-white text-center">
+                            <h5 class="col-12">${r.DESCATEGORIA}</label>
+                        </div>
+
+                    </div>
+                    
+                </div>
+                    `
+        })
+        container.innerHTML = str;
+    })
+    .catch(()=>{
+        container.innerHTML = 'No se pudieron cargar los datos...';
+    })
+
+    
 };
-
-
 
 function getCategorias(){
     let categorias = [
@@ -258,13 +366,38 @@ function getCategorias(){
 };
 
 
-function getRazas(){
+
+function getColores(){
+    let colores = [
+        {color:"BARCINA"},
+        {color:"BARROSA"},
+        {color:"BERMEJA"},
+        {color:"BERMEJO"},
+        {color:"OSCA"},
+        {color:"OVERA"},
+        {color:"PRIETA"},
+        {color:"ZARDA"},
+        {color:"ZARDO"},
+        
+    ]
+
+    let str = '';
+    colores.map((r)=>{
+        str += `<option value="${r.color}">${r.color}</option>`
+    })
+
+    return str;
+
+};
+
+function getRazasCategorias(){
     return new Promise((resolve, reject)=>{
 
         axios.post('/finca/select_razas')
         .then((response) => {
-            const datos = response.data.recordset;
-            resolve(datos);
+            const data = response.data;
+           
+            resolve(data);
         })
         .catch(()=>{
             reject();
@@ -272,4 +405,41 @@ function getRazas(){
         
     })
     
-}
+};
+
+
+
+
+function insert_animal(){
+
+    return new Promise((resolve, reject)=>{
+        let data = {
+            codigo: document.getElementById('txtCodigo').value,
+            nombre: document.getElementById('txtNombre').value,
+            codraza: document.getElementById('cmbRaza').value,
+            sexo: document.getElementById('cmbSexo').value,
+            color: document.getElementById('cmbColor').value,
+            compra: document.getElementById('cmbComprada').value,
+            fechanacimiento: funciones.devuelveFecha("txtFechaNacimiento"),
+            codcateoria: document.getElementById('cmbCategoria').value,
+            cargada: document.getElementById('cmbCargada').value,
+            obs: document.getElementById('txtObs').value,
+            status:"A"
+        }
+        axios.post('/finca/insert_animal', data)
+        .then((response) => {
+            const datos = response.data;
+            if(Number(datos.rowsAffected[0])==0){
+                reject();
+            }else{
+                resolve();
+            }
+            
+        })
+        .catch(()=>{
+            reject();
+        })
+        
+    })
+    
+};
