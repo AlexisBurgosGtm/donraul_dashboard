@@ -14,7 +14,7 @@ function getView(){
                     <div class="tab-content py-3">
 
                         <div class="tab-pane fade active show" id="panelInicio" role="tabpanel">
-                          ${view.listadoAnimales() + view.modalDetallesAnimal()}
+                          ${view.listadoAnimales() + view.modalDetallesAnimal() + view.modalDetallesAnimalE() + view.modalMenuAnimal()}
                         </div>
                         
                         <div class="tab-pane fade" id="panelEstadisticas" role="tabpanel">
@@ -190,6 +190,247 @@ function getView(){
             
             `
         },
+        modalDetallesAnimalE :()=>{
+            return `
+            <div class="modal fade  modal-with-scroll" id="modalEditar" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-right" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <label class="modal-title text-info h3" id="">Editar datos del Animal</label>
+                        </div>
+
+                        <div class="modal-body p-4" style="font-size:85%">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label>Código</label>
+                                        <input type="number" id="txtCodigoE" class="form-control bg-amarillo" disabled="true">
+                                    </div>    
+                                </div>
+                                <div class="col-6">
+                                    <div class="form-group">
+                                        <label>Fecha Nacimiento</label>
+                                        <input type="date" id="txtFechaNacimientoE" class="form-control">
+                                    </div>    
+                                </div>
+                            </div>
+                            <br>
+                            
+                            <div class="form-group">
+                                <label>Nombre</label>
+                                <input type="text" id="txtNombreE" class="form-control" value="SN">
+                            </div>
+
+
+                            <div class="row">
+                            
+                                <div class="col-sm-12 col-lg-6 col-xl-6 col-md-6">
+                                    <div class="form-group">
+                                        <label>Raza</label>
+                                        <select id="cmbRazaE" class="form-control">
+                                        </select>
+                                    </div>    
+                                </div>
+                                 
+                                <div class="col-sm-12 col-lg-6 col-xl-6 col-md-6">
+                                    <div class="form-group">
+                                        <label>Color</label>
+                                        <select id="cmbColorE" class="form-control">
+                                        </select>
+                                    </div>    
+                                </div>
+                            </div>
+                            <br>
+
+                            <div class="row">
+                            
+                                <div class="col-sm-12 col-lg-6 col-xl-6 col-md-6">
+                                    <div class="form-group">
+                                        <label>¿Es Comprada?</label>
+                                        <select id="cmbCompradaE" class="form-control">
+                                            <option value="NO">NO</option>
+                                            <option value="SI">SI</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-12 col-lg-6 col-xl-6 col-md-6">
+                                    <div class="form-group">
+                                        <label>Sexo</label>
+                                        <select id="cmbSexoE" class="form-control">
+                                            <option value="MACHO">MACHO</option>
+                                            <option value="HEMBRA">HEMBRA</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                              
+                            </div>
+                            <br>
+
+                            <div class="row">
+                            
+                                <div class="col-sm-12 col-lg-6 col-xl-6 col-md-6">
+                                    <div class="form-group">
+                                        <label>Categoría</label>
+                                        <select id="cmbCategoriaE" class="form-control">
+                                            
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-12 col-lg-6 col-xl-6 col-md-6">
+                                    <div class="form-group">
+                                        <label>Cargada</label>
+                                        <select id="cmbCargadaE" class="form-control">
+                                            <option value="CARGADA">CARGADA</option>
+                                            <option value="VACIA">VACIA</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            
+                            </div>
+                            <br>                      
+
+                            <div class="form-group">
+                                    <label>Observaciones</label>
+                                    <textarea rows="2" id="txtObsE" class="form-control" value="SN">
+                                    </textarea>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-6">
+                                    <button class="btn btn-outline-secondary btn-circle shadow btn-xl" data-dismiss="modal" id="bntCerrarModalE">
+                                        X
+                                    </button>
+                                </div>
+                                <div class="col-6">
+                                    <button class="btn btn-info btn-circle shadow btn-xl" id="bntGuardarE">
+                                        <i class="fal fa-save"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+
+                        </div>
+                        
+                    
+                    </div>
+                </div>
+              
+            </div>
+            
+            `
+        },
+        modalMenuAnimal :()=>{
+            return `
+            <div class="modal fade" id="modalMenu" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <label class="modal-title text-secondary h3" id="">Opciones de Animal</label>
+                        </div>
+
+                        <div class="modal-body p-4">
+
+                            <div class="row">
+                                <div class="col-4">
+                                        <div class="card p-4 shadow hand card-rounded text-info border-info">
+                                            <div class="row">
+                                                <i class="fal fa-edit" style="font-size:170%"></i>
+                                            </div>
+                                            <div class="row">
+                                                EDITAR DATOS
+                                            </div>
+                                        </div>
+                                </div>
+                                <div class="col-4">
+                                        <div class="card p-4 shadow hand card-rounded bg-campesino text-white">
+                                            <div class="row">
+                                                <i class="fal fa-sync" style="font-size:170%"></i>
+                                            </div>
+                                            <div class="row">
+                                                DESHABILITAR
+                                            </div>
+                                        </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card p-4 shadow hand card-rounded bg-danger text-white">
+                                        <div class="row">
+                                            <i class="fal fa-trash" style="font-size:170%"></i>
+                                        </div>
+                                        <div class="row">
+                                            ELIMINAR
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr class="solid"> <hr class="solid">
+
+                            <div class="row">
+                                <div class="col-4">
+                                        <div class="card p-4 shadow hand card-rounded">
+                                            <div class="row">
+                                                <i class="fal fa-edit" style="font-size:120%"></i>CAMBIAR CATEGORÍA
+                                            </div>
+                                            <div class="row">
+                                                <select id="cmbMCategoria" class="form-control">
+                                                
+                                                </select>
+                                            </div>
+                                        </div>
+                                </div>
+                                <div class="col-4">
+                                        <div class="card p-4 shadow hand card-rounded">
+                                            <div class="row">
+                                                <i class="fal fa-sync" style="font-size:120%"></i>
+                                            </div>
+                                            <div class="row">
+                                                <select id="cmbMCargada" class="form-control">
+                                                    <option value="VACIA">VACIA</option>
+                                                    <option value="CARGADA">CARGADA</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="card p-4 shadow hand card-rounded">
+                                        <div class="row">
+                                            <i class="fal fa-trash" style="font-size:170%"></i>
+                                        </div>
+                                        <div class="row">
+                                            OPCION
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        
+
+                            
+                            <br>            
+                            <br>
+
+                            <div class="row">
+                                <div class="col-6" align="right">
+                                </div>
+                                <div class="col-6" align="right">
+                                    <button class="btn btn-outline-secondary btn-circle shadow btn-xl" data-dismiss="modal" id="bntCerrarModalE">
+                                        X
+                                    </button>
+                                </div> 
+                            </div>
+
+
+                        </div>
+                        
+                    
+                    </div>
+                </div>              
+            </div>
+            `
+        },
         modalFiltro :()=>{
             return `
             <div class="modal fade  modal-with-scroll" id="modalFiltro" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -350,69 +591,7 @@ function getListadoAnimales(){
     .then((response) => {
         const data = response.data.recordset;
         data.map((r)=>{
-            let icono = '';
-            if(r.SEXO=='MACHO'){icono='<i class="fal fa-male"></i>'}else{icono='<i class="fal fa-female"></i>'}
-            str += `
-                <div class="card p-3 shadow card-rounded col-sm-6 col-md-4 col-xl-3 col-lg-3 hand" style="font-size:90%; width:17rem;">
-                    <div class="form-group"> 
-                        
-                        <label class="negrita">Código: ${r.CODIGO}</label>
-                        <br>
-                        <h5>${r.NOMBRE} -  ${icono}</h5>
-                    </div>
-                    <div class="card border-secondary p-4 card-rounded bg-white text-secondary negrita">
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label>Raza: ${r.DESRAZA}</label>
-                                </div>     
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label>Sexo: ${r.SEXO}</label>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <br class="solid">
-
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label>Color: ${r.COLOR}</label>
-                                </div>     
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label>Compra: ${r.COMPRA}</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <br class="solid">
-
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label>Nacimiento: ${funciones.convertDate2(r.FECHANACIMIENTO)}</label>
-                                </div>     
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label>Cargada: ${r.CARGADA}</label>
-                                </div>
-                            </div>
-                        </div>
-
-                        
-                        <div class="row bg-campesino text-white text-center">
-                            <h5 class="col-12">${r.DESCATEGORIA}</label>
-                        </div>
-
-                    </div>
-                    
-                </div>
-                    `
+            str += getCardAnimal(r.CODIGO,r.NOMBRE,r.SEXO,r.DESRAZA,r.COLOR,r.COMPRA,r.FECHANACIMIENTO,r.CARGADA,r.DESCATEGORIA);
         })
         container.innerHTML = str;
     })
@@ -423,25 +602,75 @@ function getListadoAnimales(){
     
 };
 
-function getCategorias(){
-    let categorias = [
-        {codcategoria:1,descategoria:"GENERAL" },
-        {codcategoria:2,descategoria:"NOVILLAS/OS" },
-        {codcategoria:4,descategoria:"LECHERAS" },
-        {codcategoria:5,descategoria:"CHIVAS/OS" },
-        {codcategoria:7,descategoria:"ENGORDE" }
-    ]
-
+function getCardAnimal(CODIGO,NOMBRE,SEXO,DESRAZA,COLOR,COMPRA,FECHANACIMIENTO,CARGADA,DESCATEGORIA){
+    let icono = '';
     let str = '';
-    categorias.map((r)=>{
-        str += `<option value="${r.codcategoria}">${r.descategoria}</option>`
-    })
 
-    return str;
+            if(SEXO=='MACHO'){icono='<i class="fal fa-male"></i>'}else{icono='<i class="fal fa-female"></i>'}
+            str += `
+                <div class="card p-3 shadow card-rounded col-sm-6 col-md-4 col-xl-3 col-lg-3 hand" style="font-size:90%; width:17rem;" 
+                ondblclick="getdata_animal('${CODIGO}','${NOMBRE}','${SEXO}','${DESRAZA}','${COLOR}')">
+                    <div class="form-group"> 
+                        
+                        <label class="negrita">Código: ${CODIGO}</label>
+                        <br>
+                        <h5>${NOMBRE} -  ${icono}</h5>
+                    </div>
+                    <div class="card border-secondary p-4 card-rounded bg-white text-secondary negrita">
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Raza: ${DESRAZA}</label>
+                                </div>     
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Sexo: ${SEXO}</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <br class="solid">
 
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Color: ${COLOR}</label>
+                                </div>     
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Compra: ${COMPRA}</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br class="solid">
+
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Nacimiento: ${funciones.convertDate2(FECHANACIMIENTO)}</label>
+                                </div>     
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label>Cargada: ${CARGADA}</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        
+                        <div class="row bg-campesino text-white text-center">
+                            <h5 class="col-12">${DESCATEGORIA}</label>
+                        </div>
+
+                    </div>
+                    
+                </div>
+                    `
+        return str;
 };
-
-
 
 function getColores(){
     let colores = [
@@ -518,4 +747,11 @@ function insert_animal(){
         
     })
     
+};
+
+
+function getdata_animal(){
+
+    $('#modalMenu').modal('show');
+
 };
