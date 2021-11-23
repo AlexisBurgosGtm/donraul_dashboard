@@ -14,7 +14,7 @@ function getView(){
                     <div class="tab-content py-3">
 
                         <div class="tab-pane fade active show" id="panelInicio" role="tabpanel">
-                          ${view.listadoAnimales() + view.modalDetallesAnimal() + view.modalDetallesAnimalE() + view.modalMenuAnimal()}
+                          ${view.listadoAnimales() + view.modalDetallesAnimal() + view.modalDetallesAnimalE() + view.modalMenuAnimal() + view.modalMenuAnimalCargada()}
                         </div>
                         
                         <div class="tab-pane fade" id="panelEstadisticas" role="tabpanel">
@@ -327,37 +327,43 @@ function getView(){
             <div class="modal fade" id="modalMenu" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog" role="document">
                     <div class="modal-content">
-                        <div class="modal-header">
-                            <label class="modal-title text-secondary h3" id="">Opciones de Animal</label>
-                        </div>
+                       
 
                         <div class="modal-body p-4">
+                           
+                            <h5>Opciones Generales</h5>
+                            <hr class="solid">
 
                             <div class="row">
-                                <div class="col-4">
+                                <div class="col-3">
+                                    <button class="btn btn-outline-secondary btn-circle shadow btn-xl" data-dismiss="modal" id="bntCerrarModalE">
+                                        X
+                                    </button> 
+                                </div>
+                                <div class="col-3">
                                         <div class="card p-4 shadow hand card-rounded text-info border-info">
                                             <div class="row">
-                                                <i class="fal fa-edit" style="font-size:170%"></i>
+                                                <i class="fal fa-edit" style="font-size:120%"></i>
                                             </div>
                                             <div class="row">
                                                 EDITAR DATOS
                                             </div>
                                         </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-3">
                                         <div class="card p-4 shadow hand card-rounded bg-campesino text-white">
                                             <div class="row">
-                                                <i class="fal fa-sync" style="font-size:170%"></i>
+                                                <i class="fal fa-sync" style="font-size:120%"></i>
                                             </div>
                                             <div class="row">
                                                 DESHABILITAR
                                             </div>
                                         </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-3">
                                     <div class="card p-4 shadow hand card-rounded bg-danger text-white">
                                         <div class="row">
-                                            <i class="fal fa-trash" style="font-size:170%"></i>
+                                            <i class="fal fa-trash" style="font-size:120%"></i>
                                         </div>
                                         <div class="row">
                                             ELIMINAR
@@ -366,63 +372,58 @@ function getView(){
                                 </div>
                             </div>
 
-                            <hr class="solid"> <hr class="solid">
+                          
+                        </div>
+                        
+                    
+                    </div>
+                </div>              
+            </div>
+            `
+        },
+        modalMenuAnimalCargada :()=>{
+            return `
+            <div class="modal fade" id="modalCargada" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog" role="document">
+                    <div class="modal-content">
+                       
+
+                        <div class="modal-body p-4">
+                           
+                            <h5>Registrar Fecha de Embarazo (Montura)</h5>
+                            <hr class="solid">
+                                                    
 
                             <div class="row">
-                                <div class="col-4">
-                                        <div class="card p-4 shadow hand card-rounded">
-                                            <div class="row">
-                                                <i class="fal fa-edit" style="font-size:120%"></i>CAMBIAR CATEGORÍA
-                                            </div>
-                                            <div class="row">
-                                                <select id="cmbMCategoria" class="form-control">
-                                                
-                                                </select>
-                                            </div>
-                                        </div>
-                                </div>
-                                <div class="col-4">
-                                        <div class="card p-4 shadow hand card-rounded">
-                                            <div class="row">
-                                                <i class="fal fa-sync" style="font-size:120%"></i>
-                                            </div>
-                                            <div class="row">
-                                                <select id="cmbMCargada" class="form-control">
-                                                    <option value="VACIA">VACIA</option>
-                                                    <option value="CARGADA">CARGADA</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="card p-4 shadow hand card-rounded">
-                                        <div class="row">
-                                            <i class="fal fa-trash" style="font-size:170%"></i>
-                                        </div>
-                                        <div class="row">
-                                            OPCION
-                                        </div>
+                               
+                                <div class="col-xl-6 col-sm-12 col-lg-6 col-md-6">
+                                    <div class="card p-4 shadow hand card-rounded">   
+                                        <label>¿ESTÁ CARGADA? </label>
+                                            <label class="switch">
+                                                <input type="checkbox" id="settxtCargada">
+                                                <span class="slider round" ></span>
+                                            </label>
+
+                                        <input type="date" id="settxtFechaCargada" class="form-control">        
                                     </div>
                                 </div>
+                              
+                                
                             </div>
-
-                        
-
-                            
-                            <br>            
-                            <br>
-
                             <div class="row">
-                                <div class="col-6" align="right">
-                                </div>
-                                <div class="col-6" align="right">
-                                    <button class="btn btn-outline-secondary btn-circle shadow btn-xl" data-dismiss="modal" id="bntCerrarModalE">
-                                        X
-                                    </button>
-                                </div> 
+                                    <div class="col-4">
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-outline-secondary btn-circle shadow btn-xl" data-dismiss="modal" id="">
+                                            X
+                                        </button> 
+                                    </div>
+                                    <div class="col-4">
+                                        <button class="btn btn-info btn-circle shadow btn-xl" id="btnGuardarEmbarazo">
+                                            <i class="fal fa-save"></i>
+                                        </button> 
+                                    </div>
                             </div>
-
-
                         </div>
                         
                     
@@ -508,6 +509,8 @@ function addListeners(){
         })
 
         document.getElementById('cmbCategoria').innerHTML = str;
+        //document.getElementById('setcmbCategoria').innerHTML = str;
+        str='';
     });
 
 
@@ -567,6 +570,16 @@ function addListeners(){
     });
 
   
+    let settxtCargada = document.getElementById('settxtCargada');
+    settxtCargada.addEventListener('change',()=>{
+        funciones.Aviso(settxtCargada.value);
+
+        if(settxtCargada.value=='on'){
+            document.getElementById('settxtFechaCargada').style= "visibility:visible";
+        }else{
+            document.getElementById('settxtFechaCargada').style= "visibility:hidden";
+        }
+    });
 
 
     getListadoAnimales();
@@ -608,13 +621,15 @@ function getCardAnimal(CODIGO,NOMBRE,SEXO,DESRAZA,COLOR,COMPRA,FECHANACIMIENTO,C
 
             if(SEXO=='MACHO'){icono='<i class="fal fa-male"></i>'}else{icono='<i class="fal fa-female"></i>'}
             str += `
-                <div class="card p-3 shadow card-rounded col-sm-6 col-md-4 col-xl-3 col-lg-3 hand" style="font-size:90%; width:17rem;" 
-                ondblclick="getdata_animal('${CODIGO}','${NOMBRE}','${SEXO}','${DESRAZA}','${COLOR}')">
+                <div class="card p-3 shadow card-rounded col-sm-6 col-md-4 col-xl-3 col-lg-3 hand" style="font-size:90%; width:17rem;">
                     <div class="form-group"> 
                         
                         <label class="negrita">Código: ${CODIGO}</label>
                         <br>
                         <h5>${NOMBRE} -  ${icono}</h5>
+                        <button class="btn btn-md btn-info shadow" onclick="getdata_animal('${CODIGO}','${NOMBRE}','${SEXO}','${DESRAZA}','${COLOR}')">
+                            <i class="fal fa-edit"></i>
+                        </button>
                     </div>
                     <div class="card border-secondary p-4 card-rounded bg-white text-secondary negrita">
                         <div class="row">
@@ -657,6 +672,9 @@ function getCardAnimal(CODIGO,NOMBRE,SEXO,DESRAZA,COLOR,COMPRA,FECHANACIMIENTO,C
                                 <div class="form-group">
                                     <label>Cargada: ${CARGADA}</label>
                                 </div>
+                                <button class="btn btn-md btn-warning shadow hand" onclick="getdata_cargada('${CODIGO}','${NOMBRE}','${CARGADA}','${SEXO}')">
+                                    <i class="fal fa-link"></i>
+                                </button>
                             </div>
                         </div>
 
@@ -712,9 +730,6 @@ function getRazasCategorias(){
     
 };
 
-
-
-
 function insert_animal(){
 
     return new Promise((resolve, reject)=>{
@@ -753,5 +768,17 @@ function insert_animal(){
 function getdata_animal(){
 
     $('#modalMenu').modal('show');
+
+};
+
+
+function getdata_cargada(codigo,nombre,cargada,sexo){
+
+    if(sexo=='MACHO'){
+        funciones.AvisoError('Este animal es un MACHO, por favor revise');
+        return;
+    }else{}
+
+    $('#modalCargada').modal('show');
 
 };
