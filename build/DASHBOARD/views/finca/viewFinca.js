@@ -399,12 +399,19 @@ function getView(){
                                 <div class="col-xl-6 col-sm-12 col-lg-6 col-md-6">
                                     <div class="card p-4 shadow hand card-rounded">   
                                         <label>¿ESTÁ CARGADA? </label>
-                                            <label class="switch">
-                                                <input type="checkbox" id="settxtCargada">
-                                                <span class="slider round" ></span>
-                                            </label>
-
-                                        <input type="date" id="settxtFechaCargada" class="form-control">        
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <label class="switch">
+                                                        <input type="checkbox" id="settxtCargada">
+                                                        <span class="slider round" ></span>
+                                                    </label>
+                                                </div>
+                                                <div class="col-6" align="left">
+                                                    <input type="date" id="settxtFechaCargada" class="form-control">  
+                                                </div>
+                                            </div>
+                                            
+      
                                     </div>
                                 </div>
                               
@@ -572,9 +579,10 @@ function addListeners(){
   
     let settxtCargada = document.getElementById('settxtCargada');
     settxtCargada.addEventListener('change',()=>{
-        funciones.Aviso(settxtCargada.value);
 
-        if(settxtCargada.value=='on'){
+        document.getElementById('settxtFechaCargada').style= "visibility:hidden";
+             
+        if(settxtCargada.checked==true){
             document.getElementById('settxtFechaCargada').style= "visibility:visible";
         }else{
             document.getElementById('settxtFechaCargada').style= "visibility:hidden";
